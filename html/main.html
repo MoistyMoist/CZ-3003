@@ -1,42 +1,30 @@
-@import models.common.Notification
-@(page:Integer,notifications:List[Notification],content: Html)
-
 <!DOCTYPE html>
 
 <html lang="en">
     <head>
-        <title>BOSS SYSTEM</title>
+        <title></title>
         <meta charset="utf-8">
-        <title>Endless Admin</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="WRAPPER FOR ADMIN">
-        <meta name="author" content="MOISTYBURGER">
-
-        <!-- main.js -->
-        <script type="text/javascript" src="@controllers.admin.routes.Application.javacriptRoutes()"></script>
-        <script src="@controllers.admin.routes.Assets.versioned("javascripts/main.js")"></script>
+    
 
         <!-- Bootstrap core CSS -->
-        <link href="@controllers.common.routes.Assets.versioned("stylesheets/bootstrap.min.css")" rel="stylesheet">
+        <link href="../stylesheets/bootstrap.min.css" rel="stylesheet"/>
 
-        <link href="@controllers.admin.routes.Assets.versioned("stylesheets/main.css")" rel="stylesheet">
+        <link href="../stylesheets/main.css" rel="stylesheet"/>
 
         <!-- Font Awesome -->
-        <link href="@controllers.common.routes.Assets.versioned("stylesheets/font-awesome.min.css")" rel="stylesheet">
+        <link href="../stylesheets/font-awesome.min.css" rel="stylesheet"/>
 
         <!-- Endless -->
-        <link href="@controllers.common.routes.Assets.versioned("stylesheets/templet.css")" rel="stylesheet">
-        <link href="@controllers.common.routes.Assets.versioned("stylesheets/skin.min.css")" rel="stylesheet">
+        <link href="../stylesheets/templet.css" rel="stylesheet"/>
+        <link href="../stylesheets/skin.min.css" rel="stylesheet"/>
 
         <!-- Pace -->
-        <link href="@controllers.common.routes.Assets.versioned("stylesheets/pace.css")" rel="stylesheet">
-        <script type="text/javascript">
-        window.onbeforeunload = refreshpage();
-        </script>
+        <link href="../stylesheets/pace.css")" rel="stylesheet"/>
+ 
 
     </head>
 
-    <body class="overflow-hidden" onload="highlightMenu(@page);mainInit();">
+    <body>
 
 
         <a href="" id="theme-setting-icon" style="border-left: 1px solid #000000;border-bottom: 1px solid #000000;border-top: 1px solid black;" class=""><i class="fa fa-gears fa-lg"></i></a>
@@ -75,8 +63,8 @@
         <div id="wrapper" class="sidebar-mini">
             <div id="top-nav" class="skin-1 fixed default">
                 <div class="brand">
-                    <span>BOSS</span>
-                    <span class="text-toggle"> Admin</span>
+                    <span>CRISIS</span>
+                    <span class="text-toggle">SG</span>
                 </div><!-- /brand -->
                 <button type="button" class="navbar-toggle pull-left" id="sidebarToggle">
                     <span class="icon-bar"></span>
@@ -87,47 +75,26 @@
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             <i class="fa fa-bell fa-lg"></i>
-                            <span class="notification-label bounceIn animation-delay6">@notifications.size</span>
+                            <span class="notification-label bounceIn animation-delay6">100</span>
                         </a>
                         <ul class="dropdown-menu notification dropdown-3">
-                            <li><a href="#">You have @notifications.size new notifications</a></li>
-                            @for(notification<-notifications){
-                                <li>
-                                    <a href="#">
-                                        <span class="notification-icon bg-warning">
-                                            <i class="fa fa-warning"></i>
-                                        </span>
-                                        <span class="m-left-xs">@notification.getTitle</span>
-                                        <span class="time text-muted">@notification.getTime</span>
-                                    </a>
-                                </li>
-                            }
-
+                            <li><a href="#">You have 100 new notifications</a></li>
                             <li>
                                 <a href="#">
                                     <span class="notification-icon bg-success">
                                         <i class="fa fa-plus"></i>
                                     </span>
-                                    <span class="m-left-xs">New user registration.</span>
+                                    <span class="m-left-xs">New Incident</span>
                                     <span class="time text-muted">2m ago</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="#">
-                                    <span class="notification-icon bg-danger">
-                                        <i class="fa fa-bolt"></i>
-                                    </span>
-                                    <span class="m-left-xs">Application error.</span>
-                                    <span class="time text-muted">5m ago</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
                                     <span class="notification-icon bg-success">
-                                        <i class="fa fa-usd"></i>
+                                        <i class="fa fa-plus"></i>
                                     </span>
-                                    <span class="m-left-xs">2 items sold.</span>
-                                    <span class="time text-muted">1hr ago</span>
+                                    <span class="m-left-xs">New Incident</span>
+                                    <span class="time text-muted">2m ago</span>
                                 </a>
                             </li>
                             <li>
@@ -135,23 +102,23 @@
                                     <span class="notification-icon bg-success">
                                         <i class="fa fa-plus"></i>
                                     </span>
-                                    <span class="m-left-xs">New user registration.</span>
-                                    <span class="time text-muted">1hr ago</span>
+                                    <span class="m-left-xs">New Incident</span>
+                                    <span class="time text-muted">2m ago</span>
                                 </a>
                             </li>
-                            <li><a href="#">View all logs</a></li>
+                            <li><a href="#">View all Incidents</a></li>
                         </ul>
                     </li>
                     <li class="profile dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <strong>@session.get("staffName")</strong>
+                            <strong>STAFF NAME</strong>
                             <span><i class="fa fa-chevron-down"></i></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li>
                                 <a class="clearfix" href="#">
                                     <div class="detail">
-                                        <strong>@session.get("staffName")</strong>
+                                        <strong>STAFF NAME</strong>
                                         <p class="grey"></p>
                                         <p class="grey">Account Type : @session.get("staffType")<br/>Session expires at @session.get("x-auth-expire")</p>
                                     </div>
@@ -186,19 +153,6 @@
                     </div><!-- /search-block -->
                     <div class="main-menu">
                         <ul>
-                        @if(String.valueOf(session.get("staffType"))=="ADMIN"||String.valueOf(session.get("staffType"))=="SUPERADMIN") {
-                            <li id="dashboardmenu" style="cursor : pointer ;">
-                                <a onclick="navigateToPage ( 0 )">
-                                    <span class="menu-icon">
-                                        <i class="fa fa-desktop fa-lg"></i>
-                                    </span>
-                                    <span class="text">
-                                        Dashboard
-                                    </span>
-                                    <span class="menu-hover"></span>
-                                </a>
-                            </li>
-                        }
                             <li id="bookingsmenu" style="cursor : pointer ;">
                                 <a onclick="navigateToPage(1)">
                                     <span class="menu-icon">
@@ -247,70 +201,6 @@
                                     <span class="menu-hover"></span>
                                 </a>
                             </li>
-                            @if(String.valueOf(session.get("staffType"))=="ADMIN"||String.valueOf(session.get("staffType"))=="SUPERADMIN") {
-                                <li id="feedbackmenu" style="cursor : pointer ;">
-                                    <a onclick="navigateToPage ( 5 )">
-                                        <span class="menu-icon">
-                                            <i class="fa fa-wechat fa-lg"></i>
-                                        </span>
-                                        <span class="text">
-                                            Feedbacks
-                                        </span>
-
-                                        <span class="menu-hover"></span>
-                                    </a>
-                                </li>
-                            }
-                            <li id="socialmenu" style="display:none;cursor : pointer ;">
-                                <a onclick="navigateToPage(6)">
-                                    <span class="menu-icon">
-                                        <i class="fa fa-facebook-square fa-lg"></i>
-                                    </span>
-                                    <span class="text">
-                                        Social
-                                    </span>
-
-                                    <span class="menu-hover"></span>
-                                </a>
-                            </li>
-                            <li id="roomandequipmentmenu" style="cursor : pointer ;">
-                                <a onclick="navigateToPage(7)">
-                                    <span class="menu-icon">
-                                        <i class="fa fa-bed fa-lg"></i>
-                                    </span>
-                                    <span class="text">
-                                        Rooms & Equipments
-                                    </span>
-                                    <span class="badge badge-success bounceIn animation-delay5">Available</span>
-                                    <span class="menu-hover"></span>
-                                </a>
-                            </li>
-                            <li id="platformandgamemenu" style="cursor : pointer ;">
-                                <a onclick="navigateToPage(8)">
-                                    <span class="menu-icon">
-                                        <i class="fa fa-gamepad fa-lg"></i>
-                                    </span>
-                                    <span class="text">
-                                        Platforms & Games
-                                    </span>
-                                    <span class="badge badge-success bounceIn animation-delay5">Available</span>
-                                    <span class="menu-hover"></span>
-                                </a>
-                            </li>
-                            @if(String.valueOf(session.get("staffType"))=="SUPERADMIN") {
-                                <li id="accountandlogmenu" style="cursor : pointer ;">
-                                    <a onclick="navigateToPage ( 9 )">
-                                        <span class="menu-icon">
-                                            <i class="fa fa-key fa-lg"></i>
-                                        </span>
-                                        <span class="text">
-                                            Accounts & Logs
-                                        </span>
-                                        <span class="badge badge-success bounceIn animation-delay5">Available</span>
-                                        <span class="menu-hover"></span>
-                                    </a>
-                                </li>
-                            }
                         </ul>
 
                     </div><!-- /main-menu -->
@@ -318,7 +208,7 @@
             </aside>
 
             <div id="main-container" class="transparentscrollbar" style="overflow : scroll ;">
-                @content
+               <!-- TODO:insert the content here -->
             </div><!-- /main-container -->
         </div>
 
@@ -344,28 +234,28 @@
             <!-- Placed at the end of the document so the pages load faster -->
 
             <!-- Jquery -->
-        <script src="@controllers.common.routes.Assets.versioned("javascripts/jquery-1.10.2.min.js")"></script>
+        <script src="../javascripts/jquery-1.10.2.min.js"></script>
 
             <!-- Bootstrap -->
-        <script src="@controllers.common.routes.Assets.versioned("javascripts/bootstrap.min.js")"></script>
+        <script src="../javascripts/bootstrap.min.js"></script>
 
             <!-- Modernizr -->
-        <script src=" @controllers.common.routes.Assets.versioned("javascripts/modernizr.min.js")"></script>
+        <script src="../javascripts/modernizr.min.js"></script>
 
             <!-- Pace -->
-        <script src="@controllers.common.routes.Assets.versioned("javascripts/pace.min.js")"></script>
+        <script src="../javascripts/pace.min.js"></script>
 
             <!-- Popup Overlay -->
-        <script src=" @controllers.common.routes.Assets.versioned("javascripts/jquery.popupoverlay.min.js")"></script>
+        <script src="../javascripts/jquery.popupoverlay.min.js"></script>
 
             <!-- Slimscroll -->
-        <script src="@controllers.common.routes.Assets.versioned("javascripts/jquery.slimscroll.min.js")"></script>
+        <script src="../javascripts/jquery.slimscroll.min.js"></script>
 
             <!-- Cookie -->
-        <script src="@controllers.common.routes.Assets.versioned("javascripts/jquery.cookie.min.js")"></script>
+        <script src="../javascripts/jquery.cookie.min.js"></script>
 
             <!-- Endless -->
-        <script src="@controllers.common.routes.Assets.versioned("javascripts/skin.js")"></script>
+        <script src="../javascripts/skin.js"></script>
 
     </body>
 </html>
