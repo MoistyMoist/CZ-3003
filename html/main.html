@@ -18,7 +18,8 @@
 
         <!-- Pace -->
         <link href="../stylesheets/pace.css" rel="stylesheet"/>
- 
+
+           
 
     </head>
 
@@ -151,50 +152,36 @@
                     </div><!-- /search-block -->
                     <div class="main-menu">
                         <ul>
-                            <li id="bookingsmenu" style="cursor : pointer ;">
-                                <a onclick="navigateToPage(1)">
+                            <li style="cursor : pointer ;">
+                                <a>
                                     <span class="menu-icon">
-                                        <i class="fa fa-file-text fa-lg"></i>
+                                        <i class="fa fa-exclamation-triangle fa-lg"></i>
                                     </span>
                                     <span class="text">
-                                        Bookings
+                                        Incident Management
                                     </span>
-                                    <span class="badge badge-success bounceIn animation-delay5">Available</span>
                                     <span class="menu-hover"></span>
                                 </a>
                             </li>
-                            <li id="membershipmenu" style="cursor : pointer ;">
-                                <a onclick="navigateToPage(2)">
+                            <li style="cursor : pointer ;">
+                                <a>
                                     <span class="menu-icon">
                                         <i class="fa fa-users fa-lg"></i>
                                     </span>
                                     <span class="text">
-                                        Memberships
+                                        Resource Management
                                     </span>
-                                    <span class="badge badge-success bounceIn animation-delay5">Available</span>
                                     <span class="menu-hover"></span>
                                 </a>
                             </li>
 
-                            <li id="vouchermenu" style="cursor : pointer ;">
-                                <a onclick="navigateToPage(3)">
+                            <li style="cursor : pointer ;">
+                                <a>
                                     <span>
-                                        <i class="fa fa-ticket fa-lg"></i>
+                                        <i class="fa fa-envelope-o fa-lg"></i>
                                     </span>
                                     <span class="text">
-                                        Vouchers
-                                    </span>
-                                    <span class="badge badge-success bounceIn animation-delay5">Available</span>
-                                    <span class="menu-hover"></span>
-                                </a>
-                            </li>
-                            <li id="rewardmenu" style="cursor : pointer ;">
-                                <a onclick="navigateToPage(4)">
-                                    <span class="menu-icon">
-                                        <i class="fa fa-gift fa-lg"></i>
-                                    </span>
-                                    <span class="text">
-                                        Rewards
+                                        Report Management
                                     </span>
                                     <span class="menu-hover"></span>
                                 </a>
@@ -207,9 +194,38 @@
 
             <div id="main-container" class="transparentscrollbar" style="overflow : scroll ;">
                <!-- TODO:insert the content here -->
-               <div id="map"></div>
+                <div id="map"></div>
+                <div class="grey-container shortcut-wrapper">
+                    <a href="#" class="shortcut-link">
+                        <span class="shortcut-icon">
+                            <i class="fa fa-exclamation-triangle"></i>
+                        </span>
+                        <span class="text">Incident Management</span>
+                    </a>
+                    <a href="#" class="shortcut-link">
+                        <span class="shortcut-icon">
+                            <i class="fa fa-envelope-o"></i>
+                            <span class="shortcut-alert">
+                                !
+                            </span> 
+                        </span>
+                        <span class="text">Report Management</span>
+                    </a>
+                    <a href="#" class="shortcut-link">
+                        <span class="shortcut-icon">
+                            <i class="fa fa-user"></i>
+                        </span>
+                        <span class="text">Resource Management</span>
+                    </a>
+                </div>
+
+                <div id="InnerContent">
+                </div>
                
             </div><!-- /main-container -->
+
+
+
         </div>
 
         
@@ -232,6 +248,7 @@
             <!-- Le javascript
     ================================================== -->
             <!-- Placed at the end of the document so the pages load faster -->
+
 
             <!-- Jquery -->
         <script src="../javascripts/jquery-3.1.1.min.js"></script>
