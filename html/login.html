@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title></title>
+        <title>Login</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <!-- Bootstrap core CSS -->
@@ -15,9 +14,7 @@
     </head>
 
     <body>
-
         <div class="login-wrapper">
-
             <div class="text-center">
                 <h2 class="fadeInUp animation-delay8" style="font-weight:bold">
                     <span class="text-danger">CRISIS</span> <span style="color:#ccc; text-shadow:0 1px #fff">SG</span>
@@ -34,19 +31,35 @@
                         <form class="form-login">
                             <div class="form-group">
                                 <label>Username</label>
-                                <input  name="username" id="username" type="text" placeholder="Username" class="form-control input-sm bounceIn animation-delay2" >
+                                <input  name="username" id="username" type="text" placeholder="Username" class="form-control input-sm bounceIn animation-delay2" required autofocus>
                             </div>
                             <div class="form-group">
                                 <label>Password</label>
-                                <input name="password" id="password" type="password" placeholder="Password" class="form-control input-sm bounceIn animation-delay4">
+                                <input name="password" id="password" type="password" placeholder="Password" class="form-control input-sm bounceIn animation-delay4" required>
                             </div>
                             <div class="seperator"></div>
                             <hr/>
-                            <button type="submit" class="btn btn-success btn-sm bounceIn animation-delay5 login-link pull-right" href="index.html"><i class="fa fa-sign-in"></i> Sign in</button>
+                            <button type="submit" class="btn btn-success btn-sm bounceIn animation-delay5 login-link pull-right" href="index.html">
+                            	<i class="fa fa-sign-in"></i> Sign in
+                            </button>
                         </form>
                     </div>
                 </div><!-- /panel -->
             </div><!-- /login-widget -->
         </div><!-- /login-wrapper -->
+        
+        <!-- Le javascript
+    ================================================== -->
+            <!-- Placed at the end of the document so the pages load faster -->
+
+            <!-- Jquery -->
+        <script src="../javascripts/jquery-3.1.1.min.js"></script>
+        
+        	<!-- Bootstrap -->
+        <script src="../javascripts/bootstrap.min.js"></script>
+        
+        	<!-- Self -->
+        <script src="../javascripts/login.js"></script>
+        
     </body>
 </html>
