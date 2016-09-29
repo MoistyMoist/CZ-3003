@@ -19,6 +19,9 @@ $(function() {
 		attempt_login : function(data) {
 			//TODO: ajax calls to backend server for login
 			
+			var role = $("#username").val();
+			document.cookie = "role=" + role;
+			
 			//temporary redirect to main page
 			window.location = "main.html";
 		}
