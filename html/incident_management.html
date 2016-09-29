@@ -16,15 +16,13 @@
 
 
     <body>
-        <div class="panel panel-default table-responsive">
+        <div class="panel panel-default table-responsive" style="margin:10px;">
             <div class="panel panel-default">
                 
                 <div class="panel-heading" style=" height : 50px;">
-                    <label class="pull-left" style="margin-top: 8px;">Incident Reports </label>
+                    <label class="pull-left" style="margin-top: 8px;">Incidents : </label>
                     <div class="form-horizontal pull-right" id="dataTable_filter" style="margin-bottom: 10px;">
                         <div class="form-horizontal pull-right" id="dataTable_filter" style="margin-bottom: 10px;">
-                            
-                        
                         </div>
                         Search :
                         <label style="margin-bottom: -10px;">
@@ -89,25 +87,90 @@
 
 
                             <!-- Incident details -->
-                            <div class="col-md-6" style="min-height:300px;">
+                            <div class="col-md-6" style="min-height:300px;padding-left:0px;">
                                 <div class="panel panel-default">   
                                     <div class="panel-heading clearfix">
                                         <span class="pull-left">Incident Details</span>
                                     </div> 
-                                    <div class="panel-body">
-                                        add in the incident form here
+                                    <div class="panel-body" style="height:500px">
+                                      
+                                      <div class="form-group" style="height:30px;margin-top: 10px;">
+                                        <label class="label-checkbox col-lg-1" style="padding-top:7px;padding-bottom:7px;text-align:right;color: #777;">Date</label>
+                                        <div class="col-lg-5">
+                                            <input  class="form-control" type="date" placeholder="input here...">
+                                        </div><!-- /.col -->
                                     </div>
-
+                                    
+                                      <div class="form-group" style="height:30px;margin-top: 10px;">
+                                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Name</label>
+                                        <div class="col-lg-5">
+                                            <input  class="form-control" type="text" placeholder="input here..." disabled="">
+                                        </div><!-- /.col -->
+                                        <label class="col-lg-1 control-label" style="text-align;padding-top:7px; right;color: #777;">Contact</label>
+                                        <div class="col-lg-5">
+                                            <input class="form-control" type="text" placeholder="input here..." disabled="">
+                                        </div><!-- /.col -->
+                                      </div>
+                                      
+                                      <div class="form-group" style="height:80px;margin-top: 10px;">
+                                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Address</label>
+                                        <div class="col-lg-11">
+                                            <textarea class="form-control" rows="7" disabled=""></textarea>
+                                        </div><!-- /.col -->
+                                      </div>
+                                      
+                                      <div class="form-group" style="height:30px;margin-bottom: 10px;">
+                                        <div class="col-lg-offset-1 col-lg-1">
+                                            <input  type="checkbox" style="margin-top:7px;" disabled="">
+                                            <span class="custom-checkbox" style="margin-top:7px;"></span>
+                                        </div>
+                                        <label class="label-checkbox col-lg-4" style="padding-top:7px;padding-bottom:7px;text-align:left;color: #777;">Flooding</label>
+                                        
+                                         <div class="col-lg-offset-1 col-lg-1">
+                                            <input  type="checkbox" style="margin-top:7px;" disabled="">
+                                            <span class="custom-checkbox" style="margin-top:7px;"></span>
+                                        </div>
+                                        <label class="label-checkbox col-lg-4" style="padding-top:7px;padding-bottom:7px;text-align:left;color: #777;">Terroriest</label>
+                                      </div>
+                                      
+                                      <div class="form-group" style="height:80px;margin-top: 10px;">
+                                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Address</label>
+                                        <div class="col-lg-11">
+                                            <textarea class="form-control" rows="7" disabled=""></textarea>
+                                        </div><!-- /.col -->
+                                      </div>
+                                      
+                                      <div class="form-group" style="height:30px;margin-bottom: 10px;">
+                                        <div class="col-lg-offset-1 col-lg-1">
+                                            <input  type="checkbox" style="margin-top:7px;" disabled="">
+                                            <span class="custom-checkbox" style="margin-top:7px;"></span>
+                                        </div>
+                                        <label class="label-checkbox col-lg-10" style="padding-top:7px;padding-bottom:7px;text-align:left;color: #777;">Requires Assistance</label>
+                                      </div>
+                                      
+                                      <div class="form-group" style="height:30px;margin-top: 10px;">
+                                        <label class="label-checkbox col-lg-1" style="padding-top:7px;padding-bottom:7px;text-align:right;color: #777;">Status</label>
+                                        <div class="col-lg-11">
+                                            <select class="form-control input-sm inline-block" disabled="">
+                                                <option value="" selected="selected">ACTIVE</option>
+                                                <option value="">CLOSED</option>
+                                                <option value="">WAITING FOR REVIEW</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                      
+                                    </div>
+                                    
                                 </div>     
 
                             </div>
                             <!-- log details -->
-                            <div class="col-md-6" style="min-height:300px;padding:0px;">
+                            <div class="col-md-6" style="padding:0px;">
                                 <div class="panel panel-default">   
                                     <div class="panel-heading clearfix">
                                         <span class="pull-left">Logs</span>
                                     </div>      
-                                    <ul class="list-group collapse in" id="feedList">
+                                    <ul class="list-group collapse in" id="feedList" style="min-height:500px">
                                         <li class="list-group-item clearfix">
                                             <div class="activity-icon bg-info small">
                                                 <i class="fa fa-comment"></i>
