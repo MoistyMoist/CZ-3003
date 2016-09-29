@@ -1,59 +1,191 @@
-<!DOCTYPE html>
-
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title></title>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
 
-        <!-- Bootstrap core CSS -->
-        <link href="../stylesheets/bootstrap.min.css" rel="stylesheet">
+		<!-- Bootstrap core CSS -->
+		<link href="../stylesheets/bootstrap.min.css" rel="stylesheet">
 
-        <link href="../stylesheets/main.css" rel="stylesheet">
+		<link href="../stylesheets/main.css" rel="stylesheet">
 
-        <!-- Font Awesome -->
-        <link href="../stylesheets/font-awesome.min.css" rel="stylesheet">
+		<!-- Font Awesome -->
+		<link href="../stylesheets/font-awesome.min.css" rel="stylesheet">
 
-        <!-- Endless -->
-        <link href="../stylesheets/templet.css" rel="stylesheet">
-        <link href="../stylesheets/skin.min.css" rel="stylesheet">
+		<!-- Endless -->
+		<link href="../stylesheets/templet.css" rel="stylesheet">
+		<link href="../stylesheets/skin.min.css" rel="stylesheet">
 
-        <!-- Pace -->
-        <link href="../stylesheets/pace.css")" rel="stylesheet">
+		<!-- Pace -->
+		<link href="../stylesheets/pace.css" rel="stylesheet">
 
-    </head>
+	</head>
 
-    <body>
+	<body>
+
+		<div class="panel panel-default table-responsive">
+			<div class="panel-heading" style=" height : 50px;">
+					<label class="pull-left" style="margin-top: 8px;">Incident Reports </label>
+					<div class="form-horizontal pull-right" id="dataTable_filter" style="margin-bottom: 10px;">
+						<div class="form-horizontal pull-right" id="dataTable_filter" style="margin-bottom: 10px;">
+							
+						
+						</div>
+						Search :
+						<label style="margin-bottom: -10px;">
+							<div class="input-group pull-right" style="width:200px;">
+								<input id="searchStoredVoucherInput" class="input-sm form-control" type="text" placeholder="input text....">
+								<span class="input-group-btn">
+									<button id="searchStoredVoucherBtn" onclick="searchStoredVouchers();" class="btn btn-success btn-sm" type="button">
+										<i class="fa fa-search"></i>
+									</button>
+								</span>
+							</div>
+						</label>
+					</div>
+			</div>
+			<div class="panel-body">
+					<!-- Incident table-->
+					<table class="table table-bordered table-condensed table-hover table-striped">
+	                    <thead>
+	                        <tr>
+	                            <th>Title</th>
+	                            <th>Total Used Vouchers</th>
+	                            <th>Total Expired Vouchers</th>
+	                            <th>Total Active Vouchers</th>
+	                            <th>Status</th>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                    
+	                        <tr style="cursor : pointer ;" onclick="viewStoredVoucherInfo(1)">
+	                            <td>fakesamplevoucher1</td>
+	                            <td>
+	                             1
+	                            </td>
+	                            <td>8
+	                            </td>
+	                            <td>
+	                                0
+	                            </td>
+	                            <td>
+	                                <span class="label label-success">ACTIVE</span>
+	                            </td>
+	                        </tr>
+	                    
+	                        <tr style="cursor : pointer ;" onclick="viewStoredVoucherInfo(1)">
+	                            <td>fakesamplevoucher1</td>
+	                            <td>
+	                             1
+	                            </td>
+	                            <td>8
+	                            </td>
+	                            <td>
+	                                0
+	                            </td>
+	                            <td>
+	                                <span class="label label-success">ACTIVE</span>
+	                            </td>
+	                        </tr>
+	                        <tr style="cursor : pointer ;" onclick="viewStoredVoucherInfo(1)">
+	                            <td>fakesamplevoucher1</td>
+	                            <td>
+	                             1
+	                            </td>
+	                            <td>8
+	                            </td>
+	                            <td>
+	                                0
+	                            </td>
+	                            <td>
+	                                <span class="label label-success">ACTIVE</span>
+	                            </td>
+	                        </tr>
+	                        <tr style="cursor : pointer ;" onclick="viewStoredVoucherInfo(1)">
+	                            <td>fakesamplevoucher1</td>
+	                            <td>
+	                             1
+	                            </td>
+	                            <td>8
+	                            </td>
+	                            <td>
+	                                0
+	                            </td>
+	                            <td>
+	                                <span class="label label-success">ACTIVE</span>
+	                            </td>
+	                        </tr>
+	                    
+	                    </tbody>
+	                </table>
+
+					
+					<div class="panel panel-default">
+
+						<div class="panel-heading" style=" height : 50px;">
+	                		<label class="pull-left" style="margin-top: 8px;">Vouchers templets</label>
+	                		<div class="form-horizontal pull-right" id="dataTable_filter" style="margin-bottom: 10px;">
+	                    		<div class="form-horizontal pull-right" id="dataTable_filter" style="margin-bottom: 10px;">
+				                    <label style="margin-bottom: -10px;">
+				                        <div class="input-group pull-right" style="width:100px;">
+				                            <span class="input-group-btn">
+				                                <button class="btn btn-success btn-sm" type="button">
+				                                    <i class="fa fa-plus"></i>
+				                                    New Incident
+				                                </button>
+				                            </span>
+				                        </div>
+				                    </label>
+	                    		</div>
+	                		</div>
+	            		</div>
+						<div class="panel-tab clearfix">
+							<ul class="tab-bar">
+								<li class="active"><a href="#home1" data-toggle="tab"><i class="fa fa-home"></i>Incident</a></li>
+								<li class=""><a href="#profile1" data-toggle="tab"><i class="fa fa-pencil"></i> Logs</a></li>
+							</ul>
+						</div>
+						<div class="panel-body">
+							<div class="tab-content">
+								<div class="tab-pane fade active in" id="home1">
+									<p>The incident form here(cannot be edited)</p>
+										</div>
+										<div class="tab-pane fade" id="profile1">
+											<p>The logs here (cannot be edited) but can add new logs</p>
+										</div>
+									</div>
+								</div>
+							</div>
+			</div>
+		</div>
 
 
+			<!-- Le javascript
+	================================================== -->
+			<!-- Placed at the end of the document so the pages load faster -->
 
+			<!-- Jquery -->
+		<script src="../javascripts/jquery-1.10.2.min.js")"></script>
 
-            <!-- Le javascript
-    ================================================== -->
-            <!-- Placed at the end of the document so the pages load faster -->
+			<!-- Bootstrap -->
+		<script src="../javascripts/bootstrap.min.js")"></script>
 
-            <!-- Jquery -->
-        <script src="../javascripts/jquery-1.10.2.min.js")"></script>
+			<!-- Modernizr -->
+		<script src="../javascripts/modernizr.min.js"></script>
 
-            <!-- Bootstrap -->
-        <script src="../javascripts/bootstrap.min.js")"></script>
+			<!-- Pace -->
+		<script src="../javascripts/pace.min.js"></script>
 
-            <!-- Modernizr -->
-        <script src="../javascripts/modernizr.min.js"></script>
+			<!-- Popup Overlay -->
+		<script src="../javascripts/jquery.popupoverlay.min.js"></script>
 
-            <!-- Pace -->
-        <script src="../javascripts/pace.min.js"></script>
+			<!-- Slimscroll -->
+		<script src="../javascripts/jquery.slimscroll.min.js"></script>
 
-            <!-- Popup Overlay -->
-        <script src="../javascripts/jquery.popupoverlay.min.js"></script>
+			<!-- Cookie -->
+		<script src="../javascripts/jquery.cookie.min.js"></script>
 
-            <!-- Slimscroll -->
-        <script src="../javascripts/jquery.slimscroll.min.js"></script>
+			<!-- Endless -->
+		<script src="../javascripts/skin.js"></script>
 
-            <!-- Cookie -->
-        <script src="../javascripts/jquery.cookie.min.js"></script>
-
-            <!-- Endless -->
-        <script src="../javascripts/skin.js"></script>
-
-    </body>
+	</body>
 </html>
