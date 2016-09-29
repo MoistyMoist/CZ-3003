@@ -26,36 +26,36 @@
         
         <div class="panel panel-default table-responsive" style="margin:10px;">
             <div>
-                <div class="row" style="margin-top:20px;">
-                    <div class="col-md-3">
-                        <div class="panel-stat3 bg-danger">
-                            <h2 class="m-top-none" id="userCount">SPF</h2>
+                <div class="row" style="margin-top:20px;margin-left:10px;margin-right:10px;">
+                    <div class="col-md-3" style="margin-right:0px;margin-left:0px;">
+                        <div class="panel-stat3 bg-info">
+                            <h2 class="m-top-none">SPF</h2>
                             <div class="stat-icon">
-                                <i class="fa fa-star fa-3x"></i>
+                                <i class="fa fa-taxi fa-3x"></i>
                             </div>
                         </div>
                     </div><!-- /.col -->
-                     <div class="col-md-3">
+                     <div class="col-md-3" style="margin-right:0px;margin-left:0px;">
                         <div class="panel-stat3 bg-danger">
-                            <h2 class="m-top-none" id="userCount">SCDF</h2>
+                            <h2 class="m-top-none">SCDF</h2>
                             <div class="stat-icon">
-                                <i class="fa fa-user fa-3x"></i>
+                                <i class="fa fa-bus fa-3x"></i>
                             </div>
                         </div>
                     </div><!-- /.col -->
-                     <div class="col-md-3">
-                        <div class="panel-stat3 bg-danger">
-                            <h2 class="m-top-none" id="userCount">ARMY</h2>
+                     <div class="col-md-3" style="margin-right:0px;margin-left:0px;">
+                        <div class="panel-stat3 bg-info">
+                            <h2 class="m-top-none">PUB</h2>
                             <div class="stat-icon">
-                                <i class="fa fa-user fa-3x"></i>
+                                <i class="fa fa-tint fa-3x"></i>
                             </div>
                         </div>
                     </div><!-- /.col -->
-                     <div class="col-md-3">
+                     <div class="col-md-3" style="margin-right:0px;margin-left:0px;">
                         <div class="panel-stat3 bg-danger">
-                            <h2 class="m-top-none" id="userCount">GOD</h2>
+                            <h2 class="m-top-none">ARMBLUEANCE</h2>
                             <div class="stat-icon">
-                                <i class="fa fa-user fa-3x"></i>
+                                <i class="fa fa-ambulance fa-3x"></i>
                             </div>
                         </div>
                     </div><!-- /.col -->
@@ -63,11 +63,15 @@
             </div>
 
 
-            <div id="membership_header" class="panel-heading" style="height : 50px ;">
-                    <a class="pull-left"style="cursor: pointer"><i class="fa fa-angle-down fa-lg"></i>Resource Management</a>
-            </div>
-
             <div id="" class="panel-body padding-md" style="padding-left:90px;padding-right:90px;">
+            
+                <div class="form-group" style="height:30px;margin-top: 10px;">
+                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">To:</label>
+                    <div class="col-lg-11">
+                       <input  class="form-control" type="text" placeholder="input here..." disabled="">
+                    </div><!-- /.col -->
+                </div>
+            
                 <div class="form-group" style="height:30px;margin-bottom: 10px;">
                         <label class="label-checkbox col-lg-1" style="padding:0px;padding-top:0px;padding-bottom:7px;text-align:right;color: #777;">Incident ID</label>
                         <div class="col-lg-11">
@@ -79,14 +83,14 @@
                         </div>
                 </div>
 
-                <div class="form-group" style="height:80px;margin-top: 10px;">
+                <div class="form-group" style="height:200px;margin-top: 10px;">
                         <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Task Description</label>
                         <div class="col-lg-11">
                             <textarea id="membershipFormAddress" class="form-control" rows="10"></textarea>
                         </div><!-- /.col -->
                 </div>
                 <div class="form-group" style="height:auto;margin-top: 10px;">
-                        <button id="membershipFormSaveBtn" onclick="saveMembershipForm()" class="btn col-lg-12 btn-success" disabled=""><i class="fa fa-save fa-lg"></i>  Assign Task</button>
+                        <button  class=" col-lg-offset-1 btn col-lg-11 btn-success" disabled=""><i class="fa fa-save fa-lg"></i>  Assign Task</button>
                 </div>
             </div>
         </div>
