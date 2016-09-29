@@ -59,35 +59,37 @@
                     </div>
                 </div><!-- /.col -->
             </div>
+        </div>
 
-        <div class="panel panel-default">
-                    <div class="panel-heading">Search form</div>
-                    <div class="panel-body">
-                        <form class="form-inline no-margin">
-                            <div class="row">
-                                <div class="col-md-5">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control input-sm">
-                                        <div class="input-group-btn">
-                                            <button type="button" class="btn btn-sm btn-success" tabindex="-1">Search</button>
-                                            <button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" tabindex="-1">
-                                                Options
-                                            </button>
-                                            <ul class="dropdown-menu pull-right" role="menu">
-                                                <li><a href="#">Action</a></li>
-                                                <li><a href="#">Another action</a></li>
-                                                <li><a href="#">Something else here</a></li>
-                                                <li class="divider"></li>
-                                                <li><a href="#">Separated link</a></li>
-                                            </ul>
-                                        </div> <!-- /input-group-btn -->
-                                    </div> <!-- /input-group -->
-                                </div><!-- /.col -->
-                            </div><!-- /.row -->
-                        </form>
+
+        <div id="membership_header" class="panel-heading" style="height : 50px ;">
+                <a class="pull-left"style="cursor: pointer"><i class="fa fa-angle-down fa-lg"></i>Resource Management</a>
+        </div>
+
+        <div id="" class="panel-body padding-md" style="padding-left:90px;padding-right:90px;">
+                <div class="form-group" style="height:30px;margin-bottom: 10px;">
+                    <label class="label-checkbox col-lg-1" style="padding:0px;padding-top:0px;padding-bottom:7px;text-align:right;color: #777;">Incident ID</label>
+                    <div class="col-lg-11">
+                        <select id="" class="form-control input-sm inline-block" disabled="">
+                                <option value="INCIDENT ID">INCIDENT ID</option>
+                                 <option value="INCIDENT ID">INCIDENT ID</option>
+                                  <option value="INCIDENT ID">INCIDENT ID</option>
+                        </select>
                     </div>
                 </div>
-        </div>
+
+                <div class="form-group" style="height:80px;margin-top: 10px;">
+                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Task Description</label>
+                    <div class="col-lg-11">
+                        <textarea id="membershipFormAddress" class="form-control" rows="10"></textarea>
+                    </div><!-- /.col -->
+                </div>
+                <div class="form-group" style="height:auto;margin-top: 10px;">
+                    <button id="membershipFormSaveBtn" onclick="saveMembershipForm()" class="btn col-lg-12 btn-success" disabled=""><i class="fa fa-save fa-lg"></i>  Assign Task</button>
+                </div>
+            </div>
+
+
             <!-- Le javascript
     ================================================== -->
             <!-- Placed at the end of the document so the pages load faster -->
