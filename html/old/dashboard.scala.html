@@ -1,0 +1,191 @@
+
+@(venueContent:Html,notificationContent:Html,userContent:Html,registeredUsersCount:String,bookingCountThisMonth:String,totalAppDownloadCount:String,totalVisitorsCount:String,totalSalesToday:String)
+
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <script src="@controllers.admin.routes.Assets.versioned("javascripts/dashboard.js")"></script>
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.2.4/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.2.4/mapbox.css' rel='stylesheet' />
+
+</head>
+
+<body onload="dashboardInit()">
+    <div class="main-header clearfix">
+        <div class="page-title">
+            <h3 class="no-margin">Dashboard</h3>
+            <span>Welcome back @(session.get("staffName"))</span>
+        </div><!-- /page-title -->
+
+        <ul class="page-stats">
+            <li>
+                <div class="value">
+                    <span>New Signups</span>
+                    <h4 id="currentVisitor">4255</h4>
+                </div>
+                <span id="visits" class="sparkline"><canvas width="79" height="35" style="display: inline-block; width: 79px; height: 35px; vertical-align: top;"></canvas></span>
+            </li>
+            <li>
+                <div class="value">
+                    <span>NEXMO Balance</span>
+                    <h4>$<strong id="currentBalance">32141</strong></h4>
+                </div>
+                <span id="balances" class="sparkline"><canvas width="69" height="35" style="display: inline-block; width: 69px; height: 35px; vertical-align: top;"></canvas></span>
+            </li>
+        </ul><!-- /page-stats -->
+    </div>
+
+    <div class="grey-container shortcut-wrapper">
+        <a class="shortcut-link" onclick="toggleView(0)">
+            <span id="dashboard_overview" class="shortcut-icon activeblack">
+                <i class="fa fa-home"></i>
+            </span>
+            <span class="text">Overview</span>
+        </a>
+        <a  class="shortcut-link" onclick="toggleView(1)">
+            <span id="dashboard_userstatistics" class="shortcut-icon">
+                <i class="fa fa-user"></i>
+            </span>
+            <span class="text">User Statistics</span>
+        </a>
+        <a  class="shortcut-link" onclick="toggleView(2)">
+            <span id="dashboard_marketing" class="shortcut-icon">
+                <i class="fa fa-wifi"></i>
+            </span>
+            <span class="text">Marketing</span>
+        </a>
+        <a  class="shortcut-link" onclick="toggleView(3)">
+            <span id="dashboard_sales" class="shortcut-icon">
+                <i class="fa fa-dollar"></i>
+            </span>
+            <span class="text">Sales</span>
+        </a>
+        <a class="shortcut-link" onclick="toggleView(4)">
+            <span id="dashboard_bookings" class="shortcut-icon">
+                <i class="fa fa-clipboard"></i></span>
+            <span class="text">Bookings</span>
+        </a>
+    </div>
+
+    <div class="padding-md">
+        <div id="overview">
+            <div class="row">
+                <div class="col-sm-6 col-md-3">
+                    <div class="panel-stat3 bg-danger">
+                        <h2 class="m-top-none" id="userCount">@registeredUsersCount</h2>
+                        <h5>Registered users</h5>
+                        <div class="stat-icon">
+                            <i class="fa fa-user fa-3x"></i>
+                        </div>
+                    </div>
+                </div><!-- /.col -->
+                <div class="col-sm-6 col-md-3">
+                    <div class="panel-stat3 bg-info">
+                        <h2 class="m-top-none"><span id="bookingCount">@bookingCountThisMonth</span></h2>
+                        <h5>Bookings this month</h5>
+                        <div class="stat-icon">
+                            <i class="fa fa-clipboard fa-3x"></i>
+                        </div>
+                    </div>
+                </div><!-- /.col -->
+                <div class="col-sm-6 col-md-3">
+                    <div class="panel-stat3 bg-warning">
+                        <h2 class="m-top-none" id="orderCount">@totalAppDownloadCount</h2>
+                        <h5>App downloads this month</h5>
+                        <div class="stat-icon">
+                            <i class="fa fa-phone-square fa-3x"></i>
+                        </div>
+                    </div>
+                </div><!-- /.col -->
+                <div class="col-sm-6 col-md-3">
+                    <div class="panel-stat3 bg-success">
+                        <h2 class="m-top-none" id="visitorCount">@totalVisitorsCount</h2>
+                        <h5>Total Members Visits</h5>
+                        <div class="stat-icon">
+                            <i class="fa fa-bar-chart-o fa-3x"></i>
+                        </div>
+                    </div>
+                </div><!-- /.col -->
+            </div>
+            <div class="row">
+                <div class="col-lg-8">
+                    @venueContent
+
+                </div>
+                <div class="col-lg-4">
+                    <div class="panel panel-overview">
+                        <div class="overview-icon bg-success">
+                            <i class="fa fa-usd"></i>
+                        </div>
+                        <div class="overview-value">
+                            <div class="h2">@totalSalesToday</div>
+                            <div class="text-muted">Sales Today</div>
+                        </div>
+                    </div>
+                    @notificationContent
+
+                </div>
+            </div>
+        </div>
+        <div id="user_statistics">
+            @userContent
+            <!--total legacy users-->
+            <!--total members-->
+            <!--total unique visitors this month-->
+            <!--graph of registeration rate (app and offline) (filter by outlet)-->
+
+
+            <!--map of users in postal code-->
+
+        </div>
+        <div id="marketing" style="visibility : hidden ;">
+            <!--push notification-->
+            <!--filter by device type,-->
+        </div>
+        <div id="sales" style="visibility : hidden ;">
+            <!--sales for the day,month-->
+            <!--sales for the day,month-->
+        </div>
+        <div id="bookings" style="visibility : visible ;">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <span class="pull-left"><i class="fa fa-bar-chart-o fa-lg"></i>Bookings Today</span>
+                    <ul class="tool-bar">
+                        <li><a href="#" class="refresh-widget" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Refresh"><i class="fa fa-refresh"></i></a></li>
+                    </ul>
+                </div>
+                <div id="chartdiv" style="height: 300px;width: 100%;"></div>
+                <div class="panel-footer">
+                    <div class="row row-merge">
+                        <div class="col-xs-4 text-center border-right">
+                            <h4 class="no-margin">1232</h4>
+                            <small class="text-muted">Visitors</small>
+                        </div>
+                        <div class="col-xs-4 text-center border-right">
+                            <h4 class="no-margin">5421</h4>
+                            <small class="text-muted">Bookings</small>
+                        </div>
+                        <div class="col-xs-4 text-center border-right">
+                            <h4 class="no-margin">$3021</h4>
+                            <small class="text-muted">Sales</small>
+                        </div>
+                    </div><!-- ./row -->
+                </div>
+                <div class="loading-overlay">
+                    <i class="loading-icon fa fa-refresh fa-spin fa-lg"></i>
+                </div>
+            </div>
+                <!--get total bookings (day,month)-->
+            <!--get booking rate per day-->
+            <!--get total bookings-->
+
+        </div>
+    </div>
+
+</body>
+</html>

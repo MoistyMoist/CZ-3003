@@ -1,0 +1,1042 @@
+@import models.common.Booking_room
+
+@import models.common.Booking
+
+@import models.common.Room
+
+@import models.common.Venue
+
+@import models.common.Platform
+@(bookingTimes : List[String], currentTime : String,platforms:List[Platform],venues:List[Venue],rooms:List[Room],booking_rooms:List[Booking_room],bookings:List[Booking])
+@import models.common.Booking.BookingStatus
+@import java.math.BigInteger;  var longDiff = new Long(0l); var tempHr=new Long(0l); var tempMin=new Long(0l); var tempArray=new ArrayList[Long]();
+@for(room<-rooms){
+    <p style="display: none;visibility:hidden">@(tempArray.add(0l));</p>
+}
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <meta charset="UTF-8">
+    <link href="@controllers.admin.routes.Assets.versioned("stylesheets/main.css")" rel="stylesheet">
+    <link href="@controllers.admin.routes.Assets.versioned("stylesheets/booking.css")" rel="stylesheet">
+    <script src="@controllers.admin.routes.Assets.versioned("javascripts/booking.js")"></script>
+</head>
+
+<body onpageshow="bookingInit()" style="overflow: scroll">
+    <div class="padding-md">
+        <div class="panel panel-default table-responsive">
+            <div class="panel-heading" style="height:50px;">
+                <label class="pull-left" style="margin-top: 8px;">Booking Management</label>
+                <form class="form-inline ">
+                    <div class="form-group pull-right">
+                        <label id="refreshCountDown" style="margin: 0px;margin-right:10px;:0px">Refreshing in :</label>
+                        <select class="form-control" id="searchVenue" style="width: auto;">
+                        @for(venue<-venues){
+                            @if(Integer.valueOf(session.get("preferredVenueID"))==(venue.getVenueID)){
+                                <option selected="true" value="@venue.getVenueID">@venue.getName</option>
+                            }else{
+                                <option value="@venue.getVenueID">@venue.getName</option>
+                            }
+                        }
+                        </select>
+                        @if(session.get("SearchDate").equals(null)){
+                            <input class="form-control" type="date" class="form-control" id="searchDate" style="color: black;">
+                        }else{
+                            <input class="form-control" type="date" class="form-control" id="searchDate" value="@session.get("SearchDate")" style="color: black;">
+                        }
+                        <button id="searchBookingBtn" type="button" class="btn btn-success" onclick="searchBookings()">Go</button>
+                    </div>
+                </form>
+            </div>
+            <div id="message" class="alert alert-success" style="margin:0px;border-radius: 0%;padding-top:5px;padding-bottom:5px;height: auto;" >
+                <strong>Well done!</strong> You successfully read this important alert message.
+            </div>
+            <div class="panel-body" style="padding-top: 0px;padding-bottom: 0px;">
+                <div class="row">
+                    <div class="col-lg-3 col-sm-12" style="padding:0px;border-right:1px solid lightslategrey">
+                        <div id="" class="col-md-12 col-sm-12" style="padding:0px;margin-bottom:0px;">
+                            <div class="form-group">
+                                <button id="showRequestedBookingBtn" onclick="showRequestForm()" style="border-radius: 0px;height:60px" type="submit" class="btn btn-primary col-sm-6 col-lg-6">Booking<br>Requests</button>
+                                <button id="showNewBookingBtn" onclick="showNewBookingForm()" style="border-radius: 0px;height:60px" type="submit" class="btn btn-success col-sm-6 col-lg-6 active">New<br>Booking</button>
+                            </div>
+
+                            <div id="bookingForm" class="col-md-12 transparentscrollbar" style="margin-top: 0px;padding: 25px;padding-bottom:0px;overflow: scroll;border:1px solid #ffffff;min-height:69.4vh;max-height:69.4vh;">
+                                <div class="form-group">
+                                    <label class="col-sm-12" id="bookingFormStaffID" value="@(session.get("staffID"))" style="margin: 0px;padding:0px">Staff name:</label>
+                                    <br/>
+                                    <input class="col-sm-12 form-control" id="bookingFormStaffName" type="text" value="@(session.get("staffName"))" readonly>
+                                </div>
+                                <br/>
+                                <div class="form-group" style="margin-top: 5px;">
+                                    <label class="col-sm-12" style="margin: 0px;padding:0px">Time Start:</label><br/>
+                                    <select id="bookingFormStartTime"class="col-sm-12 form-control" >
+                                    @for(time<-bookingTimes){
+                                        @if(currentTime.equals(time)){
+                                            <option selected="true" value="@time">@time</option>
+                                        }else{
+                                            <option value="@time">@time</option>
+                                        }
+                                    }
+                                    </select>
+                                </div>
+                                <br/>
+                                <div class="form-group" style="margin-top: 5px;">
+                                    <label class="col-sm-12" style="margin: 0px;padding:0px">Time End:</label><br/>
+                                    <select id="bookingFormEndTime"class="col-sm-12 form-control" >
+                                        @import java.math.BigInteger; var i=0; var k=6; var hit=false;
+                                        @for(time<-bookingTimes){
+                                            @if(currentTime.equals(time)){
+                                                @if(i==(k)){
+                                                    @(hit=true)
+                                                    <option selected="true" value="@time">@time</option>
+                                                }else {
+                                                    @(hit=true)
+                                                    @(i=i.toInt + 1)
+                                                    <option value="@time">@time</option>
+                                                }
+                                            }else{
+                                                @if(hit==true){
+                                                    @if(i==(k)){
+                                                        <option selected="true" value="@time">@time</option>
+                                                        @(hit=false)
+                                                    }else {
+                                                        @(i=i.toInt + 1)
+                                                        <option value="@time">@time</option>
+                                                    }
+                                                }else{
+                                                    <option value="@time">@time</option>
+                                                }
+
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <br/>
+                                    <!--rooms-->
+                                <div class="form-group" style="margin-top: 15px;">
+                                        <!--for loop the rooms-->
+                                    <div class="panel panel-primary" style="position: relative;width:100%;border-radius: 5px; border:1px solid grey;height:auto;max-height:300px;min-height:200px;">
+                                        <div class="panel-heading" style="height: 30px;border-bottom: 1px solid lightslategrey">
+                                            <form class="form-inline pull-left" style="margin-top:-5px">
+                                                <div class="form-group">
+                                                    <label style="text-align: center;">Rooms</label>
+                                                </div>
+                                            </form>
+                                            <form class="form-inline pull-right" style="margin-top:-7px;margin-left:-10px;margin-right:-5px">
+                                                <div class="form-group" style="margin-right:10px;">
+                                                    <label class="label-checkbox inline" style="cursor : pointer ;">
+                                                        select all
+                                                        <input type="checkbox" id="bookingFormSelectAllRoom" onclick="selectAllRoomFromBookingForm('#bookingFormSelectAllRoom');"/>
+                                                        <span class="custom-checkbox"></span>
+                                                    </label>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div  id="bookingFormRoomCheckBox" class="row panel-body transparentscrollbar" style="height:auto;max-height:270px;min-height:200px;overflow: scroll;padding:15px">
+                                                @for(room<-rooms){
+                                                    <div class="col-md-12 form-group" style="margin-bottom:5px;cursor: pointer;" >
+                                                        <div class="col-md-10" title="@room.getRemarks" style="padding-left:5px;" onclick="checkUncheckElement('#bookingFormRoom@room.getRoomID');">
+                                                            @room.getName
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <span class="pull-right col-sm-12">
+                                                                <label>
+                                                                    <input value="@room.getRoomID" name="roomFormCheckbox" id="bookingFormRoom@room.getRoomID" type="checkbox">
+                                                                    <span class="custom-checkbox"></span>
+                                                                </label>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                        </div>
+
+                                    </div>
+                                </div>
+                                    <!--reservation details-->
+                                <hr/>
+                                <div class="form-group">
+                                    <span class="pull-left">
+                                        <label class="label-checkbox inline" style="cursor : pointer;" onclick="enableDisableReservationForm('#reservationCheckBox')">
+                                            <input type="checkbox" id="reservationCheckBox" >
+                                            <span class="custom-checkbox"></span>
+                                            Reservations
+                                        </label>
+                                    </span>
+                                </div>
+                                <div class="form-group" style="margin-top: 5px;">
+                                    <label class="col-sm-12" style="margin: 0px;padding:0px">Date:</label><br/>
+                                    <input class="col-sm-12 form-control" id="bookingFormReservationDate" type="date" style="color: black;" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Platform:</label><br/>
+                                    <select id="bookingFormPlatforms"class="col-sm-12 form-control" disabled>
+                                    @for(platform<-platforms){
+                                        <option selected="true"value="@platform.getName">@platform.getName</option>
+                                    }
+                                    </select>
+                                </div>
+                                <div class="form-group" >
+                                    <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Name:</label><br/>
+                                    <input class="col-sm-12 form-control" id="bookingFormReservationName" type="text" placeholder="Jack Sparrow" style="color: black;" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Contact:</label><br/>
+                                    <input class="col-sm-12 form-control" id="bookingFormReservationContact" type="text" placeholder="8 digit number" style="color: black;" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Number of players:</label><br/>
+                                    <input class="col-sm-12 form-control" id="bookingFormNumberOfPlayers" type="text" placeholder="0" style="color: black;" disabled>
+                                </div>
+                                <form class="form-inline col-sm-12" style="margin-left:0px;margin-right:0px;padding-left:0px;padding-right:0px;">
+                                    <div class="form-group col-sm-12" style="margin-left:0px;margin-right:0px;padding-left:0px;padding-right:0px;">
+                                        <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Amount To Pay:</label><br/>
+                                        <div class="input-group col-sm-12">
+                                            <div class="input-group-addon">$</div>
+                                            <input id="bookingFormReservationTotalCost" type="text" class="form-control col-sm-10" placeholder="Amount Payable" disabled>
+                                        </div>
+                                    </div>
+                                </form>
+                                <form class="form-inline col-sm-12" style="margin-left:0px;margin-right:0px;padding-left:0px;padding-right:0px;">
+                                    <div class="form-group col-sm-12" style="margin-left:0px;margin-right:0px;padding-left:0px;padding-right:0px;">
+                                        <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Amount Paid:</label><br/>
+                                        <div class="input-group col-sm-12">
+                                            <div class="input-group-addon">$</div>
+                                            <input id="bookingFormReservationAmountPaid" type="text" class="form-control col-sm-10" placeholder="Amount Paid" disabled>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="form-group">
+                                    <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Remarks:</label><br/>
+                                    <textarea class=" form-control col-sm-12" id="bookingFormReservationRemarks" rows="6" style="resize: none;" disabled></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Reservation Type:</label><br/>
+                                    <select id="bookingFormReservationType" class="col-sm-12 form-control" disabled>
+                                    @for(bookingType<-Booking.BookingType.values()){
+                                        <option value="@bookingType">@bookingType</option>
+                                    }
+                                    </select>
+                                </div>
+
+                                <div class="form-group" style="margin-top:450px">
+                                    <button id="bookingFormBookingBtn" style="border-radius: 0px" type="submit" class="btn btn btn-success btn-block" >Start Booking</button>
+                                    <button id="bookingFormClearBtn" onclick="cancelClearBookingForm()" style="border-radius: 0px" type="submit" class="btn btn btn-danger btn-block">Cancel</button>
+                                </div>
+                            </div>
+
+                            <div id="bookingFormDetails" class="col-md-12 transparentscrollbar" style="visibility:hidden;display:none;margin-top: 0px;padding: 25px;padding-bottom:30px;overflow: scroll;border:1px solid #ffffff;min-height:67.5vh;max-height:67.5vh">
+                                    <!--timing details-->
+                                <div class="form-group" style="margin-top:-10px">
+                                    <label class="col-sm-12" style="font-size: medium;font-style:italic;margin: 0px;padding:0px;"><b>Timing Details:</b></label>
+                                </div>
+                                <div class="form-horizontal" style="padding-left:10px">
+                                    <div class="form-group">
+                                        <label class="col-sm-5" style="font-size: small">Date:</label>
+                                        <label id="bookingForm2Date" class="col-sm-7 pull-right" style="font-size: small;color:red;margin: 0px;padding:0px"></label><br/>
+                                    </div>
+                                </div>
+                                <div class="form-horizontal" style="margin-top: -15px;padding-left:10px">
+                                    <div class="form-group">
+                                        <label class="col-sm-5" style="font-size: small">Time start:</label>
+                                        <label id="bookingForm2TimeStart" class="col-sm-7 pull-right" style="font-size: small;color:red;margin: 0px;padding:0px"></label><br/>
+                                    </div>
+                                </div>
+                                <div class="form-horizontal" style="margin-top: -15px;padding-left:10px">
+                                    <div class="form-group">
+                                        <label class="col-sm-5" style="padding-right:0px;font-size: small">Time end:</label>
+                                        <label id="bookingForm2TimeEnd" class="col-sm-7 pull-right" style="font-size: small;color:red;margin: 0px;padding:0px"></label><br/>
+                                    </div>
+                                </div>
+                                <hr>
+
+                                    <!--booking details-->
+                                <div class="form-group" style="margin: 0px;">
+                                    <label class="col-sm-12" style="font-size: medium;font-style:italic;margin: 0px;padding:0px"><b>Booking Details:</b></label><hr/><br/>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-12" value="@(session.get("staffID"))" style="margin: 0px;padding:0px">Staff name:</label>
+                                    <br/>
+                                    <input class="col-sm-12 form-control" id="bookingFormStaffName" type="text" value="@(session.get("staffName"))" readonly>
+                                </div>
+                                <div class="form-group" style="margin-top: 40px;">
+                                    <label class="col-sm-12" style="margin: 0px;padding:0px;">Platform:</label><br/>
+                                    <select id="bookingForm2Platform"class="col-sm-12 form-control" >
+                                        @for(platform<-platforms){
+                                            <option selected="true" value="@platform.getName">@platform.getName</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin-top: 40px;">
+                                    <label class="col-sm-12" style="margin: 0px;padding:0px">Booking Type:</label><br/>
+                                    <select id="bookingForm2BookingType"class="col-sm-12 form-control" >
+                                    @for(bookingType<-Booking.BookingType.values()){
+                                        <option value="@bookingType">@bookingType</option>
+                                    }
+                                    </select>
+                                </div>
+                                <br><hr style="margin-top:20px">
+
+                                    <!--member details-->
+                                <div class="form-group" style="margin: 0px;margin-top:10px">
+                                    <label class="col-sm-12" style="font-size: medium;font-style:italic;margin: 0px;padding:0px"><b>Member Details:</b></label><hr/><br/>
+                                </div>
+                                <div class="form-group col-sm-12" style="margin-bottom:0px;margin-left:0px;margin-right:0px;padding-left:0px;padding-right:0px;">
+                                    <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Total number of people:</label><br/>
+                                    <div class="input-group col-sm-12">
+                                        <div class="input-group-addon" onclick="minusCount('bookingForm2TotalPlayers');addremoveMemberField();" style="cursor: pointer">-</div>
+                                        <input id="bookingForm2TotalPlayers" onfocusout="addremoveMemberField();" type="text" class="form-control col-sm-10" value=0>
+                                        <div class="input-group-addon" onclick="addCount('bookingForm2TotalPlayers');addremoveMemberField();" style="cursor: pointer">+</div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-12" style="margin-bottom:0px;margin-left:0px;margin-right:0px;padding-left:0px;padding-right:0px;">
+                                    <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Total number of members:</label><br/>
+                                    <div class="input-group col-sm-12">
+                                        <div class="input-group-addon" onclick="minusCount('bookingForm2TotalMembers');addremoveMemberField();" style="cursor: pointer">-</div>
+                                        <input id="bookingForm2TotalMembers" onchange="addremoveMemberField();" type="text" class="form-control col-sm-10" value=0>
+                                        <div class="input-group-addon" onclick="addCount('bookingForm2TotalMembers');addremoveMemberField();" style="cursor: pointer">+</div>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-top:160px;margin-left:0px">
+                                        <!--for loop the members-->
+                                    <div class="panel panel-primary" style="position: relative;width:100%;border-radius: 5px; border:1px solid grey;height:auto;max-height:300px;min-height:200px;">
+                                        <div class="panel-heading" style="height: 30px;border-bottom: 1px solid lightslategrey;">
+                                            <form class="form-inline pull-left" style="margin-top:-5px">
+                                                <div class="form-group">
+                                                    <label style="text-align: center;">Member ID(s) *only numbers*</label>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="panel-body transparentscrollbar" style="height:auto;max-height:270px;min-height:200px;overflow: scroll;padding:0px;padding-bottom:20px">
+                                            <div id="bookingFormMemberIDs" class="form-horizontal col-sm-12" style="margin-top: 5px;padding-top:10px;">
+                                                @*<form class="form-inline" style="margin-left:20px">
+                                                <div class="form-group has-success has-feedback">
+                                                <div class="input-group">
+                                                <span class="input-group-addon">ID</span>
+                                                <input type="text" class="form-control" id="inputGroupSuccess3" aria-describedby="inputGroupSuccess3Status">
+                                                </div>
+                                                <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
+                                                <span id="inputGroupSuccess3Status" class="sr-only">(success)</span>
+                                                </div>
+                                                </form>*@
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <br><hr style="margin-top:0px">
+
+                                    <!--remarks-->
+                                <div class="form-group" style="margin: 0px;">
+                                    <label class="col-sm-12" style="font-size: medium;font-style:italic;margin: 0px;padding:0px"><b>Remarks:</b></label><hr/><br/>
+                                </div>
+                                <div class="form-group" style="margin: 0px;padding-left:10px">
+                                    <textarea  id="bookingForm2Remarks" class="col-sm-12" rows="6" style="resize: none;"></textarea>
+                                </div>
+                                <br><hr style="margin-top:130px">
+
+
+                                    <!--payment details-->
+                                <div class="form-group" style="margin: 0px;">
+                                    <label class="col-sm-12" style="font-size: medium;font-style:italic;margin: 0px;padding:0px"><b>Payment Details:</b></label><hr/><br/>
+                                </div>
+                                <form class="form-inline col-sm-12" style="margin-left:0px;margin-right:0px;padding-left:0px;padding-right:0px;">
+                                    <div class="form-group col-sm-12" style="margin-left:0px;margin-right:0px;padding-left:0px;padding-right:0px;">
+                                        <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Amount To Pay:</label><br/>
+                                        <div class="input-group col-sm-12">
+                                            <div class="input-group-addon">$</div>
+                                            <input id="bookingForm2TotalCost" type="text" class="form-control col-sm-10" placeholder="Amount Payable">
+                                        </div>
+                                    </div>
+                                </form>
+                                <form class="form-inline col-sm-12" style="margin-left:0px;margin-right:0px;padding-left:0px;padding-right:0px;">
+                                    <div class="form-group col-sm-12" style="margin-left:0px;margin-right:0px;padding-left:0px;padding-right:0px;">
+                                        <label class="col-sm-12" style="margin: 0px;margin-top: 10px;padding:0px">Amount paid:</label><br/>
+                                        <div class="input-group col-sm-12">
+                                            <div class="input-group-addon">$</div>
+                                            <input id="bookingForm2AmountPaid" type="text" class="form-control col-sm-10" placeholder="Amount Paid">
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="form-group" style="margin-top:150px;">
+                                    <button  id="bookingForm2StartBookingBtn" style="border-radius: 0px"  type="submit" class="btn btn-success col-md-9" onclick="createBooking()">Start Booking</button>
+                                    <button id="bookingForm2CreateHoldBookingBtn" style="border-radius: 0px"  type="submit" class="btn btn-info col-md-3" onclick="createHoldBooking();">Hold</button>
+                                    <button  style="border-radius: 0px" type="submit" class="btn btn-danger btn-block" onclick="cancelClearBookingForm();">Cancel</button>
+                                </div>
+                            </div>
+
+                            <div id="bookingRequests" class="col-md-12" style="visibility:hidden;display:none;padding: 0px;height:76vh;">
+                                <table class="table table-hover" style="cursor: pointer; visibility : visible ;">
+                                    <tr style="height: 70px; border-bottom: 1px solid grey; padding : 5px; ;">
+                                        <td style=" margin:15px; border-radius: 15px;">
+                                            <b>Date</b>
+                                            <br/>
+                                            <p>BOoking details</p>
+
+                                        </td>
+                                    </tr>
+                                    <tr style="height: 70px; border-bottom: 1px solid grey; padding : 5px; ;">
+                                        <td style=" margin:15px; border-radius: 15px;">
+                                            <b>Date</b>
+                                            <br/>
+                                            <p>BOoking details</p>
+
+                                        </td>
+                                    </tr>
+                                    <tr style="height: 70px; border-bottom: 1px solid grey; padding : 5px; ;">
+                                        <td style=" margin:15px; border-radius: 15px;">
+                                            <b>Date</b>
+                                            <br/>
+                                            <p>BOoking details</p>
+
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="bookingTable" class="col-md-9" style="height:77vh;padding: 0px;margin: 0px;">
+                        <table class="table table-bordered" style="width: 100%;height: 100%">
+                            <thead id="tablehead" class="tableheaderScrollbar" style="overflow: scroll;min-height: 58px;height: 58px;" onscroll="javascript:scollPos(true);">
+                                <tr style="height : 58px ;">
+                                    <th rowspan="2" style="max-width : 72px ;min-width : 72px ;text-align: center;vertical-align: middle;"></th>
+                                    @for(room<-rooms){
+                                        <th style="max-width : 50px ;min-width : 50px ;text-align: center;vertical-align: middle;">@room.getRoomName</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody id="tablebody" onscroll="javascript:scollPos(false);" class="tablebodyScrollbar">
+
+
+                            @for((time,index)<-bookingTimes.zipWithIndex){
+                                <script type="text/javascript">
+                                var bookingArray=[];
+                                var index=0
+                                    @for(booking<-bookings){
+                                        //players & rooms
+                                        var memberArray=[];
+                                        var index2=0
+                                        @for(player<-booking.getPlayers){
+                                            var memberModel = {
+                                            id:'@player.getMember.getMemberID'
+                                            }
+                                            memberArray[index2]=memberModel;
+                                            index2+=1
+                                        }
+                                        var roomArray=[];
+                                        var index3=0
+                                        @for(booking_room<-booking.getBookingRooms){
+                                            var roomModel = {
+                                            id:'@booking_room.getRoom.getRoomID',
+                                            name:'@booking_room.getRoom.getRoomName'
+                                            }
+                                            roomArray[index3]=roomModel;
+                                            index3+=1
+                                        }
+
+
+                                        var bookingModel={
+                                        id:'@booking.getBookingID',
+                                        ref:'@booking.getBookingReferenceID',
+                                        date:'@booking.getBookingDate',
+                                        timeStart:'@booking.getTimeStart',
+                                        timeEnd:'@booking.getTimeEnd',
+                                        amountToPay:'@booking.getAmountToPay',
+                                        amountPaid:'',
+                                        totalPlayers:'@booking.getTotalPlayers',
+                                        totalMembers:'@booking.getPlayers.size()',
+                                        members:memberArray,
+                                        rooms:roomArray,
+                                        status:'@booking.getBookingStatus',
+                                        venueName:document.getElementById('searchVenue').text,
+                                        sms:'@booking.isSmsSend',
+                                        remarks:'@booking.getRemarks',
+                                        reservationName:'@booking.getReservationName',
+                                        reservationContactNo:'@booking.getReservationContactNo',
+                                        platform:'@booking.getRequestedEquipment'
+                                        }
+
+                                        bookingArray[index]=bookingModel;
+                                        index+=1
+                                    }
+
+                                function viewBookingInfo(id){
+                                for(i=0;i<bookingArray.length;i++){
+                                var bookingModel=bookingArray[i];
+                                if(bookingModel["id"]==(id)){
+                                showUpdateBookingModel(bookingModel)
+                                }
+                                }
+                                }
+                                </script>
+                                @if(!time.equals("04:00 AM")){
+                                    @if(index%6==0){
+                                        <tr >
+                                            <td style="max-width: 25px;overflow: visible;padding-top: 50px" class="rotate text-center" rowspan="6">
+                                                <span style="background-color:grey;position: absolute;left: -43.5px;top: 41.5px;height:17px; width: 103px;border-left:1px solid white;border-right:1px solid white;color: #ffffff;font-size: smaller">@time.substring(0,time.length)</span>
+                                            </td>
+
+
+                                            <td  id="@time.substring(0,time.length)" style="background-color:lightgrey;color:#000000;max-height:10px;min-height:10px;padding: 0px;min-width: 55px;font-size: smaller">@time.substring(0,time.length)</td>
+
+                                            @for((room,indexx)<-rooms.zipWithIndex){
+                                                @for(booking_room<-booking_rooms){
+                                                    @if(booking_room.getRoom.getRoomID.eq(room.getRoomID)&&booking_room.getBooking.getTimeStart.format("hh:mm aa").equals(time)){
+                                                        <p style="display : none ;visibility: hidden">@(longDiff=booking_room.getBooking.getTimeEnd.getTime)
+                                                            @(longDiff-=booking_room.getBooking.getTimeStart.getTime)
+                                                            @if(longDiff<0){
+                                                                <b>@booking_room.getBooking.getTimeEnd</b>
+                                                                @(longDiff=0)
+                                                                <b>@longDiff</b>
+                                                                <b>@(booking_room.getBooking.getTimeStart)</b>
+
+                                                                @(longDiff=(booking_room.getBooking.getTimeEnd.getTime+(86400000))-booking_room.getBooking.getTimeStart.getTime)
+                                                                <b>@longDiff</b>
+                                                            }
+
+                                                            @(tempHr=longDiff/(60 * 60 * 1000))
+                                                            @(tempMin=longDiff/(60 * 1000) % 60)
+                                                            @(tempMin+=(tempHr*60))
+
+                                                            @(tempArray.set(indexx,tempMin/10))</p>
+                                                            <!--set the color of text and bg-->
+                                                        @if(booking_room.getBooking.getBookingStatus.equals(BookingStatus.ONHOLD)){
+                                                            <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding : 0px ; background-color :white ; max-width : 50px ; min-width : 50px ; white-space : nowrap ;" rowspan="@tempArray.get(indexx)">
+                                                                <div class="tableheaderScrollbar" style="font-size:small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;color: #000000" >
+                                                                    <center style="width:49px;margin-top:@(((tempMin/10*17)-70)/2)px;display: table;align-items: center;justify-content: center;width:49px">ON<br/>-<br/>HOLD</center>
+                                                                </div>
+                                                            </td>
+                                                        }else {
+                                                            @if(booking_room.getBooking.getBookingStatus.equals(BookingStatus.RESERVED)){
+                                                                @if(booking_room.getBooking.getAmountToPay>0){
+                                                                    <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color: lightskyblue ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                        <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                            <center style="color:red;width:49px;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-70)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")<br/>@booking_room.getBooking.getReservationName</center>
+                                                                        </div>
+                                                                    </td>
+                                                                }else{
+                                                                    <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color: lightskyblue ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                        <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                            <center style="color: #000000;width:49px;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-70)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")<br/>@booking_room.getBooking.getReservationName</center>
+                                                                        </div>
+                                                                    </td>
+                                                                }
+                                                            }else{
+                                                                @if(booking_room.getBooking.getBookingStatus.equals(BookingStatus.INPROGRESS)) {
+                                                                    @if(booking_room.getBooking.getAmountToPay>0) {
+                                                                        <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color: lightgoldenrodyellow ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                            <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                <center style="width:49px;color:red;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>PLAYING<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                            </div>
+                                                                        </td>
+                                                                    }else{
+                                                                        <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)"  title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color:lightgoldenrodyellow ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                            <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                <center style="color: #000000;width:49px;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>PLAYING<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                            </div>
+                                                                        </td>
+                                                                    }
+                                                                }else {
+                                                                    @if(booking_room.getBooking.getBookingStatus.equals(BookingStatus.ENDINGSOON)) {
+                                                                        @if(booking_room.getBooking.getAmountToPay>0) {
+                                                                            <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color: orange ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                                <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                    <center style="width:49px;color:red;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>ENDING<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                                </div>
+                                                                            </td>
+                                                                        }else{
+                                                                            <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color:orange ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                                <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                    <center style="color: #000000;width:49px;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>ENDING<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                                </div>
+                                                                            </td>
+                                                                        }
+                                                                    }else {
+                                                                        @if(booking_room.getBooking.getBookingStatus.equals(BookingStatus.ENDED)) {
+                                                                            @if(booking_room.getBooking.getAmountToPay>0) {
+                                                                                <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color: lightcoral ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                                    <div title="@booking_room.getBooking.getRemarks"  class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                        <center style="width:49px;color:red;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>ENDED<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                                    </div>
+                                                                                </td>
+                                                                            }else{
+                                                                                <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color:lightcoral ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                                    <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                        <center style="color: #000000;width:49px;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>ENDED<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                                    </div>
+                                                                                </td>
+                                                                            }
+                                                                        }else {
+                                                                            <td style="background-color: #ffff00;max-height:10px;min-height:10px;max-width : 50px ;min-width : 50px ;text-align: center;vertical-align: middle;" rowspan="@tempArray.get(indexx)"></td>
+                                                                        }
+                                                                    }
+                                                                }
+
+                                                            }
+                                                        }
+
+                                                    }
+                                                }
+                                                @if(tempArray.get(indexx)>0){
+                                                    <p style="display : none ;visibility: hidden">@tempArray.set(indexx,(tempArray.get(indexx)-1))</p>
+                                                }else{
+                                                    <td style="max-height:10px;min-height:10px;max-width : 50px ;min-width : 50px ;text-align: center;vertical-align: middle;"></td>
+                                                }
+
+                                            }
+
+                                        </tr>
+                                    }else{
+                                        <tr>
+                                            @if((index+1)%2==0){
+                                                <td id="@time.substring(0,time.length)" style="background-color:grey;color:#ffffff;padding: 0px;min-width: 55px;max-height:10px;min-height:10px;font-size: smaller">@time.substring(0,time.length)</td>
+                                            }else{
+                                                <td id="@time.substring(0,time.length)" style="background-color:lightgrey;color:#000000;padding: 0px;min-width: 55px;max-height:10px;min-height:10px;font-size: smaller">@time.substring(0,time.length)</td>
+                                            }
+
+                                            @for((room,indexx)<-rooms.zipWithIndex){
+                                                @for(booking_room<-booking_rooms){
+                                                    @if(booking_room.getRoom.getRoomID.eq(room.getRoomID)&&booking_room.getBooking.getTimeStart.format("hh:mm aa").equals(time)){
+                                                        <p style="display : none ;visibility: hidden">@(longDiff=booking_room.getBooking.getTimeEnd.getTime)
+                                                            @(longDiff-=booking_room.getBooking.getTimeStart.getTime)
+                                                            @if(longDiff<0){
+                                                                <b>@booking_room.getBooking.getTimeEnd</b>
+                                                                @(longDiff=0)
+                                                                <b>@longDiff</b>
+                                                                <b>@(booking_room.getBooking.getTimeStart)</b>
+
+                                                                @(longDiff=(booking_room.getBooking.getTimeEnd.getTime+(86400000))-booking_room.getBooking.getTimeStart.getTime)
+                                                                <b>@longDiff</b>
+                                                            }
+                                                            @(tempHr=longDiff/(60 * 60 * 1000))
+                                                            @(tempMin=longDiff/(60 * 1000) % 60)
+                                                            @(tempMin+=(tempHr*60))
+                                                            @(tempArray.set(indexx,tempMin/10))</p>
+
+                                                        @if(booking_room.getBooking.getBookingStatus.equals(BookingStatus.ONHOLD)){
+                                                            <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding : 0px ; background-color : white ; max-width : 50px ; min-width : 50px ; white-space : nowrap ;" rowspan="@tempArray.get(indexx)">
+                                                                <div class="tableheaderScrollbar" style="font-size:small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                    <center style="color: #000000;margin-top:@(((tempMin/10*17)-70)/2)px;display: table;align-items: center;justify-content: center;width:49px">ON<br/>-<br/>HOLD</center>
+                                                                </div>
+                                                            </td>
+                                                        }else{
+                                                            @if(booking_room.getBooking.getBookingStatus.equals(BookingStatus.RESERVED)) {
+                                                                @if(booking_room.getBooking.getAmountToPay>0){
+                                                                    <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color: lightskyblue ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                        <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                            <center style="color:red;width:49px;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-70)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")<br/>@booking_room.getBooking.getReservationName</center>
+                                                                        </div>
+                                                                    </td>
+                                                                }else{
+                                                                    <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color: lightskyblue ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                        <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                            <center style="color: #000000;width:49px;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-70)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")<br/>@booking_room.getBooking.getReservationName</center>
+                                                                        </div>
+                                                                    </td>
+                                                                }
+                                                            }else{
+                                                                @if(booking_room.getBooking.getBookingStatus.equals(BookingStatus.INPROGRESS)) {
+                                                                    @if(booking_room.getBooking.getAmountToPay>0) {
+                                                                        <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color: lightgoldenrodyellow ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                            <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                <center style="width:49px;color:red;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>PLAYING<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                            </div>
+                                                                        </td>
+                                                                    }else{
+                                                                        <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color:lightgoldenrodyellow ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                            <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                <center style="color: #000000;width:49px;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>PLAYING<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                            </div>
+                                                                        </td>
+                                                                    }
+                                                                }else {
+                                                                    @if(booking_room.getBooking.getBookingStatus.equals(BookingStatus.ENDINGSOON)) {
+                                                                        @if(booking_room.getBooking.getAmountToPay>0) {
+                                                                            <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color: orange ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                                <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                    <center style="width:49px;color:red;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>ENDING<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                                </div>
+                                                                            </td>
+                                                                        }else{
+                                                                            <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color:orange ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                                <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                    <center style="color: #000000;width:49px;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>ENDING<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                                </div>
+                                                                            </td>
+                                                                        }
+                                                                    }else {
+                                                                        @if(booking_room.getBooking.getBookingStatus.equals(BookingStatus.ENDED)) {
+                                                                            @if(booking_room.getBooking.getAmountToPay>0) {
+                                                                                <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color: lightcoral ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                                    <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                        <center style="width:49px;color:red;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>ENDED<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                                    </div>
+                                                                                </td>
+                                                                            }else{
+                                                                                <td onclick="viewBookingInfo(@booking_room.getBooking.getBookindID)" title="@booking_room.getBooking.getRemarks" id="@booking_room.getBooking.getBookindID" style="cursor:pointer;padding:0px;background-color:lightcoral ;max-width : 50px ;min-width : 50px;white-space: nowrap;" rowspan="@tempArray.get(indexx)">
+                                                                                    <div title="@booking_room.getBooking.getRemarks" class="tableheaderScrollbar" style="font-size:x-small;max-width : 49px; ;width:49px;text-align: center;align-content:center;vertical-align: middle ;border:1px solid black;height:@(tempMin/10*17)px; overflow:scroll;">
+                                                                                        <center style="color: #000000;width:49px;display: table;align-items: center;justify-content: center;margin-top:@(((tempMin/10*17)-84)/2)px;">Ref:@booking_room.getBooking.getBookindID<br/>ENDED<br/>@booking_room.getBooking.getTimeStart.format("hh:mm aa")<br/>-<br/>@booking_room.getBooking.getTimeEnd.format("hh:mm aa")</center>
+                                                                                    </div>
+                                                                                </td>
+                                                                            }
+                                                                        }else {
+                                                                            <td style="max-width : 50px ;min-width : 50px ;" rowspan="@tempArray.get(indexx)" ></td>
+                                                                        }
+                                                                    }
+                                                                }
+
+
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                @if(tempArray.get(indexx)>0){
+                                                    <p style="display : none ;visibility: hidden">@tempArray.set(indexx,(tempArray.get(indexx)-1))</p>
+                                                }else{
+                                                    <td></td>
+                                                }
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            }
+
+                            </tbody>
+
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="modal fade in" id="bookingModel" aria-hidden="false" style="visibility:hidden;display: none ;">
+        <div class="modal-dialog" style="visibility : visible ;width:850px;margin-top:0px;">
+            <div class="modal-content">
+                <div class="modal-header" style="height:60px;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 id="bookingModelTitle" class="pull-left">Booking ref: 12345</h4>
+                    <button id="bookingModelDeleteBookingBtn" type="submit" style="margin-right:20px;border-radius: 0px" class="btn btn-danger pull-right">Delete Booking</button>
+                    <button id="bookingModelConfirmBookingBtn" type="submit" style="margin-right:10px;border-radius: 0px" class="btn btn-success pull-right">Confirm Booking</button>
+                </div>
+                <div class="modal-body" style="padding-top:0px;padding-bottom:0px;">
+                    <div class="row" style="padding-top:0px;">
+                        <div class="col-sm-8" style="border-right:2px solid grey;padding:0px;padding-left:35px;padding-top:20px;">
+                                <!--timing details-->
+                            <div class="form-horizontal col-sm-12" style="padding:0px;margin:0px;margin-top:-10px;margin-left:-15px;font-size: medium;">
+                                 Timing Details
+                                <span class="pull-right">
+                                    <label class="label-checkbox inline" style="cursor : pointer;">
+                                        <input type="checkbox" id="bookingModelTimingCkBox" onclick="enableDisableUpdateTimings(false,null);" >
+                                        <span class="custom-checkbox"></span>
+                                        Edit
+                                    </label>
+                                </span>
+                            </div>
+                            <div class="form-horizontal col-sm-12" style="margin-top:5px;padding-left: 0px;">
+                                <div class="form-group" style="width:520px">
+                                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;font-size: small;">Start:</label>
+                                    <div class="col-lg-5">
+                                        <select id="bookingModelStartTime" class="form-control input-sm" disabled>
+                                        @for(time<-bookingTimes){
+                                            <option value="@time">@time</option>
+                                        }
+                                        </select>
+                                    </div><!-- /.col -->
+                                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;font-size: small;">End:</label>
+                                    <div class="col-lg-5">
+                                        <select id="bookingModelEndTime" class=" form-control input-sm col-sm-3 " disabled>
+                                        @for(time<-bookingTimes){
+                                            <option value="@time">@time</option>
+                                        }
+                                        </select>
+                                    </div><!-- /.col -->
+                                </div>
+                                <div class="form-group" style="width:520px;">
+                                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;font-size: small;">Date:</label>
+                                    <div class="col-lg-5">
+                                        <input class="form-control input-sm" id="bookingModelDate" type="date" style="color: black;" disabled>
+                                    </div><!-- /.col -->
+                                </div>
+                                <div class="form-group" style="width:520px;">
+                                    <label class="label-checkbox col-lg-1" style="padding:0px;padding-top:0px;padding-bottom:7px;text-align:right;color: #777;">Amount to pay</label>
+                                    <div class="col-lg-5">
+                                        <input id="bookingModelAmountToPay" type="text" class="form-control input-sm" value="0" placeholder="100" disabled>
+                                    </div>
+                                    <div class="col-lg-6"  style="padding-top:7px;">
+                                        <label class="label-checkbox inline" style="cursor : pointer;">
+                                            <input type="checkbox" id="bookingModelPayLater" disabled>
+                                            <span class="custom-checkbox"></span>
+                                            Pay later
+                                        </label>
+                                    </div>
+                                </div>
+                                <hr style="border:1px solid grey;margin-top:-10px;width:563px;margin-left:-35px;"/>
+                            </div>
+
+                            <!-- person to contact-->
+                            <div class="form-horizontal col-sm-12" style="padding:0px;margin:0px;margin-top:-10px;margin-left:-15px;font-size: medium;">
+                                 Person To Contact
+                                <span class="pull-right">
+                                    <label class="label-checkbox inline" style="cursor : pointer;">
+                                        <input type="checkbox" id="bookingModelReservationCkBox" onclick="enableDisableUpdateReservationDetails(false,null)">
+                                        <span class="custom-checkbox"></span>
+                                        Edit
+                                    </label>
+                                </span>
+                            </div>
+                            <div class="form-horizontal col-sm-12" style="margin-top:5px;padding-left:0px;">
+                                <div class="form-group" style="width:520px;padding-left:10px">
+                                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;font-size: small;">Name:</label>
+                                    <div class="col-lg-5">
+                                        <input class="form-control input-sm" id="bookingModelReservationName" type="text" style="color: black;" disabled>
+                                    </div><!-- /.col -->
+                                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;font-size: small;">Contact:</label>
+                                    <div class="col-lg-5">
+                                        <input class="form-control input-sm" id="bookingModelReservationContactNo" type="text" style="color: black;" disabled>
+                                    </div><!-- /.col -->
+                                </div>
+                                <hr style="border:1px solid grey;width:563px;margin-left:-35px;"/>
+                            </div>
+
+                            <!--Membership details-->
+                            <div class="form-horizontal col-sm-12" style="padding:0px;margin-bottom:5px;margin-top:-10px;margin-left:-15px;font-size: medium;">
+                                 Members
+                                <span class="pull-right">
+                                    <label class="label-checkbox inline" style="cursor : pointer;">
+                                        <input type="checkbox" id="bookingModelMembershipCkBox" onclick="enableDisableUpdateMembershipDetails(false,null);">
+                                        <span class="custom-checkbox"></span>
+                                        Edit
+                                    </label>
+                                </span>
+                            </div>
+                            <div class="form-horizontal col-sm-12" style="margin-top:5px;padding-left: 0px;">
+                                <div class="form-group col-sm-6" style="margin-top:-10px;margin-bottom:0px;margin-left:0px;margin-right:0px;padding-left:0px;padding-right:0px;">
+                                    <label class="col-sm-12" style="margin: 0px;margin-top: 0px;padding:0px">Total number of people:</label><br/>
+                                    <div class="input-group col-sm-12">
+                                        <div class="input-group-addon" onclick="minusCount('bookingModelTotalPlayers');addremoveUpdateMemberField();" style="cursor: pointer">-</div>
+                                        <input id="bookingModelTotalPlayers" onfocusout="addremoveUpdateMemberField();" type="text" class="form-control col-sm-10 input-sm" value="0" disabled>
+                                        <div class="input-group-addon" onclick="addCount('bookingModelTotalPlayers');addremoveUpdateMemberField();" style="cursor: pointer">+</div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-6" style="margin-top:-10px;margin-bottom:0px;margin-left:0px;margin-right:0px;padding-left:10px;padding-right:0px;">
+                                    <label class="col-sm-12" style="margin: 0px;margin-top: 0px;padding:0px">Total number of members:</label><br/>
+                                    <div class="input-group col-sm-12">
+                                        <div class="input-group-addon" onclick="minusCount('bookingModelTotalMembers');addremoveUpdateMemberField();" style="cursor: pointer">-</div>
+                                        <input id="bookingModelTotalMembers" onfocusout="addremoveUpdateMemberField();" type="text" class="form-control col-sm-10 input-sm" value="0" disabled>
+                                        <div class="input-group-addon" onclick="addCount('bookingModelTotalMembers');addremoveUpdateMemberField();" style="cursor: pointer">+</div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-12" style="padding:0px;margin-top:10px;margin-left: 0px;margin-right: 20px;margin-bottom:0px">
+                                        <!--for loop the members-->
+                                    <div class="panel panel-default" style="width:100%;border-radius: 5px; border:1px solid grey;height:auto;max-height:300px;min-height:200px;">
+                                        <div class="panel-heading" style="height: 30px;border-bottom:1px solid slategrey">
+                                            <form class="form-inline pull-left" style="margin-top:-5px">
+                                                <div class="form-group">
+                                                    <label style="text-align: center;padding-left:5px;">Member IDs</label>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="panel-body transparentscrollbar" style="height:auto;max-height:170px;min-height:170px;overflow: scroll;padding:0px;padding-bottom: 5px;">
+                                            <div class="form-horizontal col-sm-12" id="bookingModelMemberIDs" style="margin-top: 5px;padding-bottom:15px;">
+                                                @*<form class="form-inline" style="margin-left:20px;width:320px;margin-bottom:10px">*@
+                                                    @*<div class="form-group has-success has-feedback" style="width:470px">*@
+                                                        @*<div class="input-group">*@
+                                                            @*<span class="input-group-addon">ID</span>*@
+                                                            @*<input type="text" class="form-control" id="inputGroupSuccess3" style="width:430px;" aria-describedby="inputGroupSuccess3Status">*@
+                                                        @*</div>*@
+                                                        @*<span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>*@
+                                                        @*<span id="inputGroupSuccess3Status" class="sr-only">(success)</span>*@
+                                                    @*</div>*@
+                                                @*</form>*@
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <hr style="border:1px solid grey;width:563px;margin-left:-35px;"/>
+                            </div>
+
+                            <!--Payment details-->
+                            <div class="form-horizontal col-sm-12" style="padding:0px;margin:0px;margin-top:-10px;margin-left:-15px;font-size: medium;">
+                                 Payment details
+                                <span class="pull-right">
+                                    <label class="label-checkbox inline" style="cursor : pointer;">
+                                        <input type="checkbox" id="bookingModelPaymentCkBox" onclick="enableDisableUpdatePaymentDetails(false,null)">
+                                        <span class="custom-checkbox"></span>
+                                        Edit
+                                    </label>
+                                </span>
+                            </div>
+                            <div class="form-horizontal col-sm-12" style="margin-top:5px;padding-left: 0px;">
+                                <div class="form-group" style="width:520px;padding-left:10px">
+                                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;font-size: small;">Pay:</label>
+                                    <div class="col-lg-5">
+                                        <input class="form-control input-sm" id="bookingModelAmountPaid" type="text" style="color: black;" disabled>
+                                    </div><!-- /.col -->
+                                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;font-size: small;">Unpaid:</label>
+                                    <div class="col-lg-5">
+                                        <input class="form-control input-sm" id="bookingModelUnpaidAmount" type="text" style="color: black;" disabled>
+                                    </div><!-- /.col -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-4">
+                                <!--Room details-->
+                            <div class="form-horizontal col-sm-12" style="padding:0px;margin-bottom:10px;margin-top:15px;font-size: medium;">
+                                 Shift Room
+                                <span class="pull-right">
+                                    <label class="label-checkbox inline" style="cursor : pointer;">
+                                        <input type="checkbox" id="bookingModelShiftRoomCkBox" onclick="enableDisableUpdateRoom(false,null)">
+                                        <span class="custom-checkbox"></span>
+                                        Edit
+                                    </label>
+                                </span>
+                            </div>
+                            <div class="form-horizontal col-sm-12" style="padding:0px;margin-bottom:5px;margin-top:-15px;margin-left:0px">
+                                <div class="form-group" style="margin:0px;">
+                                    <div class="col-lg-6"  style="padding:0px;padding-top:7px;margin-bottom:5px;">
+                                        <label class="label-checkbox inline" style="cursor : pointer;">
+                                            <input type="checkbox" id="bookingModelShiftRoomTimeCkBox" onclick="shiftRoomWithWithoutTiming()" disabled>
+                                            <span class="custom-checkbox"></span>
+                                            Shift timing:
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-lg-12">
+                                    <select id="bookingModelShiftRoomTime" class="form-control input-sm" disabled>
+                                        @*for((index,time)<-bookingTimes.zipWithIndex){*@
+                                        @*<option value="@time">@time</option>*@
+                                        @*}*@
+                                    </select>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default" style="position: relative;width:100%;border-radius: 5px; border:1px solid grey;height:auto;max-height:291px;min-height:291px;">
+                                    <div class="panel-heading" style="height: 30px;border-bottom: 1px solid lightslategrey">
+                                        <form class="form-inline pull-left" style="margin-top:-5px;margin-left: 10px;">
+                                            <div class="form-group">
+                                                <label style="text-align: center;">Rooms</label>
+                                            </div>
+                                        </form>
+                                        <form class="form-inline pull-right" style="margin-top:-7px;margin-left:-10px;margin-right: 15px;">
+                                            <div class="form-group">
+                                                <label class="label-checkbox inline" style="cursor : pointer ;">
+                                                        select all
+                                                    <input type="checkbox" id="bookingModelSelectAllRoomCheckBox" onclick="selectAllRoomFromBookingModel('#bookingModelSelectAllRoomCheckBox');" disabled>
+                                                    <span class="custom-checkbox"></span>
+                                                </label>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div  id="bookingModelRoomCheckBox" class="row panel-body transparentscrollbar" style="height:auto;max-height:255px;min-height:255px;overflow: scroll;padding:10px;padding-left:50px;">
+                                    @for(room<-rooms){
+                                        <div class="col-md-12 form-group" style="margin-bottom:5px;cursor: pointer;padding:0px;" >
+                                            <div class="col-md-10" title="@room.getRemarks" style="padding-left:5px;" onclick="checkUncheckElement('#bookingModelRoom@room.getRoomID');">
+                                            @room.getName
+                                            </div>
+                                            <div class="col-md-2">
+                                                <span class="pull-right col-sm-12">
+                                                    <label>
+                                                        <input value="@room.getRoomID" name="roomModelCheckbox" id="bookingModelRoom@room.getRoomID" type="checkbox" disabled>
+                                                        <span class="custom-checkbox"></span>
+                                                    </label>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    }
+                                    </div>
+
+
+                                </div>
+                                <hr style="width:280px;border:1px solid grey;margin-left:-15px"/>
+                            </div>
+
+                            <!--SMS-->
+                            <div class="form-horizontal col-sm-12" style="padding:0px;margin-bottom:5px;margin-top:-15px;margin-left:0px">
+                                <div class="form-group" style="margin:0px;">
+                                    <div class="col-lg-6"  style="padding:0px;padding-top:7px;margin-bottom:5px;">
+                                        <label class="label-checkbox inline" style="cursor : pointer;font-size: medium">
+                                            SMS:
+                                        </label>
+                                    </div>
+                                </div>
+                                @if(String.valueOf(session.get("staffType")).equals("ADMIN")){
+                                    <div class="form-group col-sm-12" style="padding:0px;margin:0px;">
+                                        <textarea class="col-sm-12 form-control" rows="4" style="height:101px;margin-bottom:10px;resize: none;" id="bookingModelSMSContent" ></textarea>
+                                    </div>
+                                }else{
+                                    <div class="form-group col-sm-12" style="padding:0px;margin:0px;">
+                                        <textarea class="col-sm-12 form-control" rows="4" style="height:101px;margin-bottom:10px;resize: none;" id="bookingModelSMSContent" disabled></textarea>
+                                    </div>
+                                }
+                                <hr style="width:280px;border:1px solid grey;margin:0px;margin-left:-15px"/>
+                            </div>
+
+                            <!--PLATFORM-->
+                            <div class="form-horizontal col-sm-12" style="padding:0px;margin-bottom:5px;margin-top:0px;font-size: medium;">
+                                <div class="form-group" style="margin:0px;margin-bottom:5px;">
+                                    Platform
+                                    <span class="pull-right">
+                                        <label class="label-checkbox inline" style="cursor : pointer;">
+                                            <input type="checkbox" id="bookingModelRequestedEquipmentCkBox" onclick="enableDisableUpdateRequestedEquipment(false,null)">
+                                            <span class="custom-checkbox"></span>
+                                            Edit
+                                        </label>
+                                    </span>
+                                </div>
+                                <div class="form-group" style="margin: 0px;padding-left:0px">
+                                    <select id="bookingModelRequestedEquipment" class="form-control input-sm col-sm-12" disabled>
+                                    @for(platform<-platforms){
+                                        <option value="@platform.getName">@platform.getName</option>
+                                    }
+                                    </select>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="col-sm-12" style="border:1px solid #ffffff;border-top:2px solid grey;padding:0px;margin-top:5px;">
+                                <!--Remarks details-->
+                            <div class="form-group" style="margin-left:15px;margin-bottom:5px;font-size: medium;">
+                                    Remarks
+                                <span class="pull-right">
+                                    <label class="label-checkbox inline" style="cursor : pointer;">
+                                        <input type="checkbox" id="bookingModelRemarksCkBox" onclick="enableDisableUpdateRemarks(false,null)">
+                                        <span class="custom-checkbox"></span>
+                                        Edit
+                                    </label>
+                                </span>
+                            </div>
+                            <div class="form-group col-sm-12" style="padding:0px;margin:0px;">
+                                <textarea class="col-sm-12 form-control" rows="6" style="resize: none;" id="bookingModelRemarks" disabled></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button id="bookingModelSMSBtn" type="submit" class="btn btn-info">Send SMS comformation</button>
+                    <button id="bookingModelEndEarlyBtn" type="submit" class="btn btn-danger">End early</button>
+                    <button id="bookingModelUpdateBtn" type="submit" class="btn btn-success">Update</button>
+                </div>
+            </div>
+        </div><!-- /.modal-dialog -->
+    </div>
+
+</body>
+
+</html>

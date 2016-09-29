@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.2.4/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.2.4/mapbox.css' rel='stylesheet' />
+</head>
+<body>
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <span class="pull-left" style="font-size: medium"><i class="fa fa-home fa-lg"></i>My Outlets</span>
+            <div class="input-group pull-right" style="width:300px;">
+                <select id="graphSearchSelect" class="form-control input-sm pull-right" name="dataTable_length" aria-controls="dataTable">
+                    <option value="1">BUGIS</option>
+                    <option value="6">CATHAY</option>
+                    <option value="7">NOVENA</option>
+                </select>
+                <span class="input-group-btn">
+                    <button class="btn btn-success btn-sm" type="button">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+                <span class="input-group-btn">
+                    <button class="btn btn-success btn-sm" type="button">
+                        <i class="fa fa-plus"></i>New Outlet
+                    </button>
+                </span>
+            </div>
+        </div>
+        <div class="panel-body" style="padding:0px;">
+            <div id="map-one" style="height:250px;"></div>
+            <script>
+            L.mapbox.accessToken = 'pk.eyJ1IjoibW9pc3R5YnVyZ2VyIiwiYSI6ImNpcXRpcTB2NjAwMjBpMm0zdGh1aGxzemEifQ.FgvmBnqAQjn7r6ZanUjhJQ';
+            L.mapbox.map('map-one', 'mapbox.streets').setView([1.378,103.813], 14);
+            </script>
+            <hr style="border:1px solid lightsteelblue;margin-top:0px;width: 100%;"/>
+            <div style="height:auto;">
+                <div id="membership_header" class="panel-heading" style="margin-top: -20px; height : 40px ;">
+                    <a class="pull-left"  style="cursor: pointer;font-size: medium">&nbsp;CATHAY :   <span class="label label-success">OPEN</span></a>&nbsp;
+                </div>
+                <hr style="border:1px solid lightsteelblue;margin:0px;margin-top:0px;width: 100%;"/>
+                <div class="col-lg-12" style="padding:0px;border-bottom : 1px solid cornflowerblue ;">
+                    <div class="col-sm-4 col-md-4 panel-stat3 bg-info" style="border-radius: 0px;height:100px;margin:0px;border-right:1px solid darkslategrey;">
+                        <h2 class="m-top-none" id="userCount"></h2>
+                        <h5>Registered users</h5>
+                        <div class="stat-icon">
+                            <i class="fa fa-user fa-3x"></i>
+                        </div>
+                    </div><!-- /.col -->
+                    <div class="col-sm-4 col-md-4 panel-stat3 bg-success" style="border-radius: 0px;height:100px;margin:0px;border-right:1px solid darkslategrey;">
+                        <h2 class="m-top-none" id="userCount"></h2>
+                        <h5>Current Sales</h5>
+                        <div class="stat-icon">
+                            <i class="fa fa-dollar fa-3x"></i>
+                        </div>
+                    </div><!-- /.col -->
+                    <div class="col-sm-4 col-md-4 panel-stat3 bg-info" style="border-radius: 0px;height:100px;margin:0px;border-right:1px solid darkslategrey;">
+                        <h2 class="m-top-none" id="userCount"></h2>
+                        <h5>Current Bookings</h5>
+                        <div class="stat-icon">
+                            <i class="fa fa-file-text fa-3x"></i>
+                        </div>
+                    </div><!-- /.col -->
+                </div>
+                <div class="col-lg-12" style="padding:0px;border : 1px solid cornflowerblue ;">
+                    <div  style="width:1%;border-left:1px solid cornflowerblue"></div>
+                    <div class="col-lg-1" style="width:14%;border-right:1px solid cornflowerblue;">
+                        <center>MON<br/>12:00PM<br/>-<br/>10:00PM<br/></center>
+                    </div>
+                    <div class="col-lg-1" style="width:14%;border-right:1px solid cornflowerblue;">
+                        <center>TUE<br/>12:00PM<br/>-<br/>10:00PM<br/></center>
+                    </div>
+                    <div class="col-lg-1" style="width:14%;border-right:1px solid cornflowerblue;">
+                        <center>WED<br/>12:00PM<br/>-<br/>10:00PM<br/></center>
+                    </div>
+                    <div class="col-lg-1" style="width:14%;border-right:1px solid cornflowerblue;">
+                        <center>THUR<br/>12:00PM<br/>-<br/>10:00PM<br/></center>
+                    </div>
+                    <div class="col-lg-1" style="width:14%;border-right:1px solid cornflowerblue;">
+                        <center>FRI<br/>12:00PM<br/>-<br/>10:00PM<br/></center>
+                    </div>
+                    <div class="col-lg-1" style="width:14%;border-right:1px solid cornflowerblue;">
+                        <center>SAT<br/>12:00PM<br/>-<br/>10:00PM<br/></center>
+                    </div>
+                    <div class="col-lg-1" style="width:14%;">
+                        <center>SUN<br/>12:00PM<br/>-<br/>10:00PM<br/></center>
+                    </div>
+                    <div class="col-lg-1" style="width:1%;border-right:1px solid cornflowerblue"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade in" id="simpleModal" aria-hidden="false" style="display: none;">
+        <div id="platformModel" class="modal-dialog" style="width: 700px;display: none">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4>Platform :</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="height:30px;margin-top: 10px;">
+                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Name</label>
+                        <div class="col-lg-11">
+                            <input id="platformModelName" class="form-control" type="text" placeholder="input here...">
+                        </div><!-- /.col -->
+                    </div>
+                    <div class="form-group" style="height:30px;margin-top: 10px;">
+                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Icon URL</label>
+                        <div class="col-lg-11">
+                            <input id="platformModelIconURL" class="form-control" type="text" placeholder="input here...">
+                        </div><!-- /.col -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a id="platformDelete" class="btn btn-danger btn-sm">Delete platform</a>
+                    <a id="platformSave" class="btn btn-info btn-sm">Save changes</a>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+</body>
+</html>

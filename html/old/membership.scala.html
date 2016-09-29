@@ -1,0 +1,495 @@
+@import models.common.StoredVoucher
+
+@import models.common.Member
+
+@import models.common.Venue
+@(members:List[Member],venues:List[Venue],totalRecordCount:String,storedVouchers:List[StoredVoucher])
+
+
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>MEMBERSHIP MANAGEMENT</title>
+    <script src="@controllers.admin.routes.Assets.versioned("javascripts/membership.js")"></script>
+    <script type="text/javascript">
+       var memberArray = []
+       @for(member<-members){
+        //vouchers for the member
+        var voucherArray=[]
+        @for(voucher<-member.getAvailableVouchers){
+            var voucherModel= {
+            voucherID:'@voucher.getVoucherID',
+            title:'@voucher.getStoredVoucher.getTitle',
+            issuedDate:'@voucher.getDateIssued',
+            expiryDate:'@voucher.getDateOfExpiry',
+            isUsed:@voucher.isUsed,
+            dateUsed:'@voucher.getDateUsed',
+            remarks:'@voucher.getRemarks',
+            memberID:'@voucher.getMember.getMemberID',
+            memberName:'@voucher.getMember.getName'
+            }
+            voucherArray.push(voucherModel)
+        }
+        //bookings for the member val get players
+        var bookingArray=[]
+        @for(player<-member.getPlayers){
+            var bookingModel= {
+                bookingID:'@player.getBooking.getBookindID',
+                referrenceID:'@player.getBooking.getBookingReferenceID',
+                date:'@player.getBooking.getBookingDate',
+                timeStart:'@player.getBooking.getTimeStart',
+                timeEnd:'@player.getBooking.getTimeEnd',
+                status:'@player.getBooking.getBookingStatus'
+            }
+            bookingArray.push(bookingModel)
+        }
+
+        //member model
+        var memberModel= {
+            membershipID:'@member.getMemberID',
+            isVerified:@member.isVerified,
+            name:'@member.getName',
+            gender:'@member.getGender',
+            contactNo:'@member.getContactNo',
+            email:'@member.getEmail',
+            address:'@member.getAddress',
+            postalCode:'@member.getPostalCode',
+            nirc:'@member.getNirc',
+            dob:'@member.getDob',
+            registeredDate:'@member.getRegisteredDate',
+            venue:'@member.getRegisteredVenue',
+            isLegacy:@member.isLegacy,
+            points:'@member.getPoints',
+            referenceCode:'@member.getReferalCode',
+            hoursPlayed:'@member.getTotalHrsPlayed',
+            password:'@member.getPassword',
+            vouchers:voucherArray,
+            bookings:bookingArray
+
+        }
+        memberArray.push(memberModel);
+       }
+    function viewMemberInfo(id){
+    for(i=0;i<memberArray.length;i++){
+    var memberModel=memberArray[i];
+    if(memberModel["membershipID"]==(id)){
+    showMemberInfo(memberArray[i])
+    showBookingInfo(memberArray[i]["bookings"])
+    showVoucherInfo(memberArray[i]["vouchers"])
+    }
+    }
+
+    }
+    </script>
+
+</head>
+
+<body  style="color: #000000">
+    <div class="padding-md">
+        <div class="panel panel-default table-responsive">
+            <div class="panel-heading">
+						Membership management
+                <span class="label label-info pull-right">@totalRecordCount total records</span>
+            </div>
+            <div id="message" class="alert alert-success" style="margin:0px;border-radius: 0%;padding-top:5px;padding-bottom:5px;height: auto;" >
+                <strong>Well done!</strong> You successfully read this important alert message.
+            </div>
+            <div class="padding-md clearfix" style="margin-bottom: -20px;">
+                <div id="dataTable_wrapper" class="dataTables_wrapper" role="gridcell">
+                    <div class="fg-toolbar ui-toolbar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix" style="">
+                        <div class="form-horizontal" id="dataTable_filter" style="margin-bottom: 10px;">
+                            <form class="form-inline pull-right" action="@controllers.admin.routes.MemberController.downloadMembers()" style="margin-left: 5px">
+                                <button type="submit" class="btn btn-sm btn-info pull-right">Download data</button>
+                            </form>
+                            <label style="margin-bottom: 10px;" class="pull-right">
+                                <div class="input-group pull-right" style="width:200px;">
+                                    <input id="searchMemberInput" type="text" class="form-control input-sm" placeholder="search here..." aria-controls="dataTable">
+                                    <span class="input-group-btn">
+                                        <button onclick="searchMembership()" class="btn btn-default btn-sm" type="button">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <table class="table table-bordered dataTable table-hover" id="memberTable" style="max-height: 300px;">
+                        <thead>
+                            <tr role="row">
+                                <th style="width: 95px;">
+                                    <center>MemberID</center>
+                                </th>
+                                <th style="width: 95px;">
+                                    <center>NIRC</center>
+                                </th>
+                                <th>
+                                    <center>Name</center>
+                                </th>
+                                <th style="width: 200px;">
+                                    <center>Email</center>
+                                </th>
+                                <th style="width: 95px;">
+                                    <center>ContactNo</center>
+                                </th>
+                                <th style="width: 95px;">
+                                    <center>DOB</center>
+                                </th>
+                                <th style="width: 100px;">
+                                    <center>St Points</center>
+                                </th>
+                                <th style="width: 50px;">
+                                    <center>isVerified</center>
+                                </th>
+                                <th style="width: 50px;">
+                                    <center>isLegacy</center>
+                                </th>
+                            </tr>
+                        </thead>
+                        @for(member<-members){
+                            <tr onclick="viewMemberInfo(@member.getMemberID)">
+                                <td style="padding: 3px;"><center>@member.getMemberID</center></td>
+                                <td style="padding: 3px;"><center>@member.getNirc</center></td>
+                                <td style="padding: 3px;"><center>@member.getName</center></td>
+                                <td style="padding: 3px;"><center>@member.getEmail</center></td>
+                                <td style="padding: 3px;"><center>@member.getContactNo</center></td>
+                                <td style="padding: 3px;"><center>@member.getDob</center></td>
+                                <td style="padding: 3px;"><center>@member.getPoints</center></td>
+                                <td style="padding: 3px;">
+                                    <center>
+                                            <div class="">
+                                                @if(member.isVerified==true){
+                                                    <input type="checkbox" checked contenteditable="false">
+                                                    <span class="custom-checkbox"></span>
+                                                }else{
+                                                    <input type="checkbox" contenteditable="false">
+                                                    <span class="custom-checkbox"></span>
+                                                }
+                                            </div>
+                                    </center>
+                                </td>
+                                <td style="padding: 3px;">
+                                    <center>
+                                            <div class="">
+                                            @if(member.isLegacy==true){
+                                                <input type="checkbox" checked contenteditable="false">
+                                                <span class="custom-checkbox"></span>
+                                            }else{
+                                                <input type="checkbox" contenteditable="false">
+                                                <span class="custom-checkbox"></span>
+                                            }
+                                            </div>
+                                    </center>
+                                </td>
+                            </tr>
+                        }
+                        <tbody role="alert" aria-live="polite" aria-relevant="all">
+                        </tbody>
+                    </table>
+                </div>
+            </div><!-- /.padding-md -->
+
+            <hr style="border:1px solid lightsteelblue;margin-top:0px;width: 100%;"/>
+
+            <div id="membership_header" class="panel-heading" style="margin-top: -20px; height : 50px ;">
+                <a class="pull-left" onclick="showForm(0)" style="cursor: pointer"><i class="fa fa-angle-down fa-lg"></i> &nbsp;Membership information</a>&nbsp;
+                <span class="pull-right">
+                    <label class="label-checkbox inline">
+                        <input onchange="editMemberDetials()" type="checkbox" id="enableEditMembershipForm">
+                        <span class="custom-checkbox"></span>
+                        Edit
+                    </label>
+                </span>
+            </div>
+            <div id="membership_body" class="panel-body" style="padding-left:90px;padding-right:90px;">
+                <div class="form-group" style="height:30px;margin-bottom: 10px;">
+                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">MembershipID</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormMembershipID" class="form-control" type="text" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                    <label class="label-checkbox col-lg-1" style="padding-top:7px;padding-bottom:7px;text-align:right;color: #777;">Is Verfied</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormIsVerified" type="checkbox" style="margin-top:7px;" disabled>
+                        <span class="custom-checkbox" style="margin-top:7px;"></span>
+                    </div>
+                </div>
+                <div class="form-group" style="height:30px;margin-top: 10px;">
+                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Name</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormName" class="form-control" type="text" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                    <label class="label-checkbox col-lg-1" style="padding-top:7px;padding-bottom:7px;text-align:right;color: #777;">Gender</label>
+                    <div class="col-lg-5">
+                        <select id="membershipFormGender" class="form-control input-sm inline-block" disabled>
+                            <option value="M" selected="selected">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="height:30px;margin-top: 10px;">
+                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Contact</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormContactNo" class="form-control" type="text" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                    <label class="col-lg-1 control-label" style="text-align: right;color: #777;">NIRC</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormNirc" class="form-control" type="text" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                </div>
+                <div class="form-group" style="height:80px;margin-top: 10px;">
+                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Address</label>
+                    <div class="col-lg-11">
+                        <textarea id="membershipFormAddress" class="form-control" rows="4" disabled></textarea>
+                    </div><!-- /.col -->
+                </div>
+                <div class="form-group" style="height:30px;margin-top: 10px;">
+                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Postal Code</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormPostalCode" class="form-control" type="text" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                    <label class="col-lg-1 control-label" style="padding-top:7px;text-align: right;color: #777;">Email</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormEmail" class="form-control" type="text" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                </div>
+                <div class="form-group" style="height:30px;margin-top: 10px;">
+                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:0px;text-align: right;color: #777;">registration Date</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormRegisteredDate" class="form-control" type="date" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                    <label class="col-lg-1 control-label" style="padding-top:7px;text-align: right;color: #777;">DOB</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormDob" class="form-control" type="date" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                </div>
+                <div class="form-group" style="height:30px;margin-bottom: 10px;">
+                    <label class="label-checkbox col-lg-1" style="padding:0px;padding-top:0px;padding-bottom:7px;text-align:right;color: #777;">Registered at</label>
+                    <div class="col-lg-5">
+                        <select id="membershipFormVenue" class="form-control input-sm inline-block" disabled>
+                            @for(venue<-venues){
+                                <option value="@venue.getName">@venue.getName</option>
+                            }
+                        </select>
+                    </div>
+                    <label class="label-checkbox col-lg-1" style="padding-top:7px;padding-bottom:7px;text-align:right;color: #777;">Is Legecy</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormIsLegacy" type="checkbox" style="margin-top:7px;" disabled>
+                        <span class="custom-checkbox" style="margin-top:7px;"></span>
+                    </div>
+                </div>
+                <div class="form-group" style="height:30px;margin-top: 10px;">
+                    <label class="col-lg-12 control-label" style="padding-top:15px;text-align: center;color: #777;margin-left:0px;">Auto generated fields. Do not edit unless necessary</label>
+                </div>
+                <div class="form-group" style="height:30px;margin-top: 10px;">
+                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Saint Points</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormPoints" class="form-control" type="text" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                    <label class="col-lg-1 control-label" style="padding-top:7px;text-align: right;color: #777;">Ref Code</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormRefCode" class="form-control" type="text" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                </div>
+                <div class="form-group" style="height:30px;margin-top: 10px;">
+                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Hours Played</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormHoursPlayed" class="form-control" type="text" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                    <label class="col-lg-1 control-label" style="padding-top:7px;text-align: right;color: #777;">Password</label>
+                    <div class="col-lg-5">
+                        <input id="membershipFormPassword" class="form-control" type="password" placeholder="input here..." disabled>
+                    </div><!-- /.col -->
+                </div>
+                <div class="form-group" style="height:auto;margin-top: 10px;">
+                    <button id="membershipFormSaveBtn" onclick="saveMembershipForm()" class="btn col-lg-12 btn-success" disabled><i class="fa fa-save fa-lg"></i>  Update details</button>
+                </div>
+            </div>
+
+            <hr style="border:1px solid lightsteelblue;margin-top:0px;width: 100%;"/>
+
+            <div id="voucher_header" class="panel-heading" style="margin-top: -20px; height : 50px ;">
+                <a class="pull-left" onclick="showForm(1)" style="cursor: pointer"><i class="fa fa-angle-down fa-lg"></i> &nbsp;Vouchers information</a>&nbsp;
+            </div>
+            <div id="voucher_body" class="panel-body" style="padding-left:90px;padding-right:90px;">
+                <span>Total Vouchers</span><span class="badge m-left-xs" id="totalVoucherCount">0</span>
+                <span>Used Vouchers</span><span class="badge badge-success m-left-xs" id="totalVoucherUsedCount">0</span>
+                <span>Available Vouchers</span><span class="badge badge-warning m-left-xs" id="totalAvailableVoucherCount">0</span>
+                <span>Expired Vouchers</span><span class="badge badge-danger m-left-xs" id="totalExpiredVoucherCount">0</span>
+                <button onclick="showIssueVoucherModel()" id="issueVoucherBtn" class="btn btn-sm pull-right btn-success"><i class="fa fa-plus fa-lg"></i>&nbsp;Issue Voucher</button>
+                <table id="voucherTable" class="table table-bordered table-condensed table-hover table-striped" style="margin-top:20px;">
+                    <thead>
+                        <tr>
+                            <th>VoucherID</th>
+                            <th>Title</th>
+                            <th>Expiry Date</th>
+                            <th>Issued Date</th>
+                            <th>Used Date</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="voucherTableBody">
+
+                    </tbody>
+                </table>
+            </div>
+
+            <hr style="border:1px solid lightsteelblue;margin-top:0px;width: 100%;"/>
+
+            <div id="booking_header" class="panel-heading" style="margin-top: -20px; height : 50px ;">
+                <a class="pull-left" onclick="showForm(2)" style="cursor: pointer"><i class="fa fa-angle-down fa-lg"></i> &nbsp;Booking history</a>&nbsp;
+            </div>
+            <div id="booking_body" class="panel-body" style="padding-left:90px;padding-right:90px;">
+                <span >Total bookings</span><span class="badge badge-success m-left-xs" id="totalBookingCount">0</span>
+                <span >Total Canceled Reservations/Bookings</span><span class="badge badge-danger m-left-xs" id="totalCanceledBookingCount">0</span>
+                <table class="table table-bordered table-condensed table-hover table-striped" style="margin-top:20px;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ReferenceID</th>
+                            <th>Date</th>
+                            <th>Time Start</th>
+                            <th>Time End</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingTableBody">
+
+                    </tbody>
+                </table>
+
+
+            </div>
+
+            <hr style="border:1px solid lightsteelblue;margin-top:0px;width: 100%;"/>
+
+            <div id="reward_header" class="panel-heading" style="margin-top: -20px; height : 50px ;">
+                <a class="pull-left" onclick="showForm(3)" style="cursor: pointer"><i class="fa fa-angle-down fa-lg"></i> &nbsp;Rewards information</a>&nbsp;
+                <span class="pull-right">
+                    <label class="label-checkbox inline">
+                        <input type="checkbox" id="toggleLine" checked="">
+                        <span class="custom-checkbox"></span>
+                        Edit
+                    </label>
+                </span>
+            </div>
+            <div id="reward_body" class="panel-body" style="padding-left:90px;padding-right:90px;">
+                <span>Total rewards</span><span class="badge m-left-xs">365</span>
+                <span>Reward(s) claimed</span><span class="badge badge-success m-left-xs">321</span>
+                <span>Unclaimed reward(s)</span><span class="badge badge-warning m-left-xs">37</span>
+                <table class="table table-bordered table-condensed table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Reward</th>
+                            <th>Date Achieved</th>
+                            <th>Date Claimed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade in" id="simpleModal" aria-hidden="false" style="display: none">
+        <div id="issueVoucherModel" class="modal-dialog" style="visibility:hidden; display : none ;width: 1000px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 id="storedModelHeader">Voucher </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="height:25px;">
+                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Voucher</label>
+                        <div class="col-lg-5">
+                            <select id="issueVoucherID" class="form-control input-sm inline-block" name="dataTable_length" aria-controls="dataTable">
+                            @for(storedVoucher<-storedVouchers){
+                                <option value="@storedVoucher.getStoredVoucherID">@storedVoucher.getTitle</option>
+                            }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="height:30px;margin-top: 10px;">
+                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Issue Date</label>
+                        <div class="col-lg-5">
+                            <input id="issueVoucherIssuedDate" class="form-control" type="date" placeholder="input here...">
+                        </div><!-- /.col -->
+                        <label class="label-checkbox col-lg-1" style="padding:0px;padding-top:7px;padding-bottom:7px;text-align:right;color: #777;">Expire Date</label>
+                        <div class="col-lg-5">
+                            <input id="issueVoucherExpiryDate" class="form-control" type="date" placeholder="input here...">
+                        </div><!-- /.col -->
+                    </div>
+                    <div class="form-group" style="height:80px;margin-top: 10px;">
+                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Remarks</label>
+                        <div class="col-lg-11">
+                            <textarea style="resize: none;" id="issueVoucherRemarks" class="form-control" rows="4" placeholder="for internal use.."></textarea>
+                        </div><!-- /.col -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a id="issueVoucherModel" onclick="issueVoucher()" class="btn btn-info btn-block btn-sm">Issue Voucher</a>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+        <div id="voucherModel" class="modal-dialog" style="visibility:hidden; display : none ;width: 900px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 id="voucherModelHeader">Voucher :</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="height:30px;margin-top: 10px;">
+                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">ID</label>
+                        <div class="col-lg-5">
+                            <input id="voucherModelID" class="form-control" type="text" disabled>
+                        </div><!-- /.col -->
+                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Title</label>
+                        <div class="col-lg-5">
+                            <input id="voucherModelTitle" class="form-control" type="text" readonly>
+                        </div><!-- /.col -->
+                    </div>
+                    <div class="form-group" style="height:30px;margin-top: 10px;">
+                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Issued Date</label>
+                        <div class="col-lg-5">
+                            <input id="voucherModelIssuedDate" class="form-control" type="date">
+                        </div><!-- /.col -->
+                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Expiry Date</label>
+                        <div class="col-lg-5">
+                            <input id="voucherModelExpiryDate" class="form-control" type="date">
+                        </div><!-- /.col -->
+                    </div>
+                    <div class="form-group" style="height:30px;margin-bottom: 10px;">
+                        <label class="label-checkbox col-lg-1" style="padding-top:7px;padding-bottom:7px;text-align:right;color: #777;">Is used</label>
+                        <div class="col-lg-5">
+                            <input id="voucherModelIsUsed" type="checkbox" style="margin-top:7px;">
+                            <span class="custom-checkbox" style="margin-top:7px;"></span>
+                        </div>
+                        <label class="label-checkbox col-lg-1" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Used Date</label>
+                        <div class="col-lg-5">
+                            <input id="voucherModelUsedDate" class="form-control" type="date" >
+                        </div><!-- /.col -->
+                    </div>
+                    <div class="form-group" style="height:80px;margin-top: 15px;">
+                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Remarks</label>
+                        <div class="col-lg-11">
+                            <textarea style="resize: none;" id="voucherModelRemarks" class="form-control" rows="4"></textarea>
+                        </div><!-- /.col -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a id="voucherModelDelete" class="btn btn-danger btn-sm">Delete voucher</a>
+                    <a id="voucherModelSave" class="btn btn-info btn-sm">Save changes</a>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+</body>
+</html>

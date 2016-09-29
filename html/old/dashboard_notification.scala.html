@@ -1,0 +1,63 @@
+@import models.common.Notification
+@(notifications:List[Notification])
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <span class="pull-left">
+											Notifications <span class="text-warning m-left-xs"><i class="fa fa-bell-o"></i></span>
+										</span>
+            <ul class="tool-bar">
+                <li><a href="#toDoListWidget" data-toggle="collapse"><i class="fa fa-arrows-v"></i></a></li>
+            </ul>
+        </div>
+        <div class="panel-body no-padding collapse in" id="toDoListWidget" style="max-height:300px;overflow: scroll">
+            <ul class="list-group task-list no-margin collapse in">
+            @for(notification<-notifications){
+                @if(notification.isSeen==true){
+                    <li class="list-group-item selected">
+                        <label class="label-checkbox inline">
+                            <input id="@notification.getNotificationID" type="checkbox" class="task-finish" onchange="updateNotification(@notification.getNotificationID)" checked>
+                            <span class="custom-checkbox"></span>
+                        </label>
+                        @notification.getTitle
+                        <span class="pull-right">
+                            <a onclick="deleteNotification(@notification.getNotificationID)" class="task-del"><i class="fa fa-trash-o fa-lg text-danger"></i></a>
+                        </span>
+                    </li>
+                    <li>
+                    @notification.getDescription
+                    </li>
+                }else{
+                    <li class="list-group-item">
+                        <label class="label-checkbox inline">
+                            <input type="checkbox" id="@notification.getNotificationID" class="task-finish" onchange="updateNotification(@notification.getNotificationID)">
+                            <span class="custom-checkbox"></span>
+                        </label>
+                        <span style="color: black"><b>@notification.getTitle</b></span>
+                        <span class="pull-right">
+                            <a onclick="deleteNotification(@notification.getNotificationID)" class="task-del"><i class="fa fa-trash-o fa-lg text-danger"></i></a>
+                        </span>
+                        <div style="margin-top: 3px;margin-left:-5px;">
+                            <label class="label-checkbox inline">
+                            </label>
+                            @notification.getTitle
+                        </div>
+                    </li>
+
+                }
+            }
+            </ul><!-- /list-group -->
+        </div>
+        <div class="loading-overlay">
+            <i class="loading-icon fa fa-refresh fa-spin fa-lg"></i>
+        </div>
+    </div>
+
+</body>
+</html>
