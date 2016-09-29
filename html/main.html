@@ -153,7 +153,7 @@
                     <div class="main-menu">
                         <ul>
                             <li style="cursor : pointer ;">
-                                <a>
+                                <a class="role_btn incident_btn" style="display:none;">
                                     <span class="menu-icon">
                                         <i class="fa fa-exclamation-triangle fa-lg"></i>
                                     </span>
@@ -164,7 +164,7 @@
                                 </a>
                             </li>
                             <li style="cursor : pointer ;">
-                                <a>
+                                <a class="role_btn resource_btn" style="display:none;">
                                     <span class="menu-icon">
                                         <i class="fa fa-users fa-lg"></i>
                                     </span>
@@ -176,7 +176,7 @@
                             </li>
 
                             <li style="cursor : pointer ;">
-                                <a>
+                                <a class="role_btn report_btn" style="display:none;">
                                     <span>
                                         <i class="fa fa-envelope-o fa-lg"></i>
                                     </span>
@@ -196,13 +196,13 @@
                <!-- TODO:insert the content here -->
                 <div id="map"></div>
                 <div class="grey-container shortcut-wrapper">
-                    <a href="#" class="shortcut-link">
+                    <a class="shortcut-link role_btn incident_btn" style="display:none;">
                         <span class="shortcut-icon">
                             <i class="fa fa-exclamation-triangle"></i>
                         </span>
                         <span class="text">Incident Management</span>
                     </a>
-                    <a href="#" class="shortcut-link">
+                    <a class="shortcut-link role_btn report_btn" style="display:none;">
                         <span class="shortcut-icon">
                             <i class="fa fa-envelope-o"></i>
                             <span class="shortcut-alert">
@@ -211,14 +211,24 @@
                         </span>
                         <span class="text">Report Management</span>
                     </a>
-                    <a href="#" class="shortcut-link">
+                    <a class="shortcut-link role_btn resource_btn" style="display:none;">
                         <span class="shortcut-icon">
                             <i class="fa fa-user"></i>
                         </span>
                         <span class="text">Resource Management</span>
                     </a>
                 </div>
-                <div data-include="../html/incident_management.html" style="height:100px;width:100px;"></div>
+                
+                <div id="incident_view" class="role_view" style="display:none;">
+                	<div data-include="incident_management.html" style="height:100px;width:100px;"></div>
+                </div>
+                <div id="report_view" class="role_view" style="display:none;">
+                	<div data-include="report_management.html"  style="height:100px;width:100px;"></div>
+                </div>
+                <div id="resource_view" class="role_view" style="display:none;">
+                	<div data-include="resource_management.html"  style="height:100px;width:100px;"></div>
+                </div>
+                
                 <div id="InnerContent">
                 </div>
                

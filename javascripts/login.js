@@ -5,6 +5,12 @@ $(function() {
 		page functions for client side processing
 	*/
 	$.page = {
+		set_cookie : function(c_name, value, exdays) {
+			var exdate = new Date();
+			exdate.setDate(exdate.getDate() + exdays);
+			var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+			document.cookie = c_name + "=" + c_value;
+		},
 		attempt_login : function(form) {
 			var data = $(form).serialize();
 			$.backend.attempt_login(data);
@@ -20,7 +26,7 @@ $(function() {
 			//TODO: ajax calls to backend server for login
 			
 			var role = $("#username").val();
-			document.cookie = "role=" + role;
+			$.page.set_cookie("role", role, 1);
 			
 			//temporary redirect to main page
 			window.location = "main.html";
