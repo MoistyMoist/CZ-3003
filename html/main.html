@@ -4,11 +4,9 @@
     <head>
         <title></title>
         <meta charset="utf-8">
-    
-
+        
         <!-- Bootstrap core CSS -->
         <link href="../stylesheets/bootstrap.min.css" rel="stylesheet"/>
-
         <link href="../stylesheets/main.css" rel="stylesheet"/>
 
         <!-- Font Awesome -->
@@ -209,6 +207,8 @@
 
             <div id="main-container" class="transparentscrollbar" style="overflow : scroll ;">
                <!-- TODO:insert the content here -->
+               <div id="map"></div>
+               
             </div><!-- /main-container -->
         </div>
 
@@ -234,7 +234,7 @@
             <!-- Placed at the end of the document so the pages load faster -->
 
             <!-- Jquery -->
-        <script src="../javascripts/jquery-1.10.2.min.js"></script>
+        <script src="../javascripts/jquery-3.1.1.min.js"></script>
 
             <!-- Bootstrap -->
         <script src="../javascripts/bootstrap.min.js"></script>
@@ -256,6 +256,12 @@
 
             <!-- Endless -->
         <script src="../javascripts/skin.js"></script>
+        
+        	<!-- Google Map -->
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_tE97WXP7-9Pzr8r1iXiNuhC8NH8AJc0&callback=initMap" async defer></script>
+        
+        	<!-- Self -->
+        <script src="../javascripts/main.js"></script>
 
     </body>
 </html>
