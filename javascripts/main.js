@@ -8,7 +8,7 @@ $(function () {
 			load_library : function() {
 				var googleMaps = $("<script>", {
 					type : "text/javascript",
-					src : "http://maps.googleapis.com/maps/api/js?key=" + $.google.api_key + "&callback=" + $.google.maps.callback
+					src : "http://maps.googleapis.com/maps/api/js?key=" + $.google.api_key + "&region=SG&callback=" + $.google.maps.callback
 				}).prop("defer", true).prop("async", true);
 				
 				$("body").append(googleMaps);
@@ -17,6 +17,28 @@ $(function () {
 				$.google.maps.Map = new google.maps.Map(document.getElementById("map"), {
 					center: {lat: 1.34284, lng: 103.8190145},
 					zoom: 11
+				});
+				
+				$.google.maps.add_marker(1.33284, 103.8190145, 1000);
+			},
+			/**
+				radius in meters
+			*/
+			add_marker : function(lat, lng, radius) {
+				var marker = new google.maps.Marker({
+					position : {lat:lat, lng:lng},
+					map : $.google.maps.Map,
+					title : "hello world!"
+				});
+				var circle = new google.maps.Circle({
+					strokeColor: '#FF0000',
+					strokeOpacity: 0.8,
+					strokeWeight: 2,
+					fillColor: '#FF0000',
+					fillOpacity: 0.35,
+					map: $.google.maps.Map,
+					center: {lat:lat, lng:lng},
+					radius: radius
 				});
 			}
 		}
