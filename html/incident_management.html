@@ -1,204 +1,218 @@
 <div class="panel panel-default table-responsive" style="margin:10px;">
 	<div class="panel panel-default">
 
-		<div class="panel-heading" style=" height : 50px;">
-			<label class="pull-left" style="margin-top: 8px;">Incidents : </label>
-			<div class="form-horizontal pull-right" id="dataTable_filter" style="margin-bottom: 10px;">
-        
-            <label>Search : </label>
-            <label style="margin-bottom: -10px;">
-                <div class="input-group pull-right" style="width:200px;">
-                    <input id="searchStoredVoucherInput" class="input-sm form-control" type="text" placeholder="input text...." />
-                    <span class="input-group-btn">
-                        <button id="searchStoredVoucherBtn" onclick="searchStoredVouchers();" class="btn btn-success btn-sm" type="button">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </span>
-                </div> <!-- end .input-group -->
-            </label>
-        
-			</div> <!-- end #dataTable_filter -->
+		<div class="panel-heading">
+        	<div class="row">
+                <h4 class="col-md-8">Incidents</h4>
+                <div class="col-md-4 text-right" id="incident_search_filter">
+            
+                    <form class="form-inline" id="incident_search_form">
+                        <div class="form-group">
+                            <label for="incident_search_input">Search : </label>
+                            <div class="input-group">
+                                <input id="incident_search_input" class="input-sm form-control" type="text" placeholder="input text...." />
+                                <span class="input-group-btn">
+                                    <button id="incident_search_btn" class="btn btn-success btn-sm" type="submit">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                            </div> <!-- end .input-group -->
+                        </div> <!-- end .form-group -->
+                    </form>
+                </div> <!-- end #incident_search_filter -->
+            </div>
 		</div> <!-- end .panel-heading -->
 
 		<div class="panel-body">
-			<!--incident table -->
-			<table class="table table-bordered table-condensed table-hover table-striped">
-				<thead>
-					<tr>
-                        <th>ID</th>
-                        <th>Field1</th>
-                        <th>Field2</th>
-                        <th>Field3</th>
-                        <th>Status</th>
-                	</tr>
-                </thead>
-				<tbody>
-					<tr style="cursor : pointer ;">
-                        <td>12</td>
-                        <td>1</td>
-                        <td>8</td>
-                        <td>0</td>
-                        <td>
-                        	<span class="label label-success">ACTIVE</span>
-                        </td>
-					</tr>
-					<tr style="cursor : pointer ;">
-                        <td>12</td>
-                        <td>1</td>
-                        <td>8</td>
-                        <td>0</td>
-                        <td>
-                        <span class="label label-success">ACTIVE</span>
-                        </td>
-					</tr>
-
-				</tbody>
-			</table> <!-- end incident table -->
-
-			<!-- Incident details -->
-			<div class="col-md-6" style="min-height:300px;padding-left:0px;">
-				<div class="panel panel-default">
-                
-                    <div class="panel-heading clearfix">
-						<span class="pull-left">Incident Details</span>
-					</div>
+        	<div class="row">
+                <!--incident table -->
+                <div class="col-md-12">
+                    <table class="table table-bordered table-condensed table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Field1</th>
+                                <th>Field2</th>
+                                <th>Field3</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="cursor : pointer ;">
+                                <td>12</td>
+                                <td>1</td>
+                                <td>8</td>
+                                <td>0</td>
+                                <td>
+                                    <span class="label label-success">ACTIVE</span>
+                                </td>
+                            </tr>
+                            <tr style="cursor : pointer ;">
+                                <td>12</td>
+                                <td>1</td>
+                                <td>8</td>
+                                <td>0</td>
+                                <td>
+                                <span class="label label-success">ACTIVE</span>
+                                </td>
+                            </tr>
+        
+                        </tbody>
+                    </table>
+                </div> <!-- end incident table -->
+    
+                <!-- Incident details -->
+                <div class="col-md-6">
+                    <div class="panel panel-default">
                     
-					<div class="panel-body" style="height:500px">
-                    
-						<div class="form-group" style="height:30px;margin-top: 10px;">
-							<label class="col-lg-1 control-label" style="padding-top:7px;padding-bottom:7px;text-align:right;color: #777;">Date</label>
-							<div class="col-lg-5">
-								<input  class="form-control" type="date" placeholder="input here..." />
-							</div><!-- /.col -->
-						</div>
-
-						<div class="form-group" style="height:30px;margin-top: 10px;">
-							<label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Name</label>
-							<div class="col-lg-5">
-								<input class="form-control" type="text" placeholder="input here..." disabled />
-							</div><!-- /.col -->
-                            
-							<label class="col-lg-1 control-label" style="text-align;padding-top:7px; right;color: #777;">Contact</label>
-							<div class="col-lg-5">
-								<input class="form-control" type="text" placeholder="input here..." disabled />
-							</div><!-- /.col -->
-						</div>
-
-						<div class="form-group" style="height:80px;margin-top: 10px;">
-							<label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Address</label>
-							<div class="col-lg-11">
-								<textarea class="form-control" rows="7" disabled></textarea>
-							</div><!-- /.col -->
-						</div>
-
-						<div class="form-group" style="height:30px;margin-bottom: 10px;">
-							<div class="col-lg-offset-1 col-lg-1">
-								<input  type="checkbox" style="margin-top:7px;" disabled />
-								<span class="custom-checkbox" style="margin-top:7px;"></span>
-							</div>
-							<label class="label-checkbox col-lg-4" style="padding-top:7px;padding-bottom:7px;text-align:left;color: #777;">Flooding</label>
-							<div class="col-lg-offset-1 col-lg-1">
-								<input  type="checkbox" style="margin-top:7px;" disabled />
-								<span class="custom-checkbox" style="margin-top:7px;"></span>
-							</div>
-							<label class="label-checkbox col-lg-4" style="padding-top:7px;padding-bottom:7px;text-align:left;color: #777;">Terrorist</label>
-						</div>
-
-						<div class="form-group" style="height:80px;margin-top: 10px;">
-							<label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Address</label>
-							<div class="col-lg-11">
-								<textarea class="form-control" rows="7" disabled></textarea>
-							</div><!-- /.col -->
-						</div>
-
-						<div class="form-group" style="height:30px;margin-bottom: 10px;">
-							<div class="col-lg-offset-1 col-lg-1">
-								<input  type="checkbox" style="margin-top:7px;" disabled />
-								<span class="custom-checkbox" style="margin-top:7px;"></span>
-							</div>
-							<label class="label-checkbox col-lg-10" style="padding-top:7px;padding-bottom:7px;text-align:left;color: #777;">Requires Assistance</label>
-						</div>
-
-						<div class="form-group" style="height:30px;margin-top: 10px;">
-							<label class="label-checkbox col-lg-1" style="padding-top:7px;padding-bottom:7px;text-align:right;color: #777;">Status</label>
-							<div class="col-lg-11">
-								<select class="form-control input-sm inline-block" disabled="">
-									<option value="" selected="selected">ACTIVE</option>
-                                    <option value="">CLOSED</option>
-                                    <option value="">WAITING FOR REVIEW</option>
-                                </select>
-                        	</div>
+                        <div class="panel-heading clearfix">
+                            <span>Incident Details</span>
                         </div>
-
-					</div> <!-- end panel-body -->
-
-				</div> <!-- end panel -->
-			</div> <!-- end Incident details -->
-
-			<!-- log details -->
-			<div class="col-md-6" style="padding:0px;">
-				<div class="panel panel-default">
-                
-					<div class="panel-heading clearfix">
-						<span class="pull-left">Logs</span>
-					</div>      
-					<ul class="list-group collapse in" id="feedList" style="min-height:500px">
-						<li class="list-group-item clearfix">
-							<div class="activity-icon bg-info small">
-								<i class="fa fa-comment"></i>
-							</div>
-							<div class="pull-left m-left-sm">
-								<span>SPF Assigment<a href="#"> to access incident location</a></span><br>
-								<small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
-							</div>
-						</li>
-						<li class="list-group-item clearfix">
-							<div class="activity-icon bg-info small">
-								<i class="fa fa-comment"></i>
-							</div>
-							<div class="pull-left m-left-sm">
-								<span>SPF Assigment<a href="#"> to access incident location</a></span><br>
-								<small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
-							</div>
-						</li>
-						<li class="list-group-item clearfix">
-							<div class="activity-icon bg-info small">
-								<i class="fa fa-comment"></i>
-</div>
-<div class="pull-left m-left-sm">
-<span>SPF Assigment<a href="#"> to access incident location</a></span><br>
-<small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
-</div>
-</li>
-<li class="list-group-item clearfix">
-<div class="activity-icon bg-info small">
-<i class="fa fa-comment"></i>
-</div>
-<div class="pull-left m-left-sm">
-<span>SPF Assigment<a href="#"> to access incident location</a></span><br>
-<small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
-</div>
-</li>
-<li class="list-group-item clearfix" style="padding:0px;">
-<div>
-<div class="form-group" style="margin:0px;">
-<div class="col-lg-12">
-<textarea class="form-control" rows="3"></textarea>
-</div><!-- /.col -->
-</div>
-<div class="form-group">
-<div class="col-lg-12">
-<button class="btn col-lg-12 btn-success" disabled=""><i class="fa fa-save fa-lg"></i>Update</button>
-</div>
-</div>
-</div>
-</li>
-</ul><!-- /list-group -->   
-<div class="loading-overlay">
-<i class="loading-icon fa fa-refresh fa-spin fa-lg"></i>
-</div>
-</div>
-</div>
-</div>
-</div>
+                        
+                        <div class="panel-body">
+                        	<form class="form-horizontal" id="incident_create_form">
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label" for="incident_date">Date</label>
+                                    <div class="col-md-5">
+                                        <input class="form-control" id="incident_date" type="date" placeholder="input here..." />
+                                    </div><!-- /.col -->
+                                </div>
+        
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label" for="incident_caller_name">Name</label>
+                                    <div class="col-md-5">
+                                        <input class="form-control" id="incident_caller_name" type="text" placeholder="input here..." />
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                	<label class="col-md-2 control-label">Contact</label>
+                                    <div class="col-md-5">
+                                        <input class="form-control" type="text" placeholder="input here..." />
+                                    </div>
+                                </div>
+        
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">Address</label>
+                                    <div class="col-md-10">
+                                        <textarea class="form-control" rows="7"></textarea>
+                                    </div>
+                                </div>
+        
+                                <div class="form-group">
+                                	<label class="col-md-2 control-label">Incident Type</label>
+                                    <div class="col-md-10">
+                                        <select class="form-control input-sm">
+                                            <option value="" selected>Flooding</option>
+                                            <option value="">Terrorist</option>
+                                            <option value="">Others</option>
+                                        </select>
+                                    </div>
+                                </div>
+        
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">Address</label>
+                                    <div class="col-md-10">
+                                        <textarea class="form-control" rows="7"></textarea>
+                                    </div>
+                                </div>
+        
+                                <div class="form-group">
+                                    <div class="col-md-offset-2 col-md-1">
+                                        <input type="checkbox" class="form-control" />
+                                        <span class="custom-checkbox"></span>
+                                    </div>
+                                    <label class="label-checkbox col-md-9">Requires Assistance</label>
+                                </div>
+        
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Status</label>
+                                    <div class="col-md-10">
+                                        <select class="form-control input-sm inline-block">
+                                            <option value="" selected>ACTIVE</option>
+                                            <option value="">CLOSED</option>
+                                            <option value="">WAITING FOR REVIEW</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            
+                            </form>
+    
+                        </div> <!-- end panel-body -->
+    
+                    </div> <!-- end panel -->
+                </div> <!-- end Incident details -->
+    
+                <!-- log details -->
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                    
+                        <div class="panel-heading clearfix">
+                            <span>Logs</span>
+                        </div>     
+                         
+                        <ul class="list-group" id="feedList">
+                            <li class="list-group-item clearfix">
+                                <div class="activity-icon bg-info small">
+                                    <i class="fa fa-comment"></i>
+                                </div>
+                                <div class="pull-left m-left-sm">
+                                    <span>SPF Assigment<a href="#"> to access incident location</a></span><br>
+                                    <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
+                                </div>
+                            </li>
+                            <li class="list-group-item clearfix">
+                                <div class="activity-icon bg-info small">
+                                    <i class="fa fa-comment"></i>
+                                </div>
+                                <div class="pull-left m-left-sm">
+                                    <span>SPF Assigment<a href="#"> to access incident location</a></span><br>
+                                    <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
+                                </div>
+                            </li>
+                            <li class="list-group-item clearfix">
+                                <div class="activity-icon bg-info small">
+                                    <i class="fa fa-comment"></i>
+                                </div>
+                                <div class="pull-left m-left-sm">
+                                    <span>SPF Assigment<a href="#"> to access incident location</a></span><br>
+                                    <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
+                                </div>
+                            </li>
+                            <li class="list-group-item clearfix">
+                                <div class="activity-icon bg-info small">
+                                    <i class="fa fa-comment"></i>
+                                </div>
+                                <div class="pull-left m-left-sm">
+                                    <span>SPF Assigment<a href="#"> to access incident location</a></span><br>
+                                    <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
+                                </div>
+                            </li>
+                            <li class="list-group-item clearfix">
+                                <div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <textarea class="form-control" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button class="btn col-md-12 btn-success" disabled=""><i class="fa fa-save fa-lg"></i>Submit</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul><!-- /list-group -->   
+    
+                        <div class="loading-overlay">
+                            <i class="loading-icon fa fa-refresh fa-spin fa-lg"></i>
+                        </div>
+                        
+                    </div>
+                    
+                </div> <!-- end log details -->
+            </div>
+		</div> <!-- end .panel-body -->
+        
+	</div>
 </div>
