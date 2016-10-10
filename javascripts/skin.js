@@ -2,7 +2,7 @@
 $(function	()	{
 
     // Cookie validation
-    if(jQuery.type($.cookie('skin_color')) != 'undefined')	{
+    if(/*jQuery.type($.cookie('skin_color'))*/Cookies.get('skin_color') != 'undefined')	{
 
         $('aside').removeClass('skin-1');
         $('aside').removeClass('skin-2');
@@ -17,14 +17,15 @@ $(function	()	{
         $('#top-nav').removeClass('skin-5');
         $('#top-nav').removeClass('skin-6');
 
-        $('aside').addClass($.cookie('skin_color'));
-        $('#top-nav').addClass($.cookie('skin_color'));
+        $('aside').addClass(/*$.cookie('skin_color')*/Cookies.get('skin_color'));
+        $('#top-nav').addClass(/*$.cookie('skin_color')*/Cookies.get('skin_color'));
     }
 
     //Skin color
     $('.theme-color').click(function()	{
         //Cookies for storing theme color
-        $.cookie('skin_color', $(this).attr('id'));
+        //$.cookie('skin_color', $(this).attr('id'));
+		Cookies.set('skin_color', $(this).attr('id'));
 
         $('aside').removeClass('skin-1');
         $('aside').removeClass('skin-2');
@@ -330,7 +331,7 @@ $(function	()	{
 
 });
 
-$(window).load(function() {
+$(window).on("load",function() {
     //Stop preloading animation
     Pace.stop();
 
