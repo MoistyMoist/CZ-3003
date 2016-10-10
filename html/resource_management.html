@@ -1,124 +1,75 @@
-<!DOCTYPE html>
-
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title></title>
-
-        <!-- Bootstrap core CSS -->
-        <link href="../stylesheets/bootstrap.min.css" rel="stylesheet">
-
-        <link href="../stylesheets/main.css" rel="stylesheet">
-
-        <!-- Font Awesome -->
-        <link href="../stylesheets/font-awesome.min.css" rel="stylesheet">
-
-        <!-- Endless -->
-        <link href="../stylesheets/templet.css" rel="stylesheet">
-        <link href="../stylesheets/skin.min.css" rel="stylesheet">
-
-        <!-- Pace -->
-        <link href="../stylesheets/pace.css" rel="stylesheet">
-
-    </head>
-
-    <body>
+<div class="panel panel-default">
+	<div class="pannel-heading clearfix" style="padding-top:20px;">
+		<div class="col-md-3">
+            <div class="panel-stat3 bg-info">
+                <h2 class="m-top-none">SPF</h2>
+                <div class="stat-icon">
+                    <i class="fa fa-taxi fa-3x"></i>
+                </div>
+            </div>
+        </div><!-- SPF -->
         
-        <div class="panel panel-default table-responsive" style="margin:10px;">
-            <div>
-                <div class="row" style="margin-top:20px;margin-left:10px;margin-right:10px;">
-                    <div class="col-md-3" style="margin-right:0px;margin-left:0px;">
-                        <div class="panel-stat3 bg-info">
-                            <h2 class="m-top-none">SPF</h2>
-                            <div class="stat-icon">
-                                <i class="fa fa-taxi fa-3x"></i>
-                            </div>
-                        </div>
-                    </div><!-- /.col -->
-                     <div class="col-md-3" style="margin-right:0px;margin-left:0px;">
-                        <div class="panel-stat3 bg-danger">
-                            <h2 class="m-top-none">SCDF</h2>
-                            <div class="stat-icon">
-                                <i class="fa fa-bus fa-3x"></i>
-                            </div>
-                        </div>
-                    </div><!-- /.col -->
-                     <div class="col-md-3" style="margin-right:0px;margin-left:0px;">
-                        <div class="panel-stat3 bg-info">
-                            <h2 class="m-top-none">PUB</h2>
-                            <div class="stat-icon">
-                                <i class="fa fa-tint fa-3x"></i>
-                            </div>
-                        </div>
-                    </div><!-- /.col -->
-                     <div class="col-md-3" style="margin-right:0px;margin-left:0px;">
-                        <div class="panel-stat3 bg-danger">
-                            <h2 class="m-top-none">ARMBLUEANCE</h2>
-                            <div class="stat-icon">
-                                <i class="fa fa-ambulance fa-3x"></i>
-                            </div>
-                        </div>
-                    </div><!-- /.col -->
+        <div class="col-md-3">
+            <div class="panel-stat3 bg-danger">
+                <h2 class="m-top-none">SCDF</h2>
+                <div class="stat-icon">
+                    <i class="fa fa-bus fa-3x"></i>
                 </div>
             </div>
-
-
-            <div id="" class="panel-body padding-md" style="padding-left:90px;padding-right:90px;">
-            
-                <div class="form-group" style="height:30px;margin-top: 10px;">
-                    <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">To:</label>
-                    <div class="col-lg-11">
-                       <input  class="form-control" type="text" placeholder="input here..." disabled="">
-                    </div><!-- /.col -->
-                </div>
-            
-                <div class="form-group" style="height:30px;margin-bottom: 10px;">
-                        <label class="label-checkbox col-lg-1" style="padding:0px;padding-top:0px;padding-bottom:7px;text-align:right;color: #777;">Incident ID</label>
-                        <div class="col-lg-11">
-                            <select id="" class="form-control input-sm inline-block" disabled="">
-                                    <option value="INCIDENT ID">INCIDENT ID</option>
-                                     <option value="INCIDENT ID">INCIDENT ID</option>
-                                      <option value="INCIDENT ID">INCIDENT ID</option>
-                            </select>
-                        </div>
-                </div>
-
-                <div class="form-group" style="height:200px;margin-top: 10px;">
-                        <label class="col-lg-1 control-label" style="padding:0px;padding-top:7px;text-align: right;color: #777;">Task Description</label>
-                        <div class="col-lg-11">
-                            <textarea id="membershipFormAddress" class="form-control" rows="10"></textarea>
-                        </div><!-- /.col -->
-                </div>
-                <div class="form-group" style="height:auto;margin-top: 10px;">
-                        <button  class=" col-lg-offset-1 btn col-lg-11 btn-success" disabled=""><i class="fa fa-save fa-lg"></i>  Assign Task</button>
+        </div><!-- SCDF -->
+        
+        <div class="col-md-3">
+            <div class="panel-stat3 bg-info">
+                <h2 class="m-top-none">PUB</h2>
+                <div class="stat-icon">
+                    <i class="fa fa-tint fa-3x"></i>
                 </div>
             </div>
-        </div>
+        </div><!-- PUB -->
+        
+        <div class="col-md-3">
+            <div class="panel-stat3 bg-danger">
+                <h2 class="m-top-none">AMBULANCE</h2>
+                <div class="stat-icon">
+                    <i class="fa fa-ambulance fa-3x"></i>
+                </div>
+            </div>
+        </div><!-- AMBULANCE -->
+        
+	</div>
 
-            <!-- Le javascript
-    ================================================== -->
-            <!-- Placed at the end of the document so the pages load faster -->
+	<div id="" class="panel-body padding-md">
+    	<form class="form-horizontal">
+			<div class="form-group">
+            	<label class="col-md-2 control-label">To:</label>
+				<div class="col-md-10">
+					<input  class="form-control" type="text" placeholder="input here..." />
+				</div>
+			</div>
 
-            <!-- Jquery -->
-        <script src="../javascripts/jquery-3.1.1.min.js"></script>
+			<div class="form-group">
+				<label class="col-md-2 control-label">Incident ID</label>
+				<div class="col-md-10">
+                    <select id="" class="form-control input-sm inline-block">
+                        <option value="INCIDENT ID">INCIDENT ID</option>
+                        <option value="INCIDENT ID">INCIDENT ID</option>
+                        <option value="INCIDENT ID">INCIDENT ID</option>
+                    </select>
+				</div>
+			</div>
 
-            <!-- Bootstrap -->
-        <script src="../javascripts/bootstrap.min.js"></script>
-
-            <!-- Pace -->
-        <script src="../javascripts/pace.min.js"></script>
-
-            <!-- Popup Overlay -->
-        <script src="../javascripts/jquery.popupoverlay.min.js"></script>
-
-            <!-- Slimscroll -->
-        <script src="../javascripts/jquery.slimscroll.min.js"></script>
-
-            <!-- Cookie -->
-        <script src="../javascripts/js.cookie.js"></script>
-
-            <!-- Endless -->
-        <script src="../javascripts/skin.js"></script>
-
-    </body>
-</html>
+			<div class="form-group">
+				<label class="col-md-2 control-label">Task Description</label>
+				<div class="col-md-10">
+					<textarea id="membershipFormAddress" class="form-control" rows="10"></textarea>
+				</div>
+			</div>
+            
+			<div class="form-group">
+            	<div class="col-md-offset-2 col-md-10">
+					<button class="col-md-12 btn  btn-success" type="submit"><i class="fa fa-save fa-lg"></i>  Assign Task</button>
+                </div>
+			</div>
+		</form>
+	</div>
+</div>

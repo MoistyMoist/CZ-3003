@@ -5,11 +5,16 @@ $(function() {
 		page functions for client side processing
 	*/
 	$.page = {
+		init : function() {
+			//Cookies.remove("role");
+			//$.page.set_cookie("role", "", 1);
+		},
 		set_cookie : function(c_name, value, exdays) {
-			var exdate = new Date();
+			/*var exdate = new Date();
 			exdate.setDate(exdate.getDate() + exdays);
 			var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
-			document.cookie = c_name + "=" + c_value;
+			document.cookie = c_name + "=" + c_value;*/
+			Cookies.set(c_name, value, {expires: exdays});
 		},
 		attempt_login : function(form) {
 			var data = $(form).serialize();
@@ -34,6 +39,7 @@ $(function() {
 	}
 	
 	$(document).ready(function(e) {
+		$.page.init();
         $(".form-login").submit(function(e) {
 			e.preventDefault();
 			$.page.attempt_login($(this));

@@ -24,7 +24,7 @@ $(function () {
 	
 	$.page = {
 		get_cookie : function(c_name) {
-			var i, x, y, ARRcookies = document.cookie.split(";");
+			/*var i, x, y, ARRcookies = document.cookie.split(";");
 			
 			for (i = 0; i < ARRcookies.length; i++) {
 				x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
@@ -33,7 +33,8 @@ $(function () {
 				if (x == c_name) {
 					return unescape(y);
 				}
-			}
+			}*/
+			return Cookies.get()[c_name];
 		},
 		init : function() {
 			$(".incident_btn").click(function(e) {
@@ -62,6 +63,7 @@ $(function () {
             });
 			
 			var role = $.page.get_cookie("role");
+			
 			if (role === "CC") {
 				$(".role_btn:not(.incident_btn)").hide(1, function() {
 					$(".incident_btn").show();
