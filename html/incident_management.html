@@ -149,10 +149,10 @@
                     
                         <div class="panel-heading clearfix">
                             <span>Logs</span>
-                        </div>     
-                         
-                        <ul class="list-group" id="feedList">
-                            <li class="list-group-item clearfix">
+                        </div>
+                        
+                        <ul class="list-group" id="incident-log-list" incident-id="1">
+                            <li class="list-group-item clearfix log-item">
                                 <div class="activity-icon bg-info small">
                                     <i class="fa fa-comment"></i>
                                 </div>
@@ -161,7 +161,7 @@
                                     <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
                                 </div>
                             </li>
-                            <li class="list-group-item clearfix">
+                            <li class="list-group-item clearfix log-item">
                                 <div class="activity-icon bg-info small">
                                     <i class="fa fa-comment"></i>
                                 </div>
@@ -170,11 +170,11 @@
                                     <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
                                 </div>
                             </li>
-                            <li class="list-group-item clearfix">
+                            <li class="list-group-item clearfix log-item">
                                 <div class="activity-icon bg-info small">
                                     <i class="fa fa-comment"></i>
                                 </div>
-                                <div class="pull-left m-left-sm">
+                                <div class="pull-left m-left-sm log-item">
                                     <span>SPF Assigment<a href="#"> to access incident location</a></span><br>
                                     <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
                                 </div>
@@ -183,31 +183,25 @@
                                 <div class="activity-icon bg-info small">
                                     <i class="fa fa-comment"></i>
                                 </div>
-                                <div class="pull-left m-left-sm">
+                                <div class="pull-left m-left-sm log-item">
                                     <span>SPF Assigment<a href="#"> to access incident location</a></span><br>
                                     <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
                                 </div>
                             </li>
-                            <li class="list-group-item clearfix">
-                                <div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <textarea class="form-control" rows="3"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <button class="btn col-md-12 btn-success" disabled=""><i class="fa fa-save fa-lg"></i>Submit</button>
-                                        </div>
-                                    </div>
+                        </ul><!-- /list-group -->
+                        
+                        <div class="panel-footer clearfix">
+                        	<form class="form" id="log-create-form">
+                            	<div class="form-group">
+                                    <textarea class="form-control" rows="3" style="resize:none;"></textarea>
                                 </div>
-                            </li>
-                        </ul><!-- /list-group -->   
+                                <button class="btn col-md-12 btn-success" type="submit"><i class="fa fa-save fa-lg"></i>Submit</button>
+                            </form>
+                        </div>
     
                         <div class="loading-overlay">
                             <i class="loading-icon fa fa-refresh fa-spin fa-lg"></i>
                         </div>
-                        
                     </div>
                     
                 </div> <!-- end log details -->

@@ -88,23 +88,129 @@ $(function () {
 			
 			if (role === "CC") {
 				$(".role_btn:not(.incident_btn)").hide(1, function() {
-					$(".incident_btn").show();
+					//$(".incident_btn").show();
+					$(".incident_btn").css("display", "");
 				});
 				$(".incident_btn").click();
 			} else if (role === "PR") {
 				$(".role_btn:not(.report_btn)").hide(1, function() {
-					$(".report_btn").show();
+					//$(".report_btn").show();
+					$(".report_btn").css("display", "");
 				});
 				$(".report_btn").click();
 			} else if (role === "HQ") {
-				$(".role_btn").show();
+				//$(".role_btn").show();
+				$(".role_btn").css("display", "");
 				$(".incident_btn").click();
 			}
+			
+			$.page.incident.init();
+		},
+		incident : {
+			init : function() {
+				//setInterval(function() {
+					var incident_id = $("#incident-log-list").attr("incident-id");
+					if (incident_id === undefined) return;
+					$.backend.incident_logs.list(incident_id, function(results){
+						//alert(JSON.stringify(results));
+						$("#incident-log-list").empty();
+						for(var i = 0; i < results.length; i++) {
+							var id = results[i].id;
+							var description = results[i].description;
+							var datetimeString = results[i].datetime;
+							
+							var list_item = $.page.incident.logs.new_list_item(id, description, datetimeString);
+							$("#incident-log-list").prepend(list_item);
+						}
+					});
+				//}, 5000);
+			},
+			logs : {
+				new_list_item : function(id, description, datetimeString) {
+					var li = $("<li>", {
+						class : "list-group-item clearfix log-item",
+						id : id
+					});
+					
+					var icon_wrapper = $("<div>", {
+						class : "activity-icon bg-info small"
+					}).appendTo(li);
+					
+					var icon = $("<i>", {
+						class : "fa fa-comment"
+					}).appendTo(icon_wrapper);
+					
+					var content_wrapper = $("<div>", {
+						class : "pull-left m-left-sm"
+					}).appendTo(li);
+					
+					var text = $("<span>").text(description).appendTo(content_wrapper);
+					var br = $("<br>").appendTo(content_wrapper);
+					
+					var datetime_wrapper = $("<small>", {
+						class : "text-muted"	
+					}).appendTo(content_wrapper);
+					
+					var time_icon = $("<i>",{
+						class : "fa fa-clock-o"	
+					}).appendTo(datetime_wrapper);
+					
+					datetime_wrapper.append($.page.convert_time_display(datetimeString));
+					
+					return li;
+				} // end new_list_item
+			} // end logs
+		}, // end incident
+		convert_time_display : function(datetimeString) {
+			var datetime = new Date(datetimeString);
+			var now = new Date();
+			
+			var diffMillis = now.getTime() - datetime.getTime();
+			var diffSecs = diffMillis / 1000;
+			
+			if (diffSecs < 60) {
+				var c = Math.ceil(diffSecs);
+				if (c > 1) return " " + c + " secs ago";
+				else return " " + c + " sec ago";
+			}
+			
+			var diffMins = diffSecs / 60;
+			if (diffMins < 60) {
+				var c = Math.ceil(diffMins);
+				if (c > 1) return " " + c + " mins ago";
+				else return " " + c + " min ago";
+			}
+			
+			var diffHrs = diffMins / 60;
+			if (diffHrs < 24) {
+				var c = Math.ceil(diffHrs);
+				if (c > 1) return " " + c + " hrs ago";
+				else return " " + c + " hr ago";
+			}
+			
+			var diffDays = diffHrs / 24;
+			var c = Math.ceil(diffDays);
+			if (c > 1) return " " + c + " days ago";
+			else return " " + c + " day ago";
 		}
-	}
+	} // end $.page
 	
 	$.backend = {
-		
+		root_url : "https://crisismanagement.herokuapp.com/",
+		incident_logs : {
+			list : function(incident_id, successCallback) {
+				$.ajax({
+					url : $.backend.root_url + "main/list_logs/" + incident_id + "/",
+					method : "GET",
+					dataType : "json",
+					success : function(data, textStatus, jqXHR) {
+						if(successCallback !== undefined) {
+							successCallback.call(this, data.results);	
+						}
+					}
+				});
+			}
+		}
 	}
 	
 	$(document).ready(function(e) {
