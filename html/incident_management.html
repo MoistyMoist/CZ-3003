@@ -191,11 +191,14 @@
                         </ul><!-- /list-group -->
                         
                         <div class="panel-footer clearfix">
-                        	<form class="form" id="log-create-form">
+                        	<form class="form" id="log-create-form" onSubmit="$.page.incident.logs.create(this, event)">
                             	<div class="form-group">
-                                    <textarea class="form-control" rows="3" style="resize:none;"></textarea>
+                                    <textarea id="log-create-description" class="form-control" rows="3" style="resize:none;"></textarea>
                                 </div>
-                                <button class="btn col-md-12 btn-success" type="submit"><i class="fa fa-save fa-lg"></i>Submit</button>
+                                <button class="btn col-md-12 btn-success" type="submit">
+                                	<i class="fa fa-save fa-lg"></i>
+                                    <span>Submit</span>
+                                </button>
                             </form>
                         </div>
     

@@ -109,6 +109,11 @@ $(function () {
 		incident : {
 			init : function() {
 				//setInterval(function() {
+					$.page.incident.logs.refresh_list();
+				//}, 5000);
+			},
+			logs : {
+				refresh_list : function() {
 					var incident_id = $("#incident-log-list").attr("incident-id");
 					if (incident_id === undefined) return;
 					$.backend.incident_logs.list(incident_id, function(results){
@@ -123,9 +128,7 @@ $(function () {
 							$("#incident-log-list").prepend(list_item);
 						}
 					});
-				//}, 5000);
-			},
-			logs : {
+				},
 				new_list_item : function(id, description, datetimeString) {
 					var li = $("<li>", {
 						class : "list-group-item clearfix log-item",
@@ -158,7 +161,21 @@ $(function () {
 					datetime_wrapper.append($.page.convert_time_display(datetimeString));
 					
 					return li;
-				} // end new_list_item
+				}, // end new_list_item
+				create : function(form, e) {
+					e.preventDefault();
+					
+					var incident_id = $("#incident-log-list").attr("incident-id");
+					if (incident_id === undefined) return;
+					
+					var description = $("#log-create-description").val();
+					if (description.length <= 0) return;
+					
+					$.backend.incident_logs.create(incident_id, description, function(data) {
+						$.page.incident.logs.refresh_list();
+						$("#log-create-description").val("");
+					});
+				}
 			} // end logs
 		}, // end incident
 		convert_time_display : function(datetimeString) {
@@ -166,6 +183,9 @@ $(function () {
 			var now = new Date();
 			
 			var diffMillis = now.getTime() - datetime.getTime();
+			
+			if (diffMillis < 0) diffMillis = 0;
+			
 			var diffSecs = diffMillis / 1000;
 			
 			if (diffSecs < 60) {
@@ -206,6 +226,27 @@ $(function () {
 					success : function(data, textStatus, jqXHR) {
 						if(successCallback !== undefined) {
 							successCallback.call(this, data.results);	
+						}
+					}
+				});
+			},
+			create : function(incident_id, description, successCallback) {
+				var data = {
+					"incident_id" : incident_id,
+					"description" : description
+				};
+				
+				// stringify json for backend to recognise
+				data = JSON.stringify(data);
+				
+				$.ajax({
+					url : $.backend.root_url + "IncidentLog/create/",
+					method : "POST",
+					data : data,
+					dataType : "json",
+					success : function(data, textStatus, jqXHR) {
+						if(successCallback !== undefined) {
+							successCallback.call(this, data);	
 						}
 					}
 				});
