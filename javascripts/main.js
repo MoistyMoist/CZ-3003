@@ -251,8 +251,8 @@ $(function () {
 					}
 				});
 			}
-		}
-	}
+		} // end incident_logs
+	} // end $.backend
 	
 	$(document).ready(function(e) {
         $.google.maps.load_library();
