@@ -63,13 +63,6 @@ $(function () {
 			return Cookies.get()[c_name];
 		},
 		init : function() {
-			$(".incident_btn").click(function(e) {
-				e.preventDefault();
-				
-                $(".role_view:not(#incident_view)").slideUp(1, function() {
-					$("#incident_view").slideDown();
-				});
-            });
 			
 			$(".report_btn").click(function(e) {
 				e.preventDefault();
@@ -78,14 +71,6 @@ $(function () {
 					$("#report_view").slideDown();
 				});
 				
-            });
-			
-			$(".resource_btn").click(function(e) {
-				e.preventDefault();
-				
-                $(".role_view:not(#resource_view)").slideUp(1, function() {
-					$("#resource_view").slideDown();
-				});
             });
 			
 			var role = $.page.get_cookie("role");
@@ -109,13 +94,79 @@ $(function () {
 			}
 			
 			$.page.incident.init();
-		},
+			$.page.resource.init();
+		}, //end $.page.init
 		incident : {
 			init : function() {
 				//setInterval(function() {
-					$.page.incident.logs.refresh_list();
+					//$.page.incident.logs.refresh_list();
 				//}, 5000);
-			},
+				
+				//load view
+				$.ajax({
+					url : "incident_management.html",
+					success : function(data) {
+						var view = $("<div>", {
+							id : "incident_view",
+							class : "role_view"
+						}).appendTo("#main-container");
+						$("#incident_view").html(data);
+					}
+				}).done(function() {
+					$.page.incident.logs.refresh_list();
+				});
+				
+				//load menus
+				$.page.incident.menu.init($.page.incident.menu.click);
+				
+				
+			}, //end $.page.incident.init
+			menu : {
+				init : function(onClick) {
+					$.page.incident.menu.main_menu(onClick);
+					$.page.incident.menu.shortcut(onClick);
+				},
+				main_menu : function(onClick) {
+					var li = $("<li>", {
+						class : "role_btn incident_btn"	
+					}).appendTo(".main-menu > ul");
+					var a = $("<a>").appendTo(li);
+					var icon_wrapper = $("<span>",{
+						class : "menu-icon"
+					}).appendTo(a);
+					var icon = $("<i>", {
+						class : "fa fa-exclamation-triangle fa-lg"
+					}).appendTo(icon_wrapper);
+					var text = $("<span>", {
+						class : "text"
+					}).text("Incident Management").appendTo(a);
+					
+					li.click(onClick);
+				}, //end $.page.incident.menu.main_menu
+				shortcut : function(onClick) {
+					var a = $("<a>", {
+						class : "shortcut-link role_btn incident_btn"
+					}).appendTo(".shortcut-wrapper");
+					var icon_wrapper = $("<span>",{
+						class : "shortcut-icon"
+					}).appendTo(a);
+					var icon = $("<i>", {
+						class : "fa fa-exclamation-triangle"
+					}).appendTo(icon_wrapper);
+					var text = $("<span>", {
+						class : "text"
+					}).text("Incident Management").appendTo(a);
+					
+					a.click(onClick);
+				}, //end $.page.incident.menu.shortcut
+				click : function(e) {
+					e.preventDefault();
+					
+					$(".role_view:not(#incident_view)").slideUp(1, function() {
+						$("#incident_view").slideDown();
+					});
+				}
+			}, //end $.page.incident.menu
 			logs : {
 				refresh_list : function() {
 					var incident_id = $("#incident-log-list").attr("incident-id");
@@ -132,7 +183,7 @@ $(function () {
 							$("#incident-log-list").prepend(list_item);
 						}
 					});
-				},
+				}, // end $.page.incident.logs.refresh_list
 				new_list_item : function(id, description, datetimeString) {
 					var li = $("<li>", {
 						class : "list-group-item clearfix log-item",
@@ -165,7 +216,7 @@ $(function () {
 					datetime_wrapper.append($.page.convert_time_display(datetimeString));
 					
 					return li;
-				}, // end new_list_item
+				},  // end $.page.incident.logs.new_list_item
 				create : function(form, e) {
 					e.preventDefault();
 					
@@ -179,9 +230,63 @@ $(function () {
 						$.page.incident.logs.refresh_list();
 						$("#log-create-description").val("");
 					});
+				}  // end $.page.incident.logs.create
+			}  // end $.page.incident.logs
+		},  // end $.page.incident
+		resource : {
+			init : function() {
+				
+				
+				//load controls
+				$.page.resource.menu.init($.page.resource.menu.click);
+			}, // end $.page.resource.init
+			menu : {
+				init : function(onClick) {
+					$.page.resource.menu.main_menu(onClick);
+					$.page.resource.menu.shortcut(onClick);
+				},
+				main_menu : function(onClick) {
+					var li = $("<li>", {
+						class : "role_btn resource_btn"	
+					}).appendTo(".main-menu > ul");
+					var a = $("<a>").appendTo(li);
+					var icon_wrapper = $("<span>",{
+						class : "menu-icon"
+					}).appendTo(a);
+					var icon = $("<i>", {
+						class : "fa fa-users fa-lg"
+					}).appendTo(icon_wrapper);
+					var text = $("<span>", {
+						class : "text"
+					}).text("Resource Management").appendTo(a);
+					
+					li.click(onClick);
+				}, //end $.page.resource.menu.main_menu
+				shortcut : function(onClick) {
+					var a = $("<a>", {
+						class : "shortcut-link role_btn resource_btn"
+					}).appendTo(".shortcut-wrapper");
+					var icon_wrapper = $("<span>",{
+						class : "shortcut-icon"
+					}).appendTo(a);
+					var icon = $("<i>", {
+						class : "fa fa-user"
+					}).appendTo(icon_wrapper);
+					var text = $("<span>", {
+						class : "text"
+					}).text("Resource Management").appendTo(a);
+					
+					a.click(onClick);
+				}, //end $.page.resource.menu.shortcut
+				click : function(e) {
+					e.preventDefault();
+				
+					$(".role_view:not(#resource_view)").slideUp(1, function() {
+						$("#resource_view").slideDown();
+					});
 				}
-			} // end logs
-		}, // end incident
+			}, //end $.page.resource.menu
+		}, // end $.page.resource
 		convert_time_display : function(datetimeString) {
 			var datetime = new Date(datetimeString);
 			var now = new Date();
@@ -216,7 +321,7 @@ $(function () {
 			var c = Math.ceil(diffDays);
 			if (c > 1) return " " + c + " days ago";
 			else return " " + c + " day ago";
-		}
+		}  // end $.page.convert_time_display
 	} // end $.page
 	
 	$.backend = {
