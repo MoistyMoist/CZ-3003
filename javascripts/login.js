@@ -7,7 +7,6 @@ $(function() {
 	$.page = {
 		init : function() {
 			Cookies.remove("role");
-			//$.page.set_cookie("role", "", 1);
 		},
 		set_cookie : function(c_name, value, exdays) {
 			/*var exdate = new Date();
@@ -17,7 +16,12 @@ $(function() {
 			Cookies.set(c_name, value, {expires: exdays});
 		},
 		attempt_login : function(form) {
-			var data = $(form).serialize();
+			var data = $(form).serializeArray().reduce(function(obj, item) {
+				obj[item.name] = item.value;
+    			return obj;
+			}, {});
+			
+			data = JSON.stringify(data);
 			$.backend.attempt_login(data);
 		}
 	};
@@ -26,9 +30,18 @@ $(function() {
 		functions for backend operations
 	*/
 	$.backend = {
-		
+		root_url : "https://crisismanagement.herokuapp.com/",
 		attempt_login : function(data) {
 			//TODO: ajax calls to backend server for login
+			$.ajax({
+				url : $.backend.root_url + "login/",
+				data : data,
+				method : "GET",
+				dataType : "json",
+				success : function(data, textStatus, jqXHR) {
+					
+				}
+			});
 			
 			var role = $("#username").val();
 			$.page.set_cookie("role", role, 1);
