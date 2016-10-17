@@ -66,34 +66,20 @@ $(function () {
 			var role = $.page.get_cookie("role");
 			
 			if (role === "CC") {
-				$.page.incident.init();
-				/*$(".role_btn:not(.incident_btn)").hide(1, function() {
-					//$(".incident_btn").show();
-					$(".incident_btn").css("display", "");
-				});*/
-				$(".incident_btn").click();
+				$.page.incident.init(true);
 			} else if (role === "PR") {
-				$.page.social_media.init();
-				/*$(".role_btn:not(.report_btn)").hide(1, function() {
-					//$(".report_btn").show();
-					$(".report_btn").css("display", "");
-				});*/
-				$(".report_btn").click();
+				$.page.social_media.init(true);
 			} else if (role === "HQ") {
-				//$(".role_btn").show();
-				//$(".role_btn").css("display", "");
-				$.page.incident.init();
+				$.page.incident.init(true);
 				$.page.resource.init();
 				$.page.social_media.init();
-				
-				$(".incident_btn").click();
 			} else {
 				// back to login
 				window.location = "login.html";	
 			}
 		}, //end $.page.init
 		incident : {
-			init : function() {
+			init : function(showView) {
 				//load view
 				$.ajax({
 					url : "incident_management.html",
@@ -103,7 +89,9 @@ $(function () {
 							class : "role_view"
 						}).appendTo("#main-container");
 						
-						view.html(data).hide();
+						view.html(data);
+						
+						if(!showView) view.hide();
 					}
 				}).done(function() {
 					//setInterval(function() {
@@ -229,7 +217,7 @@ $(function () {
 			}  // end $.page.incident.logs
 		},  // end $.page.incident
 		resource : {
-			init : function() {
+			init : function(showView) {
 				//load view
 				$.ajax({
 					url : "resource_management.html",
@@ -239,7 +227,9 @@ $(function () {
 							class : "role_view"
 						}).appendTo("#main-container");
 						
-						view.html(data).hide();
+						view.html(data);
+						
+						if (!showView) view.hide();
 					}
 				});
 				
@@ -295,7 +285,7 @@ $(function () {
 			}, //end $.page.resource.menu
 		}, // end $.page.resource
 		social_media : {
-			init : function() {
+			init : function(showView) {
 				//load view
 				$.ajax({
 					url : "media_management.html",
@@ -305,7 +295,9 @@ $(function () {
 							class : "role_view"
 						}).appendTo("#main-container");
 						
-						view.html(data).hide();
+						view.html(data);
+						
+						if (!showView) view.hide();
 					}
 				});
 				
