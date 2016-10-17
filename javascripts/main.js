@@ -63,45 +63,37 @@ $(function () {
 			return Cookies.get()[c_name];
 		},
 		init : function() {
-			
-			$(".report_btn").click(function(e) {
-				e.preventDefault();
-				
-                $(".role_view:not(#report_view)").slideUp(1, function() {
-					$("#report_view").slideDown();
-				});
-				
-            });
-			
 			var role = $.page.get_cookie("role");
 			
 			if (role === "CC") {
-				$(".role_btn:not(.incident_btn)").hide(1, function() {
+				$.page.incident.init();
+				/*$(".role_btn:not(.incident_btn)").hide(1, function() {
 					//$(".incident_btn").show();
 					$(".incident_btn").css("display", "");
-				});
+				});*/
 				$(".incident_btn").click();
 			} else if (role === "PR") {
-				$(".role_btn:not(.report_btn)").hide(1, function() {
+				$.page.social_media.init();
+				/*$(".role_btn:not(.report_btn)").hide(1, function() {
 					//$(".report_btn").show();
 					$(".report_btn").css("display", "");
-				});
+				});*/
 				$(".report_btn").click();
 			} else if (role === "HQ") {
 				//$(".role_btn").show();
-				$(".role_btn").css("display", "");
+				//$(".role_btn").css("display", "");
+				$.page.incident.init();
+				$.page.resource.init();
+				$.page.social_media.init();
+				
 				$(".incident_btn").click();
+			} else {
+				// back to login
+				window.location = "login.html";	
 			}
-			
-			$.page.incident.init();
-			$.page.resource.init();
 		}, //end $.page.init
 		incident : {
 			init : function() {
-				//setInterval(function() {
-					//$.page.incident.logs.refresh_list();
-				//}, 5000);
-				
 				//load view
 				$.ajax({
 					url : "incident_management.html",
@@ -114,12 +106,13 @@ $(function () {
 						view.html(data).hide();
 					}
 				}).done(function() {
-					$.page.incident.logs.refresh_list();
+					//setInterval(function() {
+						$.page.incident.logs.refresh_list();
+					//}, 5000);
 				});
 				
 				//load menus
 				$.page.incident.menu.init($.page.incident.menu.click);
-				
 				
 			}, //end $.page.incident.init
 			menu : {
@@ -163,8 +156,9 @@ $(function () {
 				click : function(e) {
 					e.preventDefault();
 					
-					$(".role_view:not(#incident_view)").slideUp(1, function() {
-						$("#incident_view").slideDown();
+					$(".role_view:not(#incident_view)").slideUp("fast");
+					$(".role_view").promise().done(function() {
+						$("#incident_view").slideDown("fast");
 					});
 				}
 			}, //end $.page.incident.menu
@@ -256,7 +250,7 @@ $(function () {
 				init : function(onClick) {
 					$.page.resource.menu.main_menu(onClick);
 					$.page.resource.menu.shortcut(onClick);
-				},
+				}, // end $.page.resource.menu.init
 				main_menu : function(onClick) {
 					var li = $("<li>", {
 						class : "role_btn resource_btn"	
@@ -293,12 +287,79 @@ $(function () {
 				click : function(e) {
 					e.preventDefault();
 				
-					$(".role_view:not(#resource_view)").slideUp(1, function() {
-						$("#resource_view").slideDown();
+					$(".role_view:not(#resource_view)").slideUp("fast");
+					$(".role_view").promise().done(function() {
+						$("#resource_view").slideDown("fast");
 					});
 				}
 			}, //end $.page.resource.menu
 		}, // end $.page.resource
+		social_media : {
+			init : function() {
+				//load view
+				$.ajax({
+					url : "media_management.html",
+					success : function(data) {
+						var view = $("<div>", {
+							id : "media_view",
+							class : "role_view"
+						}).appendTo("#main-container");
+						
+						view.html(data).hide();
+					}
+				});
+				
+				//load controls
+				$.page.social_media.menu.init($.page.social_media.menu.click);
+			}, // end $.page.social_media.init
+			menu : {
+				init : function(onClick) {
+					$.page.social_media.menu.main_menu(onClick);
+					$.page.social_media.menu.shortcut(onClick);
+				}, // end $.page.social_media.menu.init
+				main_menu : function(onClick) {
+					var li = $("<li>", {
+						class : "role_btn media_btn"	
+					}).appendTo(".main-menu > ul");
+					var a = $("<a>").appendTo(li);
+					var icon_wrapper = $("<span>",{
+						class : "menu-icon"
+					}).appendTo(a);
+					var icon = $("<i>", {
+						class : "fa fa-envelope-o fa-lg"
+					}).appendTo(icon_wrapper);
+					var text = $("<span>", {
+						class : "text"
+					}).text("Media Management").appendTo(a);
+					
+					li.click(onClick);
+				}, //end $.page.resource.menu.main_menu
+				shortcut : function(onClick) {
+					var a = $("<a>", {
+						class : "shortcut-link role_btn media_btn"
+					}).appendTo(".shortcut-wrapper");
+					var icon_wrapper = $("<span>",{
+						class : "shortcut-icon"
+					}).appendTo(a);
+					var icon = $("<i>", {
+						class : "fa fa-envelope-o"
+					}).appendTo(icon_wrapper);
+					var text = $("<span>", {
+						class : "text"
+					}).text("Media Management").appendTo(a);
+					
+					a.click(onClick);
+				}, //end $.page.resource.menu.shortcut
+				click : function(e) {
+					e.preventDefault();
+				
+					$(".role_view:not(#media_view)").slideUp("fast");
+					$(".role_view").promise().done(function() {
+						$("#media_view").slideDown("fast");
+					});
+				}
+			} // end $.page.social_media.menu
+		}, // end $.page.social_media
 		convert_time_display : function(datetimeString) {
 			var datetime = new Date(datetimeString);
 			var now = new Date();
@@ -350,7 +411,7 @@ $(function () {
 						}
 					}
 				});
-			},
+			}, // end $.backend.incident_logs.list
 			create : function(incident_id, description, successCallback) {
 				var data = {
 					"incident_id" : incident_id,
@@ -371,8 +432,8 @@ $(function () {
 						}
 					}
 				});
-			}
-		} // end incident_logs
+			} // end $.backend.incident_logs.create
+		} // end $.backend.incident_logs
 	} // end $.backend
 	
 	$(document).ready(function(e) {
