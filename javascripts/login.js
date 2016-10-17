@@ -36,18 +36,29 @@ $(function() {
 			$.ajax({
 				url : $.backend.root_url + "login/",
 				data : data,
-				method : "GET",
+				method : "POST",
 				dataType : "json",
 				success : function(data, textStatus, jqXHR) {
+					alert(data);
+				},
+				error : function(jqXHR, textStatus, errorThrown ) {
+					alert(jqXHR.responseText);
 					
+					$("#password").val("");
+					$("#password").focus();
+				},
+				complete : function() {
+					var role = $("#username").val();
+					$.page.set_cookie("role", role, 1);
+					
+					//temporary redirect to main page
+					window.location = "main.html";
 				}
 			});
 			
-			var role = $("#username").val();
-			$.page.set_cookie("role", role, 1);
 			
-			//temporary redirect to main page
-			window.location = "main.html";
+			
+			
 		}
 	}
 	

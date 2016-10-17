@@ -19,7 +19,7 @@ $(function () {
 					zoom: 11
 				});
 				
-				$.google.maps.add_marker(1.33284, 103.8190145, 1000);
+				$.google.maps.add_marker(1.33284, 103.8190145, 1000, "hello");
 			},
 			/**
 				Adds a marker with radius on Basemap
