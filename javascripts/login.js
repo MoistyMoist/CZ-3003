@@ -6,7 +6,7 @@ $(function() {
 	*/
 	$.page = {
 		init : function() {
-			//Cookies.remove("role");
+			Cookies.remove("role");
 			//$.page.set_cookie("role", "", 1);
 		},
 		set_cookie : function(c_name, value, exdays) {

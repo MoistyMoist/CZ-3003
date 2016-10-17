@@ -110,7 +110,8 @@ $(function () {
 							id : "incident_view",
 							class : "role_view"
 						}).appendTo("#main-container");
-						$("#incident_view").html(data);
+						
+						view.html(data).hide();
 					}
 				}).done(function() {
 					$.page.incident.logs.refresh_list();
@@ -235,7 +236,18 @@ $(function () {
 		},  // end $.page.incident
 		resource : {
 			init : function() {
-				
+				//load view
+				$.ajax({
+					url : "resource_management.html",
+					success : function(data) {
+						var view = $("<div>", {
+							id : "resource_view",
+							class : "role_view"
+						}).appendTo("#main-container");
+						
+						view.html(data).hide();
+					}
+				});
 				
 				//load controls
 				$.page.resource.menu.init($.page.resource.menu.click);
