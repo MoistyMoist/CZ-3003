@@ -22,24 +22,28 @@ $(function () {
 				$.google.maps.add_marker(1.33284, 103.8190145, 1000);
 			},
 			/**
+				Adds a marker with radius on Basemap
 				radius in meters
 			*/
-			add_marker : function(lat, lng, radius) {
+			add_marker : function(lat, lng, radius, title) {
 				var marker = new google.maps.Marker({
 					position : {lat:lat, lng:lng},
 					map : $.google.maps.Map,
-					title : "hello world!"
+					title : title
 				});
-				var circle = new google.maps.Circle({
-					strokeColor: '#FF0000',
-					strokeOpacity: 0.8,
-					strokeWeight: 2,
-					fillColor: '#FF0000',
-					fillOpacity: 0.35,
-					map: $.google.maps.Map,
-					center: {lat:lat, lng:lng},
-					radius: radius
-				});
+				
+				if (radius > 0) {
+					var circle = new google.maps.Circle({
+						strokeColor: '#FF0000',
+						strokeOpacity: 0.8,
+						strokeWeight: 2,
+						fillColor: '#FF0000',
+						fillOpacity: 0.35,
+						map: $.google.maps.Map,
+						center: {lat:lat, lng:lng},
+						radius: radius
+					});
+				}
 			}
 		}
 	}

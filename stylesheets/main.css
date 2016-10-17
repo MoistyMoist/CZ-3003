@@ -5,3 +5,7 @@
 	-webkit-border-radius: 5px 5px 5px 5px;
 	border: 2px solid #000000;
 }
+
+.role_btn {
+	cursor : pointer;	
+}
