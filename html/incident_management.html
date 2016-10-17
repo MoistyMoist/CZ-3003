@@ -66,7 +66,7 @@
                     <div class="panel panel-default">
                     
                         <div class="panel-heading clearfix">
-                            <span>Incident Details</span>
+                            <span>Caller Details</span>
                         </div>
                         
                         <div class="panel-body">
@@ -74,10 +74,9 @@
                                 <div class="form-group">
                                     <label class="col-md-2 control-label" for="incident_date">Date</label>
                                     <div class="col-md-5">
-                                        <input class="form-control" id="incident_date" type="date" placeholder="input here..." />
+                                        <input class="form-control" id="incident_date" type="date" placeholder="input here..." disable/>
                                     </div><!-- /.col -->
                                 </div>
-        
                                 <div class="form-group">
                                     <label class="col-md-2 control-label" for="incident_caller_name">Name</label>
                                     <div class="col-md-5">
@@ -98,7 +97,9 @@
                                         <textarea class="form-control" rows="7"></textarea>
                                     </div>
                                 </div>
-        
+                                <div class="panel-heading clearfix">
+                                  <span>Incident Details</span>
+                                </div>
                                 <div class="form-group">
                                 	<label class="col-md-2 control-label">Incident Type</label>
                                     <div class="col-md-10">
@@ -122,7 +123,7 @@
                                         <input type="checkbox" class="form-control" />
                                         <span class="custom-checkbox"></span>
                                     </div>
-                                    <label class="label-checkbox col-md-9">Requires Assistance</label>
+                                    <label class="label-checkbox col-md-9">Requires Attention</label>
                                 </div>
         
                                 <div class="form-group">
@@ -152,42 +153,7 @@
                         </div>
                         
                         <ul class="list-group" id="incident-log-list" incident-id="1">
-                            <li class="list-group-item clearfix log-item">
-                                <div class="activity-icon bg-info small">
-                                    <i class="fa fa-comment"></i>
-                                </div>
-                                <div class="pull-left m-left-sm">
-                                    <span>SPF Assigment<a href="#"> to access incident location</a></span><br>
-                                    <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
-                                </div>
-                            </li>
-                            <li class="list-group-item clearfix log-item">
-                                <div class="activity-icon bg-info small">
-                                    <i class="fa fa-comment"></i>
-                                </div>
-                                <div class="pull-left m-left-sm">
-                                    <span>SPF Assigment<a href="#"> to access incident location</a></span><br>
-                                    <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
-                                </div>
-                            </li>
-                            <li class="list-group-item clearfix log-item">
-                                <div class="activity-icon bg-info small">
-                                    <i class="fa fa-comment"></i>
-                                </div>
-                                <div class="pull-left m-left-sm log-item">
-                                    <span>SPF Assigment<a href="#"> to access incident location</a></span><br>
-                                    <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
-                                </div>
-                            </li>
-                            <li class="list-group-item clearfix">
-                                <div class="activity-icon bg-info small">
-                                    <i class="fa fa-comment"></i>
-                                </div>
-                                <div class="pull-left m-left-sm log-item">
-                                    <span>SPF Assigment<a href="#"> to access incident location</a></span><br>
-                                    <small class="text-muted"><i class="fa fa-clock-o"></i> 1hr ago</small>
-                                </div>
-                            </li>
+                            
                         </ul><!-- /list-group -->
                         
                         <div class="panel-footer clearfix">
