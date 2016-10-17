@@ -25,36 +25,32 @@
 
     <body>
 
-        <a href="" id="theme-setting-icon" style="border-left: 1px solid #000000;border-bottom: 1px solid #000000;border-top: 1px solid black;" class=""><i class="fa fa-gears fa-lg"></i></a>
+        <a href="" id="theme-setting-icon" style="border-left: 1px solid #000000;border-bottom: 1px solid #000000;border-top: 1px solid black;" class="">
+          <i class="fa fa-exclamation-triangle fa-lg"></i>
+        </a>
         <div id="theme-setting" class="">
-            <div class="title">
-                <strong class="no-margin">Theme</strong>
+            <div class="title" style="border-bottom:1px solid black;">
+                <h5><strong class="no-margin">CRISIS STATUS</strong></h5>
             </div>
-            <div class="theme-box">
-                <a class="theme-color" style="background:#323447" id="default"></a>
-                <a class="theme-color" style="background:#efefef" id="skin-1"></a>
-                <a class="theme-color" style="background:#a93922" id="skin-2"></a>
-                <a class="theme-color" style="background:#3e6b96" id="skin-3"></a>
-                <a class="theme-color" style="background:#635247" id="skin-4"></a>
-                <a class="theme-color" style="background:#3a3a3a" id="skin-5"></a>
-                <a class="theme-color" style="background:#495B6C" id="skin-6"></a>
-            </div>
-            <hr style="border: 1px solid slategrey"/>
-            <div class="title">
-                <strong class="no-margin">Clipboard</strong>
-            </div>
-            <div class="theme-box" style="padding:0px; ;">
-                <div class="form-group" style="height:260px;margin-left: 3px;margin-right: 3px;">
-                    <div class="col-lg-12" style="padding:0px;">
-                        <textarea id="cookieClipboard" class="form-control" rows="15" ></textarea>
-                    </div><!-- /.col -->
+            <div class="theme-box" style="height:80px;padding-right:10px;">
+                <!--<a class="theme-color" style="background:#323447" id="default"></a>-->
+                
+               
+                <!--<a class="theme-color" style="background:#3e6b96" id="skin-3"></a>-->
+                <!--<a class="theme-color" style="background:#635247" id="skin-4"></a>-->
+                <!--<a class="theme-color" style="background:#3a3a3a" id="skin-5"></a>-->
+                <!--<a class="theme-color" style="background:#495B6C" id="skin-6"></a>-->
+                
+                <div class="col-md-6">
+                  <a class="theme-color col-md-12" style="background:#efefef" id="skin-1"></a>
+                  
+                  <center class="col-md-12" style="margin-top:5px;margin-left:-6px;padding:0px;">DISABLE CMS</center>
                 </div>
-            </div>
-            <div class="theme-box" style="padding: 0px;padding-left: 3px;padding-right: 3px;">
-                <label style="visibility: hidden">s</label>
-                <label class="btn-block" style="width: auto;margin-top:-10px;">
-                    <a onclick="clearCipboard()" class="btn btn-block btn-info btn-sm">Clear clipboard</a>
-                </label>
+                <div class="col-md-6">
+                   <a class="theme-color col-md-12" style="background:#a93922" id="skin-2"></a>
+                   <center class="col-md-12" style="margin-top:5px;margin-left:-6px;padding:0px;">ENABLE CMS</center>
+                </div>
+                
             </div>
         </div>
 
