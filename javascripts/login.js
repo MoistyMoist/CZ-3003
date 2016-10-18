@@ -6,7 +6,13 @@ $(function() {
 	*/
 	$.page = {
 		init : function() {
-			Cookies.remove("role");
+			Cookies.remove("groups");
+			Cookies.set("skin_color", "skin-1");
+			
+			$(".form-login").submit(function(e) {
+				e.preventDefault();
+				$.page.attempt_login($(this));
+			});
 		},
 		set_cookie : function(c_name, value, exdays) {
 			/*var exdate = new Date();
@@ -39,34 +45,25 @@ $(function() {
 				method : "POST",
 				dataType : "json",
 				success : function(data, textStatus, jqXHR) {
-					alert(data);
+					//alert(data);
+					if (data.success) {
+						$.page.set_cookie("groups", data.groups, 1);
+						// redirect after successful login
+						window.location = "main.html";
+					}
 				},
 				error : function(jqXHR, textStatus, errorThrown ) {
 					alert(jqXHR.responseText);
 					
 					$("#password").val("");
 					$("#password").focus();
-				},
-				complete : function() {
-					var role = $("#username").val();
-					$.page.set_cookie("role", role, 1);
-					
-					//temporary redirect to main page
-					window.location = "main.html";
 				}
 			});
-			
-			
-			
 			
 		}
 	}
 	
 	$(document).ready(function(e) {
 		$.page.init();
-        $(".form-login").submit(function(e) {
-			e.preventDefault();
-			$.page.attempt_login($(this));
-        });
     });
 });

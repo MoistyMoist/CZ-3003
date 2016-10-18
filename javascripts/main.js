@@ -50,19 +50,19 @@ $(function () {
 	
 	$.page = {
 		init : function() {
-			var role = $.page.get_cookie("role");
+			var role = $.page.get_cookie("groups");
 			
-			if (role === "CC") {
+			if (role === "Call_Center") {
 				$.page.incident.init(true);
-			} else if (role === "PR") {
+			} else if (role === "PR_Manager") {
 				$.page.social_media.init(true);
-			} else if (role === "HQ") {
+			} else if (role === "HQ_Commander") {
 				$.page.incident.init(true);
 				$.page.resource.init();
 				$.page.social_media.init();
 			} else {
 				// back to login
-				window.location = "login.html";	
+				window.location = "login.html";
 			}
 		}, // end $.page.init
 		get_cookie : function(c_name) {
@@ -84,7 +84,11 @@ $(function () {
 				height += $(this).outerHeight();
 			});
 			$("html, body").animate({ scrollTop: height }, 600);
-		},
+		}, // end $.page.scrollTo
+		logout : function() {
+			Cookies.remove("groups");
+			window.location = "login.html";
+		}, // end $.page.logout
 		incident : {
 			init : function(showView) {
 				//load view
