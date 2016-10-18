@@ -64,6 +64,14 @@ $(function () {
 				// back to login
 				window.location = "login.html";
 			}
+			
+			$.backend.CMS_Status.retrieve(function(active) {
+				if (active) {
+					$("#skin-2").click();
+				} else {
+					$("#skin-1").click();
+				}
+			});
 		}, // end $.page.init
 		get_cookie : function(c_name) {
 			/*var i, x, y, ARRcookies = document.cookie.split(";");
@@ -447,8 +455,19 @@ $(function () {
 			} // end $.backend.incident_logs.create
 		}, // end $.backend.incident_logs
 		CMS_Status : {
-			retrieve : function() {
-				
+			retrieve : function(successCallback) {
+				$.ajax({
+					url : $.backend.root_url + "CMSStatus/read/1/",
+					method : "GET",
+					dataType : "json",
+					success : function(data, textStatus, jqXHR) {
+						if(successCallback !== undefined) {
+							if (data.success) {
+								successCallback.call(this, data.active);
+							}
+						}
+					}
+				});
 			}, // end $.backend.CMS_Status.retrieve
 			update : function() {
 				
