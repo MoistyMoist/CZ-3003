@@ -49,19 +49,6 @@ $(function () {
 	}
 	
 	$.page = {
-		get_cookie : function(c_name) {
-			/*var i, x, y, ARRcookies = document.cookie.split(";");
-			
-			for (i = 0; i < ARRcookies.length; i++) {
-				x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
-				y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
-				x = x.replace(/^\s+|\s+$/g, "");
-				if (x == c_name) {
-					return unescape(y);
-				}
-			}*/
-			return Cookies.get()[c_name];
-		},
 		init : function() {
 			var role = $.page.get_cookie("role");
 			
@@ -77,7 +64,27 @@ $(function () {
 				// back to login
 				window.location = "login.html";	
 			}
-		}, //end $.page.init
+		}, // end $.page.init
+		get_cookie : function(c_name) {
+			/*var i, x, y, ARRcookies = document.cookie.split(";");
+			
+			for (i = 0; i < ARRcookies.length; i++) {
+				x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
+				y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
+				x = x.replace(/^\s+|\s+$/g, "");
+				if (x == c_name) {
+					return unescape(y);
+				}
+			}*/
+			return Cookies.get()[c_name];
+		}, // end $.page.get_cookie
+		scrollTo : function(element) {
+			var height = 0;
+			$(element).prevAll().each(function(index, element) {
+				height += $(this).outerHeight();
+			});
+			$("html, body").animate({ scrollTop: height }, 600);
+		},
 		incident : {
 			init : function(showView) {
 				//load view
@@ -110,7 +117,8 @@ $(function () {
 				},
 				main_menu : function(onClick) {
 					var li = $("<li>", {
-						class : "role_btn incident_btn"	
+						class : "incident_btn",
+						role : "button"
 					}).appendTo(".main-menu > ul");
 					var a = $("<a>").appendTo(li);
 					var icon_wrapper = $("<span>",{
@@ -127,7 +135,8 @@ $(function () {
 				}, //end $.page.incident.menu.main_menu
 				shortcut : function(onClick) {
 					var a = $("<a>", {
-						class : "shortcut-link role_btn incident_btn"
+						class : "shortcut-link incident_btn",
+						role : "button"
 					}).appendTo(".shortcut-wrapper");
 					var icon_wrapper = $("<span>",{
 						class : "shortcut-icon"
@@ -147,6 +156,7 @@ $(function () {
 					$(".role_view:not(#incident_view)").slideUp("fast");
 					$(".role_view").promise().done(function() {
 						$("#incident_view").slideDown("fast");
+						$.page.scrollTo("#incident_view");
 					});
 				}
 			}, //end $.page.incident.menu
@@ -243,7 +253,8 @@ $(function () {
 				}, // end $.page.resource.menu.init
 				main_menu : function(onClick) {
 					var li = $("<li>", {
-						class : "role_btn resource_btn"	
+						class : "resource_btn",
+						role : "button"
 					}).appendTo(".main-menu > ul");
 					var a = $("<a>").appendTo(li);
 					var icon_wrapper = $("<span>",{
@@ -260,7 +271,8 @@ $(function () {
 				}, //end $.page.resource.menu.main_menu
 				shortcut : function(onClick) {
 					var a = $("<a>", {
-						class : "shortcut-link role_btn resource_btn"
+						class : "shortcut-link resource_btn",
+						role : "button"
 					}).appendTo(".shortcut-wrapper");
 					var icon_wrapper = $("<span>",{
 						class : "shortcut-icon"
@@ -280,6 +292,7 @@ $(function () {
 					$(".role_view:not(#resource_view)").slideUp("fast");
 					$(".role_view").promise().done(function() {
 						$("#resource_view").slideDown("fast");
+						$.page.scrollTo("#resource_view");
 					});
 				}
 			}, //end $.page.resource.menu
@@ -311,7 +324,8 @@ $(function () {
 				}, // end $.page.social_media.menu.init
 				main_menu : function(onClick) {
 					var li = $("<li>", {
-						class : "role_btn media_btn"	
+						class : "media_btn",
+						role : "button"	
 					}).appendTo(".main-menu > ul");
 					var a = $("<a>").appendTo(li);
 					var icon_wrapper = $("<span>",{
@@ -328,7 +342,8 @@ $(function () {
 				}, //end $.page.resource.menu.main_menu
 				shortcut : function(onClick) {
 					var a = $("<a>", {
-						class : "shortcut-link role_btn media_btn"
+						class : "shortcut-link media_btn",
+						role : "button"
 					}).appendTo(".shortcut-wrapper");
 					var icon_wrapper = $("<span>",{
 						class : "shortcut-icon"
@@ -348,6 +363,7 @@ $(function () {
 					$(".role_view:not(#media_view)").slideUp("fast");
 					$(".role_view").promise().done(function() {
 						$("#media_view").slideDown("fast");
+						$.page.scrollTo("#media_view");
 					});
 				}
 			} // end $.page.social_media.menu
@@ -425,7 +441,15 @@ $(function () {
 					}
 				});
 			} // end $.backend.incident_logs.create
-		} // end $.backend.incident_logs
+		}, // end $.backend.incident_logs
+		CMS_Status : {
+			retrieve : function() {
+				
+			}, // end $.backend.CMS_Status.retrieve
+			update : function() {
+				
+			} // end $.backend.CMS_Status.retrieve
+		} // end $.backend.CMS_Status
 	} // end $.backend
 	
 	$(document).ready(function(e) {

@@ -6,6 +6,6 @@
 	border: 2px solid #000000;
 }
 
-.role_btn {
+[role=button] {
 	cursor : pointer;	
 }
