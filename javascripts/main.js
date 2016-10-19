@@ -454,6 +454,93 @@ $(function () {
 				});
 			} // end $.backend.incident_logs.create
 		}, // end $.backend.incident_logs
+		incident : {
+			list : function(successCallback) {
+				$.ajax({
+					url : $.backend.root_url + "Incident/list/",
+					method : "GET",
+					dataType : "json",
+					success : function(data, textStatus, jqXHR) {
+						if(successCallback !== undefined) {
+							successCallback.call(this, data.results);	
+						}
+					}
+				});
+			}, // end $.backend.incident.list
+			create : function(deactivation_time, activation_time, description, incident_type, location {radius, coord_lat, coord_long},  successCallback) {
+				var data = {
+					"deactivation_time" : deactivation_time,
+					"activation_time" : activation_time,
+					"description" : description,
+					"incident_type" : incident_type,
+					"location" : {
+						"radius" : radius,
+						"coord_lat" : coord_lat,
+						"coord_long" : coord_long
+					}
+				};
+				
+				// stringify json for backend to recognise
+				data = JSON.stringify(data);
+				
+				$.ajax({
+					url : $.backend.root_url + "Incident/create/",
+					method : "POST",
+					data : data,
+					dataType : "json",
+					success : function(data, textStatus, jqXHR) {
+						if(successCallback !== undefined) {
+							successCallback.call(this, data.id);	
+						}
+					}
+				});
+			} // end $.backend.incident.create
+			update : function(incident_id, location {radius}, successCallback) {
+				var data = {
+					"location" : {
+						"radius" : radius
+					}
+				};
+				
+				// stringify json for backend to recognise
+				data = JSON.stringify(data);
+				
+				$.ajax({
+					url : $.backend.root_url + "Incident/update/" + incident_id + "/",
+					method : "POST",
+					data : data,
+					dataType : "json",
+					success : function(data, textStatus, jqXHR) {
+						if(successCallback !== undefined) {
+							successCallback.call(this, data);	
+						}
+					}
+				});
+			}, // end $.backend.incident.update
+		} // end $.backend.incident
+		call_report : {
+			create : function(incident_id, details, successCallback) {
+				var data = {
+					"incident_id" : incident_id,
+					"details" : details
+				};
+				
+				// stringify json for backend to recognise
+				data = JSON.stringify(data);
+				
+				$.ajax({
+					url : $.backend.root_url,
+					method : "POST",
+					data : data,
+					dataType : "json",
+					success : function(data, textStatus, jqXHR) {
+						if(successCallback !== undefined) {
+							successCallback.call(this, data);	
+						}
+					}
+				});
+			}, // end $.backend.call_report.create
+		} // end $.backend.call_report
 		CMS_Status : {
 			retrieve : function(successCallback) {
 				$.ajax({
@@ -469,10 +556,63 @@ $(function () {
 					}
 				});
 			}, // end $.backend.CMS_Status.retrieve
-			update : function() {
+			update : function(active, successCallback) {
+				var data = {
+					"active" : active
+				};
 				
-			} // end $.backend.CMS_Status.retrieve
+				// stringify json for backend to recognise
+				data = JSON.stringify(data);
+				
+				$.ajax({
+					url : $.backend.root_url + "/CMSStatus/update/1/",
+					method : "POST",
+					data : data,
+					dataType : "json",
+					success : function(data, textStatus, jqXHR) {
+						if(successCallback !== undefined) {
+							successCallback.call(this, data);	
+						}
+					}
+				});
+			}, // end $.backend.CMS_Status.update
 		} // end $.backend.CMS_Status
+		resource : {
+			list : function(successCallback) {
+				$.ajax({
+					url : $.backend.root_url,
+					method : "GET",
+					dataType : "json",
+					success : function(data, textStatus, jqXHR) {
+						if(successCallback !== undefined) {
+							successCallback.call(this, data);	
+						}
+					}
+				});
+			}, // end $.backend.resource.list
+			assign : function(to, title, message, successCallback) {
+				var data = {
+					"to" : to,
+					"title" : title,
+					"message" : message
+				};
+				
+				// stringify json for backend to recognise
+				data = JSON.stringify(data);
+				
+				$.ajax({
+					url : $.backend.root_url + "/SMS/create/",
+					method : "POST",
+					data : data,
+					dataType : "json",
+					success : function(data, textStatus, jqXHR) {
+						if(successCallback !== undefined) {
+							successCallback.call(this, data);	
+						}
+					}
+				});
+			}, // end $.backend.resource.assign
+		} // end $.backend.resource
 	} // end $.backend
 	
 	$(document).ready(function(e) {
