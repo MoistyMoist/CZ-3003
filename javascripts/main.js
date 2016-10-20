@@ -65,6 +65,7 @@ $(function () {
 				window.location = "login.html";
 			}
 			
+			/*
 			$.backend.CMS_Status.retrieve(function(active) {
 				if (active) {
 					$("#skin-2").click();
@@ -72,6 +73,7 @@ $(function () {
 					$("#skin-1").click();
 				}
 			});
+			*/
 		}, // end $.page.init
 		get_cookie : function(c_name) {
 			/*var i, x, y, ARRcookies = document.cookie.split(";");
@@ -467,7 +469,7 @@ $(function () {
 					}
 				});
 			}, // end $.backend.incident.list
-			create : function(deactivation_time, activation_time, description, incident_type, location {radius, coord_lat, coord_long},  successCallback) {
+			create : function(deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long, successCallback) {
 				var data = {
 					"deactivation_time" : deactivation_time,
 					"activation_time" : activation_time,
@@ -494,8 +496,8 @@ $(function () {
 						}
 					}
 				});
-			} // end $.backend.incident.create
-			update : function(incident_id, location {radius}, successCallback) {
+			}, // end $.backend.incident.create
+			update : function(incident_id, radius, successCallback) {
 				var data = {
 					"location" : {
 						"radius" : radius
@@ -517,7 +519,7 @@ $(function () {
 					}
 				});
 			}, // end $.backend.incident.update
-		} // end $.backend.incident
+		}, // end $.backend.incident
 		call_report : {
 			create : function(incident_id, details, successCallback) {
 				var data = {
@@ -540,7 +542,7 @@ $(function () {
 					}
 				});
 			}, // end $.backend.call_report.create
-		} // end $.backend.call_report
+		}, // end $.backend.call_report
 		CMS_Status : {
 			retrieve : function(successCallback) {
 				$.ajax({
@@ -576,7 +578,7 @@ $(function () {
 					}
 				});
 			}, // end $.backend.CMS_Status.update
-		} // end $.backend.CMS_Status
+		}, // end $.backend.CMS_Status
 		resource : {
 			list : function(successCallback) {
 				$.ajax({
