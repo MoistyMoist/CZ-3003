@@ -65,15 +65,15 @@ $(function () {
 				window.location = "login.html";
 			}
 			
-			/*
-			$.backend.CMS_Status.retrieve(function(active) {
-				if (active) {
-					$("#skin-2").click();
-				} else {
-					$("#skin-1").click();
-				}
-			});
-			*/
+			$("#skin-1").click(function(e) {
+                $.backend.CMS_Status.update(false);
+				$("#theme-setting-icon").click();
+            });
+			
+			$("#skin-2").click(function(e) {
+                $.backend.CMS_Status.update(true);
+				$("#theme-setting-icon").click();
+            });
 		}, // end $.page.init
 		get_cookie : function(c_name) {
 			/*var i, x, y, ARRcookies = document.cookie.split(";");
