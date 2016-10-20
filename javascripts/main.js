@@ -54,8 +54,11 @@ $(function () {
 			
 			if (role === "Call_Center") {
 				$.page.incident.init(true);
+				
+				$("#theme-setting-icon, #theme-setting").remove();
 			} else if (role === "PR_Manager") {
 				$.page.social_media.init(true);
+				$("#theme-setting-icon, #theme-setting").remove();
 			} else if (role === "HQ_Commander") {
 				$.page.incident.init(true);
 				$.page.resource.init();
