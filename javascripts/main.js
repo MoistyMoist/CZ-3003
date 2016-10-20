@@ -54,7 +54,6 @@ $(function () {
 			
 			if (role === "Call_Center") {
 				$.page.incident.init(true);
-				
 				$("#theme-setting-icon, #theme-setting").remove();
 			} else if (role === "PR_Manager") {
 				$.page.social_media.init(true);
@@ -100,6 +99,7 @@ $(function () {
 		}, // end $.page.scrollTo
 		logout : function() {
 			Cookies.remove("groups");
+			Cookies.remove("skin_color");
 			window.location = "login.html";
 		}, // end $.page.logout
 		incident : {
