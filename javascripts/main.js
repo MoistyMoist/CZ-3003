@@ -4,7 +4,8 @@ $(function () {
 		api_key : "AIzaSyAfx3vltb6DmiG9O72T1dni1KweHxVQbNc",
 		maps : {
 			callback : "$.google.maps.init",
-			Map : {},
+			map : {},
+			geocoder : {},
 			load_library : function() {
 				var googleMaps = $("<script>", {
 					type : "text/javascript",
@@ -14,10 +15,11 @@ $(function () {
 				$("body").append(googleMaps);
 			}, // end $.google.maps.load_library
 			init : function() {
-				$.google.maps.Map = new google.maps.Map(document.getElementById("map"), {
+				$.google.maps.map = new google.maps.Map(document.getElementById("map"), {
 					center: {lat: 1.34284, lng: 103.8190145},
 					zoom: 11
 				});
+				$.google.maps.geocoder = new google.maps.Geocoder();
 				
 				$.google.maps.add_marker(1.33284, 103.8190145, 1000, "hello");
 			}, // end $.google.maps.init
@@ -28,7 +30,7 @@ $(function () {
 			add_marker : function(lat, lng, radius, title) {
 				var marker = new google.maps.Marker({
 					position : {lat:lat, lng:lng},
-					map : $.google.maps.Map,
+					map : $.google.maps.map,
 					title : title
 				});
 				
@@ -39,12 +41,43 @@ $(function () {
 						strokeWeight: 2,
 						fillColor: '#FF0000',
 						fillOpacity: 0.35,
-						map: $.google.maps.Map,
+						map: $.google.maps.map,
 						center: {lat:lat, lng:lng},
 						radius: radius
 					});
 				}
-			} // end $.google.maps.add_marker
+			}, // end $.google.maps.add_marker
+			geocode_address : function(address, callback) {
+				$.google.maps.geocoder.geocode({
+					address : address + ", Singapore",
+					region : "SG"
+				}, function(results, status) {
+					if (status == 'OK') {
+						//console.log('Geocoded Result: ', results[0].geometry.location);
+						if (callback !== undefined) {
+							callback.call(this, results);	
+						}
+					} else {
+						console.log('Geocode was not successful for the following reason: ^', status);
+					}
+				});
+			}, // end $.google.maps.geocode_address
+			geocode_latlng : function(location, callback) {
+				$.google.maps.geocoder.geocode({
+					location : location,
+					region : "SG"
+				}, function(results, status) {
+					if (status == 'OK') {
+						console.log('Geocoded Result: ', results);
+						if (callback !== undefined) {
+							
+							callback.call(this, results);	
+						}
+					} else {
+						console.log('Geocode was not successful for the following reason: ^', status);
+					}
+				});
+			} // end $.google.maps.geocode_latlng
 		}, // end $.google.maps
 		firebase : {
 			config : {
@@ -61,15 +94,15 @@ $(function () {
 				
 				if ('serviceWorker' in navigator) {
 					console.log('Service Worker is supported');
-					navigator.serviceWorker.register("../javascripts/sw.js").then(function(registration) {
-						console.log('Service Worker is ready :^)', registration);
+					navigator.serviceWorker.register("../javascripts/firebase-messaging-sw.js").then(function(registration) {
+						console.log('Service Worker is ready : ^) ', registration);
 						
 						firebase.initializeApp($.google.firebase.config);
 						$.google.firebase.messaging = firebase.messaging();
 						$.google.firebase.messaging.useServiceWorker(registration);
-						$.google.firebase.refresh_token();
+						$.google.firebase.token.onrefresh();
 						$.google.firebase.receive_message();
-						$.google.firebase.get_token();
+						$.google.firebase.token.get();
 						
 						/*
 						registration.pushManager.subscribe({
@@ -86,19 +119,67 @@ $(function () {
 				//$.google.firebase.request_permission();
 				
 			}, // end $.google.firebase.init
-			refresh_token : function() {
-				$.google.firebase.messaging.onTokenRefresh(function() {
-					$.google.firebase.messaging.getToken().then(function(refreshedToken) {
-						console.log('Token refreshed.');
-						// Indicate that the new Instance ID token has not yet been sent to the app server.
-						//[TODO] setTokenSentToServer(false);
-						// Send Instance ID token to app server.
-						//[TODO] sendTokenToServer(refreshedToken);
-					}).catch(function(err) {
-						console.log('Unable to retrieve refreshed token ', err);
+			token : {
+				onrefresh : function() {
+					$.google.firebase.messaging.onTokenRefresh(function() {
+						$.google.firebase.messaging.getToken().then(function(refreshedToken) {
+							console.log('Token refreshed.');
+							// Indicate that the new Instance ID token has not yet been sent to the app server.
+							$.google.firebase.token.to_server.is_sent(false);
+							// Send Instance ID token to app server.
+							$.google.firebase.token.to_server.send(refreshedToken);
+						}).catch(function(err) {
+							console.log('Unable to retrieve refreshed token ', err);
+						});
 					});
-				});
-			}, // end $.google.firebase.refresh_token
+				}, // end $.google.firebase.token.refresh
+				/**
+				*	Get Instance ID token. Initially this makes a network call, once retrieved
+				*	subsequent calls to getToken will return from cache.
+				*/
+				get : function() {
+					$.google.firebase.messaging.getToken().then(function(currentToken) {
+						if (currentToken) {
+							console.log(currentToken);
+							$.google.firebase.token.to_server.send(currentToken);
+							//updateUIForPushEnabled(currentToken);
+						} else {
+							// Show permission request.
+							console.log('No Instance ID token available. Request permission to generate one.');
+							// Show permission UI.
+							$.google.firebase.request_permission();
+							//updateUIForPushPermissionRequired();
+							$.google.firebase.token.to_server.is_sent(false);
+						}
+					}).catch(function(err) {
+						console.log('An error occurred while retrieving token. ', err);
+						//showToken('Error retrieving Instance ID token. ', err);
+						$.google.firebase.token.to_server.is_sent(false);
+					});
+				}, // end $.google.firebase.token.get
+				to_server : {
+					send : function(currentToken) {
+						if (!$.google.firebase.token.to_server.is_sent()) {
+							console.log('Sending token to server...');
+							// TODO(developer): Send the current token to your server.
+							$.google.firebase.token.to_server.is_sent(true)
+						} else {
+							console.log('Token already sent to server so won\'t send it again unless it changes');	
+						}
+					}, // end $.google.firebase.token.to_server.send
+					is_sent : function(sent) {
+						if (sent === undefined) {
+							if (window.localStorage.getItem('sentToServer') == 1) {
+								  return true;
+							}
+							return false;
+						} else {
+							window.localStorage.setItem('sentToServer', sent ? 1 : 0);
+							return sent;
+						}
+					} // end $.google.firebase.token.to_server.is_sent
+				} // end $.google.firebase.token.to_server
+			}, // end $.google.firebase.token
 			/**
 			*	Handle incoming messages. Called when:
 			*	- a message is received while the app has focus
@@ -121,37 +202,12 @@ $(function () {
       				// [START_EXCLUDE]
       				// In many cases once an app has been granted notification permission, it
       				// should update its UI reflecting this.
+					$.google.firebase.token.get();
 					// [END_EXCLUDE]
 				}).catch(function(err) {
 					console.log('Unable to get permission to notify. ', err);
 				});
-			}, // end $.google.firebase.request_permission
-			/**
-			*	Get Instance ID token. Initially this makes a network call, once retrieved
-			*	subsequent calls to getToken will return from cache.
-			*/
-			get_token : function() {
-				
-				$.google.firebase.messaging.getToken().then(function(currentToken) {
-					if (currentToken) {
-						console.log(currentToken);
-						//sendTokenToServer(currentToken);
-        				//updateUIForPushEnabled(currentToken);
-					} else {
-						// Show permission request.
-        				console.log('No Instance ID token available. Request permission to generate one.');
-        				// Show permission UI.
-						$.google.firebase.request_permission();
-						//updateUIForPushPermissionRequired();
-        				//setTokenSentToServer(false);
-					}
-				}).catch(function(err) {
-					console.log('An error occurred while retrieving token. ', err);
-					//showToken('Error retrieving Instance ID token. ', err);
-					//setTokenSentToServer(false);
-				});
-				
-			} // end $.google.firebase.get_token
+			} // end $.google.firebase.request_permission
 		} // end $.google.firebase
 	}
 	
@@ -223,6 +279,32 @@ $(function () {
 						view.html(data);
 						
 						if(!showView) view.hide();
+						
+						$("#incident_create_form").submit(function(e) {
+                			e.preventDefault();
+							
+							var address = $("#incident-location").val();
+							var incident_type = $("#incident-type").val();
+							$.google.maps.geocode_address(address, function(results) {
+								var location = results[0].geometry.location
+								//TODO search for existing incidents
+								var incident_exists = false;
+								
+								if (!incident_exists) {
+									$.google.maps.geocode_latlng(location, function(results) {
+										var address = results[0].formatted_address;
+										
+										// deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long, successCallback
+										var coord_lat = location.lat();
+										var coord_lng = location.lng();
+										var activation_time = new Date();
+										$.backend.incident.create(null, activation_time, address, incident_type, 2000, coord_lat, coord_lng, function(id) {
+											console.log("created new incident with id : ^", id);
+										});
+									});
+								}
+							});
+						});
 					}
 				}).done(function() {
 					//setInterval(function() {
@@ -232,7 +314,6 @@ $(function () {
 				
 				//load menus
 				$.page.incident.menu.init($.page.incident.menu.click);
-				
 			}, //end $.page.incident.init
 			menu : {
 				init : function(onClick) {
@@ -604,6 +685,8 @@ $(function () {
 						if(successCallback !== undefined) {
 							successCallback.call(this, data.id);	
 						}
+						
+						
 					}
 				});
 			}, // end $.backend.incident.create

@@ -1,133 +1,101 @@
-<div class="panel panel-default">
-	<div class="panel panel-default">
+<div class="panel panel-info">
 
-		<div class="panel-heading">
-        	<div class="row">
-                <h4 class="col-md-8">Incidents</h4>
-                <div class="col-md-4 text-right" id="incident_search_filter">
-            
-                    <form class="form-inline" id="incident_search_form">
-                        <div class="form-group">
-                            <label for="incident_search_input">Search : </label>
-                            <div class="input-group">
-                                <input id="incident_search_input" class="input-sm form-control" type="text" placeholder="input text...." />
-                                <span class="input-group-btn">
-                                    <button id="incident_search_btn" class="btn btn-success btn-sm" type="submit">
-                                        <i class="fa fa-search"></i>
-                                    </button>
-                                </span>
-                            </div> <!-- end .input-group -->
-                        </div> <!-- end .form-group -->
-                    </form>
-                </div> <!-- end #incident_search_filter -->
-            </div>
-		</div> <!-- end .panel-heading -->
+    <div class="panel-heading">
+        <div class="row">
+            <h4 class="col-md-8">Incidents</h4>
+            <div class="col-md-4 text-right" id="incident_search_filter">
+        
+                <form class="form-inline" id="incident_search_form">
+                    <div class="form-group">
+                        <label for="incident_search_input">Search : </label>
+                        <div class="input-group">
+                            <input id="incident_search_input" class="input-sm form-control" type="text" placeholder="input text...." />
+                            <span class="input-group-btn">
+                                <button id="incident_search_btn" class="btn btn-success btn-sm" type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div> <!-- end .input-group -->
+                    </div> <!-- end .form-group -->
+                </form>
+            </div> <!-- end #incident_search_filter -->
+        </div>
+    </div> <!-- end .panel-heading -->
 
-		<div class="panel-body">
-        	<div class="row">
-                <!--incident table -->
-                <div class="col-md-12">
-                    <table class="table table-bordered table-condensed table-hover table-striped">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Field1</th>
-                                <th>Field2</th>
-                                <th>Field3</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="cursor : pointer ;">
-                                <td>12</td>
-                                <td>1</td>
-                                <td>8</td>
-                                <td>0</td>
-                                <td>
-                                    <span class="label label-success">ACTIVE</span>
-                                </td>
-                            </tr>
-                            <tr style="cursor : pointer ;">
-                                <td>12</td>
-                                <td>1</td>
-                                <td>8</td>
-                                <td>0</td>
-                                <td>
+    <div class="panel-body">
+        <div class="row">
+            <!--incident table -->
+            <div class="col-md-12">
+                <table class="table table-bordered table-condensed table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Field1</th>
+                            <th>Field2</th>
+                            <th>Field3</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="cursor : pointer ;">
+                            <td>12</td>
+                            <td>1</td>
+                            <td>8</td>
+                            <td>0</td>
+                            <td>
                                 <span class="label label-success">ACTIVE</span>
-                                </td>
-                            </tr>
-        
-                        </tbody>
-                    </table>
-                </div> <!-- end incident table -->
+                            </td>
+                        </tr>
+                        <tr style="cursor : pointer ;">
+                            <td>12</td>
+                            <td>1</td>
+                            <td>8</td>
+                            <td>0</td>
+                            <td>
+                            <span class="label label-success">ACTIVE</span>
+                            </td>
+                        </tr>
     
-                <!-- Caller/Incident details -->
-                <div class="col-md-6">
-                	<form class="form-horizontal" id="incident_create_form">
-                    	<!-- caller details panel -->
-                    	<div class="panel panel-default">
-                    		<div class="panel-heading clearfix">
-                            	<span>Caller Details</span>
-                            </div>
-                            
-                            <div class="panel-body">
-                            
-                            	<div class="form-group">
-                                    <label class="col-md-2 control-label" for="incident_date">Date</label>
-                                    <div class="col-md-5">
-                                        <input class="form-control" id="incident_date" type="date" placeholder="input here..." disable/>
-                                    </div><!-- /.col -->
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-md-2 control-label" for="incident_caller_name">Name</label>
-                                    <div class="col-md-5">
-                                        <input class="form-control" id="incident_caller_name" type="text" placeholder="input here..." />
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                	<label class="col-md-2 control-label">Contact</label>
-                                    <div class="col-md-5">
-                                        <input class="form-control" type="text" placeholder="input here..." />
-                                    </div>
-                                </div>
-        
-                                <div class="form-group">
-                                    <label class="col-md-2 control-label">Address</label>
-                                    <div class="col-md-10">
-                                        <textarea class="form-control" rows="7"></textarea>
-                                    </div>
-                                </div>
-                                
-                            </div> <!-- end caller details panel body -->
-                        </div> <!-- end caller details panel -->
-                        
+                    </tbody>
+                </table>
+            </div> <!-- end incident table -->
+
+            <!-- Caller/Incident details -->
+            <div class="col-md-6">
+                <form class="form-horizontal" id="incident_create_form">
+                    <div class="panel-group">
+                    
                         <!-- incident details panel -->
-                    	<div class="panel panel-default">
-                        	<div class="panel-heading clearfix">
-                            	<span>Incident Details</span>
+                        <div class="panel panel-info">
+                            <div class="panel-heading clearfix">
+                                <span>Incident Details</span>
                             </div>
                             
                             <div class="panel-body">
                             
                                 <div class="form-group">
-                                	<label class="col-md-2 control-label">Incident Type</label>
+                                    <label class="col-md-2 control-label">Location</label>
                                     <div class="col-md-10">
-                                        <select class="form-control input-sm">
-                                            <option value="" selected>Flooding</option>
-                                            <option value="">Terrorist</option>
-                                            <option value="">Others</option>
+                                        <textarea id="incident-location" class="form-control" rows="3" required style="resize:none;" placeholder="postal code and building unit number, if applicable"></textarea>
+                                    </div>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">Incident Type</label>
+                                    <div class="col-md-10">
+                                        <select id="incident-type" class="form-control input-sm">
+                                            <option value="F" selected>Flooding</option>
+                                            <option value="T">Terrorist</option>
+                                            <option value="O">Others</option>
                                         </select>
                                     </div>
                                 </div>
-        
-                                <div class="form-group">
-                                    <label class="col-md-2 control-label">Address</label>
-                                    <div class="col-md-10">
-                                        <textarea class="form-control" rows="7"></textarea>
-                                    </div>
+                                
+                                <!--
+                                <div class="text-right">
+                                    <button type="button" class="btn btn-success"><i class="fa fa-search"></i> Search</button>
                                 </div>
-        
+                                
                                 <div class="form-group">
                                     <div class="col-md-offset-2 col-md-1">
                                         <input type="checkbox" id="chk-attention" class="form-control" />
@@ -135,7 +103,9 @@
                                     </div>
                                     <label class="col-md-9" for="chk-attention" role="button">Requires Attention</label>
                                 </div>
-        
+                                -->
+                                
+                                <!--
                                 <div class="form-group">
                                     <label class="control-label col-md-2">Status</label>
                                     <div class="col-md-10">
@@ -146,44 +116,96 @@
                                         </select>
                                     </div>
                                 </div>
+                                -->
                                 
-                        	</div> <!-- end incident details panel-body -->
-                    	</div> <!-- end incident details panel -->
-                    </form> <!-- end #incident_create_form -->
-                </div> <!-- end Caller/Incident details -->
-    
-                <!-- log details -->
-                <div class="col-md-6">
-                    <div class="panel panel-default">
+                            </div> <!-- end incident details panel-body -->
+                        </div> <!-- end incident details panel -->
                     
-                        <div class="panel-heading clearfix">
-                            <span>Logs</span>
-                        </div>
-                        
-                        <ul class="list-group" id="incident-log-list" incident-id="1">
+                        <!-- caller details panel -->
+                        <div class="panel panel-info">
+                            <div class="panel-heading clearfix">
+                                <span>Caller Details</span>
+                            </div>
                             
-                        </ul><!-- /list-group -->
-                        
-                        <div class="panel-footer clearfix">
-                        	<form class="form" id="log-create-form" onSubmit="$.page.incident.logs.create(this, event)">
-                            	<div class="form-group">
-                                    <textarea id="log-create-description" class="form-control" rows="3" style="resize:none;"></textarea>
+                            <div class="panel-body">
+                                
+                                <!--
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label" for="incident_date">Date</label>
+                                    <div class="col-md-5">
+                                        <input class="form-control" id="incident_date" type="date" placeholder="input here..." disable/>
+                                    </div>
                                 </div>
-                                <button class="btn col-md-12 btn-success" type="submit">
-                                	<i class="fa fa-save fa-lg"></i>
-                                    <span>Submit</span>
-                                </button>
-                            </form>
+                                -->
+                                
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label" for="incident_caller_name">Name</label>
+                                    <div class="col-md-5">
+                                        <input class="form-control" id="incident_caller_name" type="text" placeholder="input here..." />
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">Contact</label>
+                                    <div class="col-md-5">
+                                        <input class="form-control" type="text" placeholder="input here..." />
+                                    </div>
+                                </div>
+                                
+                                <!--
+                                <div class="form-group">
+                                    <label class="col-md-2 control-label">Address</label>
+                                    <div class="col-md-10">
+                                        <textarea class="form-control" rows="7"></textarea>
+                                    </div>
+                                </div>
+                                -->
+                                
+                            </div> <!-- end caller details panel body -->
+                        </div> <!-- end caller details panel -->
+                        
+                        <div class="panel panel-info">
+                        	<div class="panel-footer clearfix text-right">
+                            	<button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Submit</button>
+                        	</div>
                         </div>
-    
-                        <div class="loading-overlay">
-                            <i class="loading-icon fa fa-refresh fa-spin fa-lg"></i>
-                        </div>
+                    
+                    </div> <!-- end panel-group -->
+                    
+                </form> <!-- end #incident_create_form -->
+            </div> <!-- end Caller/Incident details -->
+
+            <!-- log details -->
+            <div class="col-md-6">
+                <div class="panel panel-info">
+                
+                    <div class="panel-heading clearfix">
+                        <span>Logs</span>
                     </div>
                     
-                </div> <!-- end log details -->
-            </div>
-		</div> <!-- end .panel-body -->
-        
-	</div>
+                    <ul class="list-group" id="incident-log-list" incident-id="1">
+                        
+                    </ul><!-- /list-group -->
+                    
+                    <div class="panel-footer clearfix">
+                        <form class="form text-right" id="log-create-form" onSubmit="$.page.incident.logs.create(this, event)">
+                            <div class="form-group">
+                                <textarea id="log-create-description" class="form-control" rows="3" style="resize:none;" placeholder="" required></textarea>
+                            </div>
+                            <button class="btn btn-success" type="submit">
+                                <i class="fa fa-comment fa-lg"></i>
+                                <span>Add New Log</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="loading-overlay">
+                        <i class="loading-icon fa fa-refresh fa-spin fa-lg"></i>
+                    </div>
+                </div>
+                
+            </div> <!-- end log details -->
+        </div>
+    </div> <!-- end .panel-body -->
+    
 </div>
