@@ -1,7 +1,7 @@
 $(function () {
 	
 	$.google = {
-		api_key : "AIzaSyB_tE97WXP7-9Pzr8r1iXiNuhC8NH8AJc0",
+		api_key : "AIzaSyAfx3vltb6DmiG9O72T1dni1KweHxVQbNc",
 		maps : {
 			callback : "$.google.maps.init",
 			Map : {},
@@ -12,7 +12,7 @@ $(function () {
 				}).prop("defer", true).prop("async", true);
 				
 				$("body").append(googleMaps);
-			},
+			}, // end $.google.maps.load_library
 			init : function() {
 				$.google.maps.Map = new google.maps.Map(document.getElementById("map"), {
 					center: {lat: 1.34284, lng: 103.8190145},
@@ -20,7 +20,7 @@ $(function () {
 				});
 				
 				$.google.maps.add_marker(1.33284, 103.8190145, 1000, "hello");
-			},
+			}, // end $.google.maps.init
 			/**
 				Adds a marker with radius on Basemap
 				radius in meters
@@ -44,8 +44,115 @@ $(function () {
 						radius: radius
 					});
 				}
-			}
-		}
+			} // end $.google.maps.add_marker
+		}, // end $.google.maps
+		firebase : {
+			config : {
+				apiKey: "AIzaSyAfx3vltb6DmiG9O72T1dni1KweHxVQbNc",
+				authDomain: "cz3003-cms.firebaseapp.com",
+				databaseURL: "https://cz3003-cms.firebaseio.com",
+				storageBucket: "cz3003-cms.appspot.com",
+				messagingSenderId: "455786633696"
+			}, // end $.google.firebase.config
+			messaging : {
+				// Firebase Messaging Object	
+			},
+			init : function() {
+				
+				if ('serviceWorker' in navigator) {
+					console.log('Service Worker is supported');
+					navigator.serviceWorker.register("../javascripts/sw.js").then(function(registration) {
+						console.log('Service Worker is ready :^)', registration);
+						
+						firebase.initializeApp($.google.firebase.config);
+						$.google.firebase.messaging = firebase.messaging();
+						$.google.firebase.messaging.useServiceWorker(registration);
+						$.google.firebase.refresh_token();
+						$.google.firebase.receive_message();
+						$.google.firebase.get_token();
+						
+						/*
+						registration.pushManager.subscribe({
+							userVisibleOnly : true
+						}).then(function(sub) {
+							console.log('endpoint:', sub.endpoint);
+						});
+						*/
+					}).catch(function(error) {
+						console.log('Service Worker error :^(', error);
+					});
+				}
+				
+				//$.google.firebase.request_permission();
+				
+			}, // end $.google.firebase.init
+			refresh_token : function() {
+				$.google.firebase.messaging.onTokenRefresh(function() {
+					$.google.firebase.messaging.getToken().then(function(refreshedToken) {
+						console.log('Token refreshed.');
+						// Indicate that the new Instance ID token has not yet been sent to the app server.
+						//[TODO] setTokenSentToServer(false);
+						// Send Instance ID token to app server.
+						//[TODO] sendTokenToServer(refreshedToken);
+					}).catch(function(err) {
+						console.log('Unable to retrieve refreshed token ', err);
+					});
+				});
+			}, // end $.google.firebase.refresh_token
+			/**
+			*	Handle incoming messages. Called when:
+			*	- a message is received while the app has focus
+			*	- the user clicks on an app notification created by a sevice worker
+			*	`messaging.setBackgroundMessageHandler` handler.
+			*/
+			receive_message : function() {
+				$.google.firebase.messaging.onMessage(function(payload) {
+					console.log("Message received. ", payload);
+				});
+			}, // end $.google.firebase.receive_message
+			/**
+			*	Callback fired if Instance ID token is updated.
+			*/
+			request_permission : function() {
+				console.log('Requesting permission...');
+				$.google.firebase.messaging.requestPermission().then(function() {
+					console.log('Notification permission granted.');
+					// TODO(developer): Retrieve a Instance ID token for use with FCM.
+      				// [START_EXCLUDE]
+      				// In many cases once an app has been granted notification permission, it
+      				// should update its UI reflecting this.
+					// [END_EXCLUDE]
+				}).catch(function(err) {
+					console.log('Unable to get permission to notify. ', err);
+				});
+			}, // end $.google.firebase.request_permission
+			/**
+			*	Get Instance ID token. Initially this makes a network call, once retrieved
+			*	subsequent calls to getToken will return from cache.
+			*/
+			get_token : function() {
+				
+				$.google.firebase.messaging.getToken().then(function(currentToken) {
+					if (currentToken) {
+						console.log(currentToken);
+						//sendTokenToServer(currentToken);
+        				//updateUIForPushEnabled(currentToken);
+					} else {
+						// Show permission request.
+        				console.log('No Instance ID token available. Request permission to generate one.');
+        				// Show permission UI.
+						$.google.firebase.request_permission();
+						//updateUIForPushPermissionRequired();
+        				//setTokenSentToServer(false);
+					}
+				}).catch(function(err) {
+					console.log('An error occurred while retrieving token. ', err);
+					//showToken('Error retrieving Instance ID token. ', err);
+					//setTokenSentToServer(false);
+				});
+				
+			} // end $.google.firebase.get_token
+		} // end $.google.firebase
 	}
 	
 	$.page = {
@@ -570,7 +677,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "/CMSStatus/update/1/",
+					url : $.backend.root_url + "CMSStatus/update/1/",
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -606,7 +713,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "/SMS/create/",
+					url : $.backend.root_url + "SMS/create/",
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -623,5 +730,6 @@ $(function () {
 	$(document).ready(function(e) {
         $.google.maps.load_library();
 		$.page.init();
+		$.google.firebase.init();
     });
 });
