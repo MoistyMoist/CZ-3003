@@ -54,6 +54,16 @@
 
 .incident-table-wrapper {
 	max-height: 200px;
-	overflow-y:auto;
+	overflow-y:scroll;
 	margin-bottom:15px;
+}
+
+.panel-left, .panel-right {
+	max-height:500px;
+	overflow-y:scroll;	
+}
+
+#incident-log-list {
+	max-height:252px;
+	overflow-y:scroll;	
 }
