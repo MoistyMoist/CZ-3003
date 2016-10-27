@@ -685,7 +685,7 @@ $(function () {
 		incident_logs : {
 			list : function(incident_id, successCallback) {
 				$.ajax({
-					url : $.backend.root_url + "main/list_logs/" + incident_id + "/",
+					url : $.backend.root_url + "Incident/" + incident_id + "/logs/list",
 					method : "GET",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
