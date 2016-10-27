@@ -43,7 +43,6 @@ $(function() {
 				
 				$.page.set_cookie("groups", response.groups, 1);
 				
-				
 				$.backend.CMS_Status.retrieve(function(active) {
 					//success callback function
 					if (active) {
@@ -75,7 +74,6 @@ $(function() {
 	$.backend = {
 		root_url : "https://crisismanagement.herokuapp.com/",
 		attempt_login : function(data, successCallback, errorCallback) {
-			//TODO: ajax calls to backend server for login
 			$.ajax({
 				url : $.backend.root_url + "login/",
 				data : data,

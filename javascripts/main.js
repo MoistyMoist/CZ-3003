@@ -82,44 +82,48 @@ $(function () {
 		firebase : {
 			config : {
 				apiKey: "AIzaSyAfx3vltb6DmiG9O72T1dni1KweHxVQbNc",
-				authDomain: "cz3003-cms.firebaseapp.com",
+				serverKey: "AIzaSyDGkaf5JEu3LZmc5_ObZP-7XGqzEhB0vTA",
+				//authDomain: "cz3003-cms.firebaseapp.com",
 				databaseURL: "https://cz3003-cms.firebaseio.com",
-				storageBucket: "cz3003-cms.appspot.com",
+				//storageBucket: "cz3003-cms.appspot.com",
 				messagingSenderId: "455786633696"
 			}, // end $.google.firebase.config
-			messaging : {
-				// Firebase Messaging Object	
-			},
+			messaging : { /* Firebase Messaging Object */ },
+			database : { /* Firebase DB Object */ },
 			init : function() {
+				firebase.initializeApp($.google.firebase.config);
 				
 				if ('serviceWorker' in navigator) {
 					console.log('Service Worker is supported');
 					navigator.serviceWorker.register("../javascripts/firebase-messaging-sw.js").then(function(registration) {
 						console.log('Service Worker is ready : ^) ', registration);
 						
-						firebase.initializeApp($.google.firebase.config);
 						$.google.firebase.messaging = firebase.messaging();
 						$.google.firebase.messaging.useServiceWorker(registration);
 						$.google.firebase.token.onrefresh();
 						$.google.firebase.receive_message();
 						$.google.firebase.token.get();
-						
-						/*
-						registration.pushManager.subscribe({
-							userVisibleOnly : true
-						}).then(function(sub) {
-							console.log('endpoint:', sub.endpoint);
-						});
-						*/
 					}).catch(function(error) {
 						console.log('Service Worker error :^(', error);
 					});
 				}
 				
-				//$.google.firebase.request_permission();
+				$.google.firebase.database = firebase.database();
+				$.google.firebase.token.db_ref = $.google.firebase.database.ref("push_registrations");
+				$.google.firebase.token.db_ref.on('value', function(snapshot) {
+					var i = 0;
+					$.google.firebase.token.registration_ids = [];
+					
+					snapshot.forEach(function(row) {
+						$.google.firebase.token.registration_ids[i] = row.val().registration_id;
+						i++;
+					});
+				});
 				
 			}, // end $.google.firebase.init
 			token : {
+				db_ref : { /* push_registrations firebase database reference */ },
+				registration_ids : [ /* list of ids for push messaging */ ],
 				onrefresh : function() {
 					$.google.firebase.messaging.onTokenRefresh(function() {
 						$.google.firebase.messaging.getToken().then(function(refreshedToken) {
@@ -161,8 +165,15 @@ $(function () {
 					send : function(currentToken) {
 						if (!$.google.firebase.token.to_server.is_sent()) {
 							console.log('Sending token to server...');
-							// TODO(developer): Send the current token to your server.
-							$.google.firebase.token.to_server.is_sent(true)
+							
+							$.google.firebase.token.db_ref.push().set({
+								registration_id : currentToken,
+								groups : $.page.get_cookie("groups"),
+								datetime : new Date().getTime()
+							}).then(function() {
+								console.log('Token has been sent...');
+								$.google.firebase.token.to_server.is_sent(true)
+							});
 						} else {
 							console.log('Token already sent to server so won\'t send it again unless it changes');	
 						}
@@ -207,7 +218,28 @@ $(function () {
 				}).catch(function(err) {
 					console.log('Unable to get permission to notify. ', err);
 				});
-			} // end $.google.firebase.request_permission
+			}, // end $.google.firebase.request_permission
+			send_broadcast : function(message) {
+				var data = {
+					"registration_ids" : $.google.firebase.token.registration_ids,
+					"data" : message
+				};
+				
+				data = JSON.stringify(data);
+				
+				$.ajax({
+					url : "https://fcm.googleapis.com/fcm/send",
+					method : "POST",
+					headers : {
+						"Content-Type" : "application/json",
+						"Authorization" : "key=" + $.google.firebase.config.serverKey
+					},
+					data : data,
+					success: function(data, textStatus, jqXHR) {
+						console.log("broadcast sent.. ", data);
+					}
+				});
+			} // end $.google.firebase.send_broadcast
 		} // end $.google.firebase
 	}
 	
@@ -685,8 +717,6 @@ $(function () {
 						if(successCallback !== undefined) {
 							successCallback.call(this, data.id);	
 						}
-						
-						
 					}
 				});
 			}, // end $.backend.incident.create
