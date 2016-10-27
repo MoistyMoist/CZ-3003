@@ -6,6 +6,7 @@ $(function () {
 			callback : "$.google.maps.init",
 			map : {},
 			geocoder : {},
+			markers : [],
 			load_library : function() {
 				var googleMaps = $("<script>", {
 					type : "text/javascript",
@@ -20,33 +21,46 @@ $(function () {
 					zoom: 11
 				});
 				$.google.maps.geocoder = new google.maps.Geocoder();
-				
-				$.google.maps.add_marker(1.33284, 103.8190145, 1000, "hello");
 			}, // end $.google.maps.init
-			/**
-				Adds a marker with radius on Basemap
-				radius in meters
-			*/
-			add_marker : function(lat, lng, radius, title) {
-				var marker = new google.maps.Marker({
-					position : {lat:lat, lng:lng},
-					map : $.google.maps.map,
-					title : title
-				});
-				
-				if (radius > 0) {
-					var circle = new google.maps.Circle({
-						strokeColor: '#FF0000',
-						strokeOpacity: 0.8,
-						strokeWeight: 2,
-						fillColor: '#FF0000',
-						fillOpacity: 0.35,
-						map: $.google.maps.map,
-						center: {lat:lat, lng:lng},
-						radius: radius
+			marker : {
+				/**
+				*	Adds a marker with radius(meters) on Basemap
+				*/
+				add : function(lat, lng, radius, title) {
+					var marker = {
+						marker : new google.maps.Marker({
+							position : {lat:lat, lng:lng},
+							map : $.google.maps.map,
+							animation: google.maps.Animation.DROP,
+							title : title
+						})
+					};
+					
+					if (radius > 0) {
+						marker.circle = new google.maps.Circle({
+							strokeColor: '#FF0000',
+							strokeOpacity: 0.8,
+							strokeWeight: 2,
+							fillColor: '#FF0000',
+							fillOpacity: 0.35,
+							map: $.google.maps.map,
+							center: {lat:lat, lng:lng},
+							radius: radius
+						});
+					}
+					
+					$.google.maps.markers.push(marker);
+				}, // end $.google.maps.marker.add
+				clear_all : function() {
+					$.google.maps.markers.forEach(function(marker, index) {
+						marker.marker.setMap(null);
+						if(marker.circle !== undefined) {
+							marker.circle.setMap(null);	
+						}
 					});
-				}
-			}, // end $.google.maps.add_marker
+					$.google.maps.markers = [];
+				} // end $.google.maps.marker.clear_all
+			}, // end $.google.maps.marker
 			geocode_address : function(address, callback) {
 				$.google.maps.geocoder.geocode({
 					address : address + ", Singapore",
@@ -200,6 +214,11 @@ $(function () {
 			receive_message : function() {
 				$.google.firebase.messaging.onMessage(function(payload) {
 					console.log("Message received. ", payload);
+					
+					var incident = payload.data.incident;
+					if(incident !== undefined && incident) {
+						$.page.incident.update();
+					}
 				});
 			}, // end $.google.firebase.receive_message
 			/**
@@ -312,41 +331,41 @@ $(function () {
 						
 						if(!showView) view.hide();
 						
-						$("#incident_create_form").submit(function(e) {
-                			e.preventDefault();
-							
-							var address = $("#incident-location").val();
-							var incident_type = $("#incident-type").val();
-							$.google.maps.geocode_address(address, function(results) {
-								var location = results[0].geometry.location
-								//TODO search for existing incidents
-								var incident_exists = false;
-								
-								if (!incident_exists) {
-									$.google.maps.geocode_latlng(location, function(results) {
-										var address = results[0].formatted_address;
-										
-										// deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long, successCallback
-										var coord_lat = location.lat();
-										var coord_lng = location.lng();
-										var activation_time = new Date();
-										$.backend.incident.create(null, activation_time, address, incident_type, 2000, coord_lat, coord_lng, function(id) {
-											console.log("created new incident with id : ^", id);
-										});
-									});
-								}
-							});
-						});
+						$("#incident_create_form").submit($.page.incident.submit_create_form);
 					}
 				}).done(function() {
-					//setInterval(function() {
-						$.page.incident.logs.refresh_list();
-					//}, 5000);
+					$.page.incident.logs.refresh_list();
 				});
 				
 				//load menus
 				$.page.incident.menu.init($.page.incident.menu.click);
 			}, //end $.page.incident.init
+			submit_create_form : function(e) {
+				e.preventDefault();
+							
+				var address = $("#incident-location").val();
+				var incident_type = $("#incident-type").val();
+				$.google.maps.geocode_address(address, function(results) {
+					var location = results[0].geometry.location
+					//TODO search for existing incidents
+					var incident_exists = false;
+					
+					if (!incident_exists) {
+						$.google.maps.geocode_latlng(location, function(results) {
+							var address = results[0].formatted_address;
+							
+							// deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long, successCallback
+							var coord_lat = location.lat();
+							var coord_lng = location.lng();
+							var activation_time = new Date();
+							$.backend.incident.create(null, activation_time, address, incident_type, 2000, coord_lat, coord_lng, function(id) {
+								console.log("created new incident with id : ^", id);
+								$.google.firebase.send_broadcast({incident:true});
+							});
+						});
+					}
+				});
+			}, //end $.page.incident.submit_create_form
 			menu : {
 				init : function(onClick) {
 					$.page.incident.menu.main_menu(onClick);
@@ -397,6 +416,25 @@ $(function () {
 					});
 				}
 			}, //end $.page.incident.menu
+			update : function() {
+				$.backend.incident.list(function(results) {
+					$.google.maps.marker.clear_all();
+					
+					results.forEach(function(result, index) {
+						var location = result.location;
+						var description = result.description;
+						if (location !== null) {
+							var lat = location.coord_lat;
+							var lng = location.coord_long;
+							var radius = location.radius;
+							$.google.maps.marker.add(lat, lng, radius, description);
+							
+							$.google.maps.map.setZoom(11);
+							$.google.maps.map.setCenter({lat:lat,lng:lng});
+						}
+					});
+				});
+			}, //end $.page.incident.update
 			logs : {
 				refresh_list : function() {
 					var incident_id = $("#incident-log-list").attr("incident-id");
