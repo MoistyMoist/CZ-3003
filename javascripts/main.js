@@ -17,10 +17,13 @@ $(function () {
 			}, // end $.google.maps.load_library
 			init : function() {
 				$.google.maps.map = new google.maps.Map(document.getElementById("map"), {
+					streetViewControl: false,
+					fullscreenControl: false,
 					center: {lat: 1.34284, lng: 103.8190145},
 					zoom: 11
 				});
 				$.google.maps.geocoder = new google.maps.Geocoder();
+				$.page.incident.update();
 			}, // end $.google.maps.init
 			marker : {
 				/**
@@ -317,6 +320,7 @@ $(function () {
 			window.location = "login.html";
 		}, // end $.page.logout
 		incident : {
+			list : [ /* list of retrieved incidents */ ],
 			init : function(showView) {
 				//load view
 				$.ajax({
@@ -416,11 +420,26 @@ $(function () {
 					});
 				}
 			}, //end $.page.incident.menu
+			get_type_text : function(incident_type) {
+				return $("#incident-type option[value=" + incident_type + "]").text();
+			}, //end $.page.incident.get_type_text
 			update : function() {
 				$.backend.incident.list(function(results) {
 					$.google.maps.marker.clear_all();
 					
+					// incident table empty
+					var table = $("#incident-table");
+					var tbody = table.children("tbody");
+					tbody.empty();
+					
+					$.page.incident.list = results;
 					results.forEach(function(result, index) {
+						//remove deactivated incidents?
+						if (result.deactivation_time !== null) {
+							return;
+						}
+						//[TODO]
+						
 						var location = result.location;
 						var description = result.description;
 						if (location !== null) {
@@ -432,6 +451,36 @@ $(function () {
 							$.google.maps.map.setZoom(11);
 							$.google.maps.map.setCenter({lat:lat,lng:lng});
 						}
+						
+						// incident table refresh/update
+						var tr = $("<tr>", {
+							id : result.id	
+						}).css("cursor", "pointer");
+						tr.appendTo(tbody);
+						
+						$("<td>").text(result.id).appendTo(tr);
+						$("<td>").text(result.description).appendTo(tr);
+						
+						var location = "";
+						if (result.location !== null) {
+							location = result.location.coord_lat + ", " + result.location.coord_long + "; " + result.location.radius + "m";
+						}
+						$("<td>").text(location).appendTo(tr);
+						
+						var type = $.page.incident.get_type_text(result.incident_type);
+						$("<td>").text(type).appendTo(tr);
+						
+						var status = $("<span>");
+						$("<td>").append(status).appendTo(tr);
+						
+						if (result.deactivation_time === null) {
+							status.attr("class", "label label-success");
+							status.text("ACTIVE");
+						} else {
+							status.attr("class", "label label-error");
+							status.text("CLOSED");
+						}
+						
 					});
 				});
 			}, //end $.page.incident.update
@@ -685,7 +734,7 @@ $(function () {
 		incident_logs : {
 			list : function(incident_id, successCallback) {
 				$.ajax({
-					url : $.backend.root_url + "Incident/" + incident_id + "/logs/list",
+					url : $.backend.root_url + "Incident/" + incident_id + "/logs/list/",
 					method : "GET",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
@@ -697,7 +746,6 @@ $(function () {
 			}, // end $.backend.incident_logs.list
 			create : function(incident_id, description, successCallback) {
 				var data = {
-					"incident_id" : incident_id,
 					"description" : description
 				};
 				
@@ -705,7 +753,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "IncidentLog/create/",
+					url : $.backend.root_url + "Incident/" + incident_id + "/logs/create/",
 					method : "POST",
 					data : data,
 					dataType : "json",

@@ -51,3 +51,9 @@
 [role=button] {
 	cursor : pointer;	
 }
+
+.incident-table-wrapper {
+	max-height: 200px;
+	overflow-y:auto;
+	margin-bottom:15px;
+}
