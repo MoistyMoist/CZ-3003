@@ -10,7 +10,7 @@ $(function () {
 			load_library : function() {
 				var googleMaps = $("<script>", {
 					type : "text/javascript",
-					src : "http://maps.googleapis.com/maps/api/js?key=" + $.google.api_key + "&region=SG&callback=" + $.google.maps.callback
+					src : "https://maps.googleapis.com/maps/api/js?key=" + $.google.api_key + "&region=SG&callback=" + $.google.maps.callback
 				}).prop("defer", true).prop("async", true);
 				
 				$("body").append(googleMaps);
@@ -28,12 +28,24 @@ $(function () {
 			marker : {
 				icons : {
 					Terrorist : {
-						icon : "../images/terrorist.svg",
+						icon : function() {
+							return {
+								url : "../images/terrorist.svg",
+								origin : new google.maps.Point(0, 0),
+								anchor : new google.maps.Point(12, 12)	
+							}
+						},
 						color : "#FF0000",
 						stroke : "#666666"
 					},
 					Flooding : {
-						icon : "../images/flooding.svg",
+						icon : function() {
+							return {
+								url : "../images/flooding.svg",
+								origin : new google.maps.Point(0, 0),
+								anchor : new google.maps.Point(12, 12)
+							}
+						},
 						color : "#006DF0",
 						stroke : "#666666"
 					}
@@ -48,7 +60,7 @@ $(function () {
 							map : $.google.maps.map,
 							animation: google.maps.Animation.DROP,
 							title : title,
-							icon : $.google.maps.marker.icons[type].icon
+							icon : $.google.maps.marker.icons[type].icon()
 						})
 					};
 					
@@ -77,36 +89,39 @@ $(function () {
 					$.google.maps.markers = [];
 				} // end $.google.maps.marker.clear_all
 			}, // end $.google.maps.marker
-			geocode_address : function(address, callback) {
-				$.google.maps.geocoder.geocode({
-					address : address + ", Singapore",
-					region : "SG"
-				}, function(results, status) {
-					if (status == 'OK') {
-						//console.log('Geocoded Result: ', results[0].geometry.location);
-						if (callback !== undefined) {
-							callback.call(this, results);	
+			geocode_address : function(address) {
+				var promise = new Promise(function(resolve, reject) {
+					$.google.maps.geocoder.geocode({
+						address : address + ", Singapore",
+						region : "SG"
+					}, function(results, status) {
+						if (status == 'OK') {
+							//console.log('Geocoded Result: ', results[0].geometry.location);
+							resolve(results);
+						} else {
+							console.log('Geocode was not successful for the following reason: ^', status);
+							reject(status);
 						}
-					} else {
-						console.log('Geocode was not successful for the following reason: ^', status);
-					}
+					});
 				});
+				return promise;
 			}, // end $.google.maps.geocode_address
-			geocode_latlng : function(location, callback) {
-				$.google.maps.geocoder.geocode({
-					location : location,
-					region : "SG"
-				}, function(results, status) {
-					if (status == 'OK') {
-						console.log('Geocoded Result: ', results);
-						if (callback !== undefined) {
-							
-							callback.call(this, results);	
+			geocode_latlng : function(location) {
+				var promise = new Promise(function(resolve, reject) {
+					$.google.maps.geocoder.geocode({
+						location : location,
+						region : "SG"
+					}, function(results, status) {
+						if (status == 'OK') {
+							//console.log('Geocoded Result: ', results);
+							resolve(results);
+						} else {
+							console.log('Geocode was not successful for the following reason: ^', status);
+							reject(status);
 						}
-					} else {
-						console.log('Geocode was not successful for the following reason: ^', status);
-					}
+					});
 				});
+				return promise;
 			} // end $.google.maps.geocode_latlng
 		}, // end $.google.maps
 		firebase : {
@@ -233,7 +248,7 @@ $(function () {
 					
 					var incident = payload.data.incident;
 					if(incident !== undefined && incident) {
-						$.page.incident.update();
+						$.page.update();
 					}
 				});
 			}, // end $.google.firebase.receive_message
@@ -262,18 +277,25 @@ $(function () {
 				
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : "https://fcm.googleapis.com/fcm/send",
-					method : "POST",
-					headers : {
-						"Content-Type" : "application/json",
-						"Authorization" : "key=" + $.google.firebase.config.serverKey
-					},
-					data : data,
-					success: function(data, textStatus, jqXHR) {
-						console.log("broadcast sent.. ", data);
-					}
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : "https://fcm.googleapis.com/fcm/send",
+						method : "POST",
+						headers : {
+							"Content-Type" : "application/json",
+							"Authorization" : "key=" + $.google.firebase.config.serverKey
+						},
+						data : data,
+						success: function(data, textStatus, jqXHR) {
+							console.log("broadcast sent.. ", data);
+							resolve(data);
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR);
+						}
+					});
 				});
+				return promise;
 			} // end $.google.firebase.send_broadcast
 		} // end $.google.firebase
 	}
@@ -333,7 +355,7 @@ $(function () {
 			window.location = "login.html";
 		}, // end $.page.logout
 		update : function() {
-			$.backend.incident.list(function(results) {
+			$.backend.incident.list().then(function(results) {
 				$.page.incident.list = results;
 				$.page.incident.update(results);
 				$.page.social_media.update(results);
@@ -369,35 +391,43 @@ $(function () {
 							
 				var address = $("#incident-location").val();
 				var incident_type = $("#incident-type").val();
-				$.google.maps.geocode_address(address, function(results) {
-					var location = results[0].geometry.location
+				$.google.maps.geocode_address(address).then(function(results) {
+					var new_location = results[0].geometry.location;
 					
 					//TODO search for existing incidents
-					var incident_exists = true;
-					$.page.incident.list.forEach(function(incident, index) {
+					var incident_exists = false;
+					$.page.incident.list.some(function(incident, index) {
 						if (incident.location != null) {
-							var incident_location = new google.maps.LatLng(incident.location.coord_lat, incident.location.coord_long)
+							var existing_location = new google.maps.LatLng(incident.location.coord_lat, incident.location.coord_long)
 							
-							var dist = google.maps.geometry.spherical.computeDistanceBetween(location, incident_location);
+							var dist = google.maps.geometry.spherical.computeDistanceBetween(new_location, existing_location);
+							var radius = incident.location.radius;
 							
-							console.log(index, dist);
+							incident_exists = dist <= radius && incident_type === incident.incident_type;
+							return incident_exists;
 						}
 					});
 					
 					if (!incident_exists) {
-						$.google.maps.geocode_latlng(location, function(results) {
+						$.google.maps.geocode_latlng(new_location).then(function(results) {
 							var address = results[0].formatted_address;
 							
 							// deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long, successCallback
-							var coord_lat = location.lat();
-							var coord_lng = location.lng();
+							var coord_lat = new_location.lat();
+							var coord_lng = new_location.lng();
 							var activation_time = new Date();
-							$.backend.incident.create(null, activation_time, address, incident_type, 2000, coord_lat, coord_lng, function(id) {
+							$.backend.incident.create(null, activation_time, address, incident_type, 2000, coord_lat, coord_lng).then(function(id) {
 								console.log("created new incident with id : ^", id);
 								$.google.firebase.send_broadcast({incident:true});
+								
+								// reset form
+								$("#incident-location").val("");
+								$("#incident-type").val("F");
 							});
 						});
 					}
+					
+					
 				});
 			}, //end $.page.incident.submit_create_form
 			menu : {
@@ -439,7 +469,7 @@ $(function () {
 					}).text("Incident Management").appendTo(a);
 					
 					a.click(onClick);
-				}, //end $.page.incident.menu.shortcut
+				}, // end $.page.incident.menu.shortcut
 				click : function(e) {
 					e.preventDefault();
 					
@@ -449,10 +479,16 @@ $(function () {
 						$.page.scrollTo("#incident_view");
 					});
 				}
-			}, //end $.page.incident.menu
+			}, // end $.page.incident.menu
+			type : {
+				F : "Flooding",
+				T : "Terrorist",
+				O : "Others"
+			}, // end $.page.incident.type
 			get_type_text : function(incident_type) {
-				return $("#incident-type option[value=" + incident_type + "]").text();
-			}, //end $.page.incident.get_type_text
+				return $.page.incident.type[incident_type];
+				//return $("#incident-type option[value=" + incident_type + "]").text();
+			}, // end $.page.incident.get_type_text
 			update : function(results) {
 				$.google.maps.marker.clear_all();
 				
@@ -538,8 +574,7 @@ $(function () {
 				refresh_list : function() {
 					var incident_id = $("#incident-log-list").attr("data-incident-id");
 					if (incident_id === undefined) return;
-					$.backend.incident_logs.list(incident_id, function(results){
-						//alert(JSON.stringify(results));
+					$.backend.incident_logs.list(incident_id).then(function(results) {
 						$("#incident-log-list").empty();
 						for(var i = 0; i < results.length; i++) {
 							var id = results[i].id;
@@ -593,7 +628,7 @@ $(function () {
 					var description = $("#log-create-description").val();
 					if (description.length <= 0) return;
 					
-					$.backend.incident_logs.create(incident_id, description, function(data) {
+					$.backend.incident_logs.create(incident_id, description).then(function(data) {
 						$.page.incident.logs.refresh_list();
 						$("#log-create-description").val("");
 					});
@@ -723,7 +758,8 @@ $(function () {
 						style : "overflow:hidden"
 					}).text(result.description).appendTo(entry);
 					
-					timeline.scrollLeft(timeline.width());
+					timeline.animate({ scrollLeft : timeline.width() } , 100);
+					//timeline.scrollLeft(timeline.width());
 				});
 			}, // end $.page.social_media.update
 			menu : {
@@ -828,19 +864,27 @@ $(function () {
 			return "/";
 		},
 		incident_logs : {
-			list : function(incident_id, successCallback) {
-				$.ajax({
-					url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/list/",
-					method : "GET",
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data.results);	
+			list : function(incident_id) {
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/list/",
+						method : "GET",
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if(data.success) {
+								resolve(data.results);
+							} else {
+								reject("Failed to retrieve logs for {" + incident_id + "}.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.incident_logs.list
-			create : function(incident_id, description, successCallback) {
+			create : function(incident_id, description) {
 				var data = {
 					"description" : description
 				};
@@ -848,33 +892,49 @@ $(function () {
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/create/",
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/create/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if(data.success) {
+								resolve(data);
+							} else {
+								reject("Failed to create logs for {" + incident_id + "}.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			} // end $.backend.incident_logs.create
 		}, // end $.backend.incident_logs
 		incident : {
-			list : function(successCallback) {
-				$.ajax({
-					url : $.backend.get_root_url() + "Incident/list/",
-					method : "GET",
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data.results);	
+			list : function() {
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/list/",
+						method : "GET",
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data.results);	
+							} else {
+								reject("Failed to list incidents.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.incident.list
-			create : function(deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long, successCallback) {
+			create : function(deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long) {
 				var data = {
 					"deactivation_time" : deactivation_time,
 					"activation_time" : activation_time,
@@ -890,19 +950,27 @@ $(function () {
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url() + "Incident/create/",
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data.id);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/create/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data.id);	
+							} else {
+								reject("Failed to create incident.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.incident.create
-			update : function(incident_id, radius, successCallback) {
+			update : function(incident_id, radius) {
 				var data = {
 					"location" : {
 						"radius" : radius
@@ -912,17 +980,25 @@ $(function () {
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url() + "Incident/update/" + incident_id + "/",
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/update/" + incident_id + "/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data);	
+							} else {
+								reject("Failed to update incident for {" + incident_id + "}.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.incident.update
 		}, // end $.backend.incident
 		call_report : {
@@ -935,35 +1011,49 @@ $(function () {
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url(),
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/" + incident_id + "/callreports/create/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data);	
+							} else {
+								reject("Failed to create call report for {" + incident_id + "}.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.call_report.create
 		}, // end $.backend.call_report
 		CMS_Status : {
-			retrieve : function(successCallback) {
-				$.ajax({
-					url : $.backend.get_root_url() + "CMSStatus/read/1/",
-					method : "GET",
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
+			retrieve : function() {
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "CMSStatus/read/1/",
+						method : "GET",
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								successCallback.call(this, data.active);
+								resolve(data.active);
+							} else {
+								reject("Failed to retrieve CMS Status.");	
 							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.CMS_Status.retrieve
-			update : function(active, successCallback) {
+			update : function(active) {
 				var data = {
 					"active" : active
 				};
@@ -971,33 +1061,49 @@ $(function () {
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url() + "CMSStatus/update/1/",
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "CMSStatus/update/1/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data);	
+							} else {
+								reject("Failed to update CMS Status.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.CMS_Status.update
 		}, // end $.backend.CMS_Status
 		resource : {
-			list : function(successCallback) {
-				$.ajax({
-					url : $.backend.get_root_url(),
-					method : "GET",
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+			list : function() {
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url(),
+						method : "GET",
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data);	
+							} else {
+								reject("Failed to retrieve resources.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.resource.list
-			assign : function(to, title, message, successCallback) {
+			assign : function(to, title, message) {
 				var data = {
 					"to" : to,
 					"title" : title,
@@ -1007,17 +1113,25 @@ $(function () {
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
-				$.ajax({
-					url : $.backend.get_root_url() + "SMS/create/",
-					method : "POST",
-					data : data,
-					dataType : "json",
-					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);	
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "SMS/create/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data);	
+							} else {
+								reject("Failed to send SMS.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
 						}
-					}
+					});
 				});
+				return promise;
 			}, // end $.backend.resource.assign
 		} // end $.backend.resource
 	} // end $.backend

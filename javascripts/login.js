@@ -38,29 +38,22 @@ $(function() {
 			
 			data = JSON.stringify(data);
 			
-			$.backend.attempt_login(data, function(response) {
-				// success callback function
-				
+			$.backend.attempt_login(data).then(function(response) {
 				$.page.set_cookie("groups", response.groups, 1);
-				
-				$.backend.CMS_Status.retrieve(function(active) {
-					//success callback function
+				$.backend.CMS_Status.retrieve().then(function(active) {
 					if (active) {
 						Cookies.set("skin_color", "skin-2");
-					}else {
+					} else {
 						Cookies.set("skin_color", "skin-1");	
 					}
-				}, function(){
-					//complete callback function
-					
+				}).then(function() {
 					// redirect after successful login
-					window.location = "main.html";	
+					window.location = "main.html";
 				});
-			}, function(responseText) {
-				// error callback function
+			}).catch(function(error) {
 				$("#loader").modal("hide");
 				
-				alert(responseText);
+				alert(error);
 				
 				$("#password").val("");
 				$("#password").focus();
@@ -72,46 +65,55 @@ $(function() {
 		functions for backend operations
 	*/
 	$.backend = {
-		root_url : "https://crisismanagement.herokuapp.com/",
-		attempt_login : function(data, successCallback, errorCallback) {
-			$.ajax({
-				url : $.backend.root_url + "login/",
-				data : data,
-				method : "POST",
-				dataType : "json",
-				success : function(data, textStatus, jqXHR) {
-					if (data.success) {
-						if(successCallback !== undefined) {
-							successCallback.call(this, data);
-						}
-					}
-				},
-				error : function(jqXHR, textStatus, errorThrown ) {
-					if(errorCallback !== undefined) {
-						errorCallback.call(this, jqXHR.responseText);
-					}
-				}
-			});
-		}, // end $.backend.attempt_login
-		CMS_Status : {
-			retrieve : function(successCallback, completeCallback) {
+		//root_url : "https://crisismanagement.herokuapp.com/",
+		get_root_url : function() {
+			if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+				return "https://crisismanagement.herokuapp.com/";	
+			}
+			
+			return "/";
+		},
+		attempt_login : function(data) {
+			var promise = new Promise(function(resolve, reject) {
 				$.ajax({
-					url : $.backend.root_url + "CMSStatus/read/1/",
-					method : "GET",
+					url : $.backend.get_root_url() + "login/",
+					data : data,
+					method : "POST",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
-						if(successCallback !== undefined) {
-							if (data.success) {
-								successCallback.call(this, data.active);
-							}
+						if (data.success) {
+							resolve(data);
+						} else {
+							reject("Login Failed.");	
 						}
 					},
-					complete: function(jqXHR, textStatus) {
-						if(completeCallback !== undefined) {
-							completeCallback.call(this);
-						}
+					error : function(jqXHR, textStatus, errorThrown) {
+						reject(jqXHR.responseText);
 					}
 				});
+			});
+			return promise;
+		}, // end $.backend.attempt_login
+		CMS_Status : {
+			retrieve : function() {
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "CMSStatus/read/1/",
+						method : "GET",
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data.active);
+							} else {
+								reject("CMS Status retrieve failed");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
+						}
+					});
+				});
+				return promise;
 			} // end $.backend.CMS_Status.retrieve
 		} // end $.backend.CMS_Status
 	} // end $.backend
