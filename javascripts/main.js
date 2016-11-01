@@ -396,6 +396,7 @@ $(function () {
 					
 					//TODO search for existing incidents
 					var incident_exists = false;
+					var incident_id;
 					$.page.incident.list.some(function(incident, index) {
 						if (incident.location != null) {
 							var existing_location = new google.maps.LatLng(incident.location.coord_lat, incident.location.coord_long)
@@ -404,15 +405,22 @@ $(function () {
 							var radius = incident.location.radius;
 							
 							incident_exists = dist <= radius && incident_type === incident.incident_type;
+							if (incident_exists) {
+								incident_id = incident.id;
+							}
 							return incident_exists;
 						}
 					});
 					
-					if (!incident_exists) {
+					return { incident_exists : incident_exists, incident_id : incident_id };
+				}).then(function(result) {
+					console.log(result);
+					return;
+					if (!result.incident_exists) {
 						$.google.maps.geocode_latlng(new_location).then(function(results) {
 							var address = results[0].formatted_address;
 							
-							// deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long, successCallback
+							// deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long
 							var coord_lat = new_location.lat();
 							var coord_lng = new_location.lng();
 							var activation_time = new Date();
@@ -425,9 +433,9 @@ $(function () {
 								$("#incident-type").val("F");
 							});
 						});
+					} else {
+						
 					}
-					
-					
 				});
 			}, //end $.page.incident.submit_create_form
 			menu : {
@@ -633,7 +641,15 @@ $(function () {
 						$("#log-create-description").val("");
 					});
 				}  // end $.page.incident.logs.create
-			}  // end $.page.incident.logs
+			}, // end $.page.incident.logs
+			call_report : {
+				create : function(incident_id) {
+					var name = $("#incident_caller_name").val();
+					var contact = $("#incident_caller_contact").val();
+					
+					//[TODO]
+				}	
+			}
 		},  // end $.page.incident
 		resource : {
 			init : function(showView) {
@@ -1002,11 +1018,22 @@ $(function () {
 			}, // end $.backend.incident.update
 		}, // end $.backend.incident
 		call_report : {
-			create : function(incident_id, details, successCallback) {
+			create : function(incident_id, name, contact, incident_type) {
+				/*
 				var data = {
 					"incident_id" : incident_id,
 					"details" : details
 				};
+				*/
+				//[TODO]
+				var data = {
+					caller_name : name,
+					caller_nric : "nric",
+					contact_no : contact,
+					description : "description",
+					incident_type : incident_type,
+					dateTime : new Date()
+				}
 				
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
