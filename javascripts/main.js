@@ -23,28 +23,39 @@ $(function () {
 					zoom: 11
 				});
 				$.google.maps.geocoder = new google.maps.Geocoder();
-				$.page.incident.update();
+				$.page.update();
 			}, // end $.google.maps.init
 			marker : {
+				icons : {
+					Terrorist : {
+						icon : "../images/terrorist.svg",
+						color : '#FF0000'
+					},
+					Flooding : {
+						icon : "../images/flooding.svg",
+						color : '#006DF0'
+					}
+				},
 				/**
 				*	Adds a marker with radius(meters) on Basemap
 				*/
-				add : function(lat, lng, radius, title) {
+				add : function(lat, lng, radius, title, type) {
 					var marker = {
 						marker : new google.maps.Marker({
 							position : {lat:lat, lng:lng},
 							map : $.google.maps.map,
 							animation: google.maps.Animation.DROP,
-							title : title
+							title : title,
+							icon : $.google.maps.marker.icons[type].icon
 						})
 					};
 					
 					if (radius > 0) {
 						marker.circle = new google.maps.Circle({
-							strokeColor: '#FF0000',
+							strokeColor: $.google.maps.marker.icons[type].color,
 							strokeOpacity: 0.8,
 							strokeWeight: 2,
-							fillColor: '#FF0000',
+							fillColor: $.google.maps.marker.icons[type].color,
 							fillOpacity: 0.35,
 							map: $.google.maps.map,
 							center: {lat:lat, lng:lng},
@@ -319,6 +330,13 @@ $(function () {
 			Cookies.remove("skin_color");
 			window.location = "login.html";
 		}, // end $.page.logout
+		update : function() {
+			$.backend.incident.list(function(results) {
+				$.page.incident.list = results;
+				$.page.incident.update(results);
+				$.page.social_media.update(results);
+			});
+		}, // end $.page.update
 		incident : {
 			list : [ /* list of retrieved incidents */ ],
 			init : function(showView) {
@@ -423,65 +441,64 @@ $(function () {
 			get_type_text : function(incident_type) {
 				return $("#incident-type option[value=" + incident_type + "]").text();
 			}, //end $.page.incident.get_type_text
-			update : function() {
-				$.backend.incident.list(function(results) {
-					$.google.maps.marker.clear_all();
+			update : function(results) {
+				$.google.maps.marker.clear_all();
+				
+				// empty incident table (incident-management)
+				var table = $("#incident-table");
+				var tbody = table.children("tbody");
+				tbody.empty();
+				
+				results.forEach(function(result, index) {
+					//[TODO] remove deactivated incidents?
+					if (result.deactivation_time !== null) {
+						return;
+					}
 					
-					// incident table empty
-					var table = $("#incident-table");
-					var tbody = table.children("tbody");
-					tbody.empty();
+					var location = result.location;
+					var description = result.description;
+					var type = $.page.incident.get_type_text(result.incident_type);
 					
-					$.page.incident.list = results;
-					results.forEach(function(result, index) {
-						//remove deactivated incidents?
-						if (result.deactivation_time !== null) {
-							return;
-						}
-						//[TODO]
-						
-						var location = result.location;
-						var description = result.description;
-						if (location !== null) {
-							var lat = location.coord_lat;
-							var lng = location.coord_long;
-							var radius = location.radius;
-							$.google.maps.marker.add(lat, lng, radius, description);
+					if (location !== null) {
+						var lat = location.coord_lat;
+						var lng = location.coord_long;
+						var radius = location.radius;
+						$.google.maps.marker.add(lat, lng, radius, description, type);
 							
-							$.google.maps.map.setZoom(11);
-							$.google.maps.map.setCenter({lat:lat,lng:lng});
-						}
-						
-						// incident table refresh/update
-						var tr = $("<tr>", {
-							id : result.id	
-						}).css("cursor", "pointer");
-						tr.appendTo(tbody);
-						
-						$("<td>").text(result.id).appendTo(tr);
-						$("<td>").text(result.description).appendTo(tr);
-						
-						var location = "";
-						if (result.location !== null) {
-							location = result.location.coord_lat + ", " + result.location.coord_long + "; " + result.location.radius + "m";
-						}
-						$("<td>").text(location).appendTo(tr);
-						
-						var type = $.page.incident.get_type_text(result.incident_type);
-						$("<td>").text(type).appendTo(tr);
-						
-						var status = $("<span>");
-						$("<td>").append(status).appendTo(tr);
-						
-						if (result.deactivation_time === null) {
-							status.attr("class", "label label-success");
-							status.text("ACTIVE");
-						} else {
-							status.attr("class", "label label-error");
-							status.text("CLOSED");
-						}
-						
-					});
+						$.google.maps.map.setZoom(11);
+						$.google.maps.map.setCenter({lat:lat,lng:lng});
+					}
+					
+					// [START] incident table refresh/update
+					var tr = $("<tr>", {
+						"data-id" : result.id
+					}).css("cursor", "pointer");
+					tr.appendTo(tbody);
+					
+					$("<td>").text(result.id).appendTo(tr);
+					$("<td>").text(result.description).appendTo(tr);
+					
+					var location = "";
+					if (result.location !== null) {
+						location = result.location.coord_lat + ", " + result.location.coord_long + "; " + result.location.radius + "m";
+					}
+					$("<td>").text(location).appendTo(tr);
+					
+					
+					$("<td>").text(type).appendTo(tr);
+					
+					var status = $("<span>");
+					$("<td>").append(status).appendTo(tr);
+					
+					if (result.deactivation_time === null) {
+						status.attr("class", "label label-success");
+						status.text("ACTIVE");
+					} else {
+						status.attr("class", "label label-error");
+						status.text("CLOSED");
+					}
+					// [END] incident table refresh/update
+
 				});
 			}, //end $.page.incident.update
 			logs : {
@@ -641,6 +658,41 @@ $(function () {
 				//load controls
 				$.page.social_media.menu.init($.page.social_media.menu.click);
 			}, // end $.page.social_media.init
+			update : function(results) {
+				
+				// empty timeline
+				var timeline = $(".timeline_main");
+				timeline.empty();
+				
+				results.forEach(function(result, index) {
+					
+					var entry = $("<div>", {
+						class : "entry",
+						"data-id" : result.id
+					}).appendTo(timeline);
+					
+					var date, time;
+					var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+					if (result.activation_time != null) {
+						var datetime = new Date(result.activation_time);
+						date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
+						time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
+						time = datetime.toTimeString().substr(0, 8);
+						//date = datetime.toUTCString();
+					}
+					
+					var type = $.page.incident.get_type_text(result.incident_type);
+					
+					$("<small>").text(date).appendTo(entry);
+					$("<h1>").text(time).appendTo(entry);
+					$("<h2>").text(type).appendTo(entry);
+					$("<div>", {
+						style : "overflow:hidden"
+					}).text(result.description).appendTo(entry);
+					
+					timeline.scrollLeft(timeline.width());
+				});
+			}, // end $.page.social_media.update
 			menu : {
 				init : function(onClick) {
 					$.page.social_media.menu.main_menu(onClick);
@@ -689,6 +741,9 @@ $(function () {
 						$("#media_view").slideDown("fast");
 						$.page.scrollTo("#media_view");
 					});
+					
+					var timeline = $(".timeline_main");
+					$(".timeline_main").scrollLeft(timeline.width());
 				}
 			} // end $.page.social_media.menu
 		}, // end $.page.social_media
