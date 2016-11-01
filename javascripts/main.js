@@ -29,11 +29,13 @@ $(function () {
 				icons : {
 					Terrorist : {
 						icon : "../images/terrorist.svg",
-						color : '#FF0000'
+						color : "#FF0000",
+						stroke : "#666666"
 					},
 					Flooding : {
 						icon : "../images/flooding.svg",
-						color : '#006DF0'
+						color : "#006DF0",
+						stroke : "#666666"
 					}
 				},
 				/**
@@ -52,7 +54,7 @@ $(function () {
 					
 					if (radius > 0) {
 						marker.circle = new google.maps.Circle({
-							strokeColor: $.google.maps.marker.icons[type].color,
+							strokeColor: $.google.maps.marker.icons[type].stroke,
 							strokeOpacity: 0.8,
 							strokeWeight: 2,
 							fillColor: $.google.maps.marker.icons[type].color,
@@ -355,9 +357,9 @@ $(function () {
 						
 						$("#incident_create_form").submit($.page.incident.submit_create_form);
 					}
-				}).done(function() {
+				})/*.done(function() {
 					$.page.incident.logs.refresh_list();
-				});
+				})*/;
 				
 				//load menus
 				$.page.incident.menu.init($.page.incident.menu.click);
@@ -369,8 +371,18 @@ $(function () {
 				var incident_type = $("#incident-type").val();
 				$.google.maps.geocode_address(address, function(results) {
 					var location = results[0].geometry.location
+					
 					//TODO search for existing incidents
-					var incident_exists = false;
+					var incident_exists = true;
+					$.page.incident.list.forEach(function(incident, index) {
+						if (incident.location != null) {
+							var incident_location = new google.maps.LatLng(incident.location.coord_lat, incident.location.coord_long)
+							
+							var dist = google.maps.geometry.spherical.computeDistanceBetween(location, incident_location);
+							
+							console.log(index, dist);
+						}
+					});
 					
 					if (!incident_exists) {
 						$.google.maps.geocode_latlng(location, function(results) {
@@ -472,10 +484,29 @@ $(function () {
 					// [START] incident table refresh/update
 					var tr = $("<tr>", {
 						"data-id" : result.id
-					}).css("cursor", "pointer");
+					}).css("cursor", "pointer").click(function(e) {
+                       $("#incident-log-list").attr({
+						    "data-incident-id" : result.id
+					   });
+					   
+					   tbody.children("tr").removeClass("active");
+					   $(this).addClass("active");
+					   $.page.incident.logs.refresh_list();
+                    });
 					tr.appendTo(tbody);
 					
 					$("<td>").text(result.id).appendTo(tr);
+					
+					var date = "", time = "";
+					var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+					if (result.activation_time != null) {
+						var datetime = new Date(result.activation_time);
+						date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
+						time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
+						time = datetime.toTimeString().substr(0, 8);
+					}
+					$("<td>").text(date + " " + time).appendTo(tr);
+					
 					$("<td>").text(result.description).appendTo(tr);
 					
 					var location = "";
@@ -498,12 +529,14 @@ $(function () {
 						status.text("CLOSED");
 					}
 					// [END] incident table refresh/update
-
 				});
+				
+				tbody.children("tr:last").click();
+				table.parent(".incident-table-wrapper").animate({ scrollTop: table.height() }, 100);
 			}, //end $.page.incident.update
 			logs : {
 				refresh_list : function() {
-					var incident_id = $("#incident-log-list").attr("incident-id");
+					var incident_id = $("#incident-log-list").attr("data-incident-id");
 					if (incident_id === undefined) return;
 					$.backend.incident_logs.list(incident_id, function(results){
 						//alert(JSON.stringify(results));
@@ -554,7 +587,7 @@ $(function () {
 				create : function(form, e) {
 					e.preventDefault();
 					
-					var incident_id = $("#incident-log-list").attr("incident-id");
+					var incident_id = $("#incident-log-list").attr("data-incident-id");
 					if (incident_id === undefined) return;
 					
 					var description = $("#log-create-description").val();
@@ -785,7 +818,8 @@ $(function () {
 	} // end $.page
 	
 	$.backend = {
-		root_url : "https://crisismanagement.herokuapp.com/",
+		//root_url : "https://crisismanagement.herokuapp.com/",
+		root_url : "/",
 		incident_logs : {
 			list : function(incident_id, successCallback) {
 				$.ajax({
