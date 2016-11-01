@@ -819,11 +819,18 @@ $(function () {
 	
 	$.backend = {
 		//root_url : "https://crisismanagement.herokuapp.com/",
-		root_url : "/",
+		//root_url : "/",
+		get_root_url : function() {
+			if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+				return "https://crisismanagement.herokuapp.com/";	
+			}
+			
+			return "/";
+		},
 		incident_logs : {
 			list : function(incident_id, successCallback) {
 				$.ajax({
-					url : $.backend.root_url + "Incident/" + incident_id + "/logs/list/",
+					url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/list/",
 					method : "GET",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
@@ -842,7 +849,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "Incident/" + incident_id + "/logs/create/",
+					url : $.backend.get_root_url() + "Incident/" + incident_id + "/logs/create/",
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -857,7 +864,7 @@ $(function () {
 		incident : {
 			list : function(successCallback) {
 				$.ajax({
-					url : $.backend.root_url + "Incident/list/",
+					url : $.backend.get_root_url() + "Incident/list/",
 					method : "GET",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
@@ -884,7 +891,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "Incident/create/",
+					url : $.backend.get_root_url() + "Incident/create/",
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -906,7 +913,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "Incident/update/" + incident_id + "/",
+					url : $.backend.get_root_url() + "Incident/update/" + incident_id + "/",
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -929,7 +936,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url,
+					url : $.backend.get_root_url(),
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -944,7 +951,7 @@ $(function () {
 		CMS_Status : {
 			retrieve : function(successCallback) {
 				$.ajax({
-					url : $.backend.root_url + "CMSStatus/read/1/",
+					url : $.backend.get_root_url() + "CMSStatus/read/1/",
 					method : "GET",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
@@ -965,7 +972,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "CMSStatus/update/1/",
+					url : $.backend.get_root_url() + "CMSStatus/update/1/",
 					method : "POST",
 					data : data,
 					dataType : "json",
@@ -980,7 +987,7 @@ $(function () {
 		resource : {
 			list : function(successCallback) {
 				$.ajax({
-					url : $.backend.root_url,
+					url : $.backend.get_root_url(),
 					method : "GET",
 					dataType : "json",
 					success : function(data, textStatus, jqXHR) {
@@ -1001,7 +1008,7 @@ $(function () {
 				data = JSON.stringify(data);
 				
 				$.ajax({
-					url : $.backend.root_url + "SMS/create/",
+					url : $.backend.get_root_url() + "SMS/create/",
 					method : "POST",
 					data : data,
 					dataType : "json",
