@@ -10,7 +10,7 @@
 .entry {
     display:inline-block;
     vertical-align:top;
-    background:#13519C;
+    background:#3c8dbc;
     color:#fff;
     padding:10px;
     font-size:12px;
@@ -24,6 +24,10 @@
 	margin-left:5px;
 	margin-right:5px;
 	cursor:pointer;
+}
+
+.entry.active {
+	background : #a93922;
 }
 
 .entry > * {

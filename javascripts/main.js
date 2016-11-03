@@ -751,39 +751,80 @@ $(function () {
 				timeline.empty();
 				
 				results.forEach(function(result, index) {
-					
-					var entry = $("<div>", {
-						class : "entry",
-						"data-id" : result.id
-					}).appendTo(timeline);
-					
-					entry.click(function(e) {
-                        console.log(e);
-                    });
-					
-					var date, time;
-					var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-					if (result.activation_time != null) {
-						var datetime = new Date(result.activation_time);
-						date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
-						time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
-						time = datetime.toTimeString().substr(0, 8);
-						//date = datetime.toUTCString();
-					}
-					
-					var type = $.page.incident.get_type_text(result.incident_type);
-					
-					$("<small>").text(date).appendTo(entry);
-					$("<h1>").text(time).appendTo(entry);
-					$("<h2>").text(type).appendTo(entry);
-					$("<div>", {
-						style : "overflow:hidden"
-					}).text(result.description).appendTo(entry);
-					
-					timeline.animate({ scrollLeft : timeline.width() } , 100);
-					//timeline.scrollLeft(timeline.width());
+					var incident_id = result.id;
+					var activation_time = result.activation_time;
+					var deactivation_time = result.deactivation_time;
+					var incident_type = $.page.incident.get_type_text(result.incident_type);
+					var description = result.description;
+					$.page.social_media.timeline.incidents.add_entry(incident_id, activation_time, deactivation_time, incident_type, description);
 				});
 			}, // end $.page.social_media.update
+			timeline : {
+				incidents : {
+					add_entry : function(incident_id, activation_time, deactivation_time, incident_type, description) {
+						var timeline = $("#media_view .timeline_main");
+					
+						var entry = $("<div>", {
+							class : "entry",
+							"data-id" : incident_id
+						}).appendTo(timeline);
+						
+						if (deactivation_time === null || deactivation_time === undefined) {
+							entry.addClass("active");
+						}
+						
+						entry.click($.page.social_media.timeline.incidents.entry_onClick);
+						
+						var date, time;
+						var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+						if (activation_time != null) {
+							var datetime = new Date(activation_time);
+							date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
+							time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
+							time = datetime.toTimeString().substr(0, 8);
+						}
+						
+						$("<small>").text(date).appendTo(entry);
+						$("<h1>").text(time).appendTo(entry);
+						$("<h2>").text(incident_type).appendTo(entry);
+						$("<div>", {
+							style : "overflow:hidden"
+						}).text(description).appendTo(entry);
+					}, // end $.page.social_media.timeline.incidents.add_entry
+					entry_onClick : function(e) {
+						var incident_id = $(this).attr("data-id");
+						var log_timeline = $("#media_view .timeline");
+						log_timeline.attr("data-id", incident_id);
+					} // end $.page.social_media.timeline.incidents.entry_onClick
+				}, // end $.page.social_media.timeline.incidents
+				logs : {
+					inverted : false,
+					update : function() {
+						
+					},
+					add_entry : function() {
+						var timeline = $("#media_view .timeline");
+						
+						var entry = $("<li>");
+						if ($.page.social_media.timeline.logs.inverted) {
+							entry.addClass("timeline-inverted");
+						}
+						$.page.social_media.timeline.logs.inverted = !$.page.social_media.timeline.logs.inverted;
+						
+						var badge = $("<div>", {
+							class : "timeline-badge"	
+						}).appendTo(entry);
+						
+						var icon = $("<i>", {
+							class : "fa fa-comment"
+						}).appendTo(badge);
+						
+						var panel = $("<div>", {
+							class : "timeline-panel"
+						}).appendTo(entry);
+					}
+				} // end $.page.social_media.timeline.logs
+			}, // end $.page.social_media.timeline
 			menu : {
 				init : function(onClick) {
 					$.page.social_media.menu.main_menu(onClick);
