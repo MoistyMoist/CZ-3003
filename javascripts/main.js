@@ -578,15 +578,16 @@ $(function () {
 					$("<td>").text(type).appendTo(tr);
 					
 					var status = $("<span>");
+					
 					status.click(function() {
-           var r = confirm("Confirm close this incident?");
-          if (r == true) {
-              $("#incident_"+result.id).remove();
-              var dectivation_time = new Date();
-             	$.backend.incident.updateStatus(result.id,dectivation_time)
-          } 
-           
-          });
+						var r = confirm("Confirm close this incident?");
+						if (r == true) {
+							$("#incident_"+result.id).remove();
+							var dectivation_time = new Date();
+							$.backend.incident.updateStatus(result.id,dectivation_time)
+						}
+					});
+					
 					$("<td>").append(status).appendTo(tr);
 					
 					if (result.deactivation_time === null) {
