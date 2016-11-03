@@ -442,29 +442,6 @@ $(function () {
 					
 					if (result.incident_id === undefined) {
 						return $.google.maps.geocode_latlng(location);
-						
-						/*$.google.maps.geocode_latlng(location).then(function(results) {
-							var address = results[0].formatted_address;
-							
-							// deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long
-							var lat = location.lat();
-							var lng = location.lng();
-							var activation_time = new Date();
-							p = $.backend.incident.create(null, activation_time, address, incident_type, 2000, lat, lng)
-							.then(function(incident_id) {
-								console.log("created new incident with id : ", incident_id);
-								$.google.firebase.send_broadcast({incident:true});
-								
-								// reset form
-								$("#incident-location").val("");
-								$("#incident-type").val("F");
-								
-								//[TODO] create call report
-								//incident_id, name, contact, description
-								$.backend.call_report.create();
-							});
-						});
-						*/
 					}
 					
 					return result;
@@ -620,8 +597,8 @@ $(function () {
 						var r = confirm("Confirm close this incident?");
 						if (r == true) {
 							$("#incident_"+result.id).remove();
-							var dectivation_time = new Date();
-							$.backend.incident.updateStatus(result.id,dectivation_time)
+							var deactivation_time = new Date();
+							$.backend.incident.update(result.id, { deactivation_time : deactivation_time })
 						}
 					});
 					
@@ -1116,7 +1093,10 @@ $(function () {
 						dataType : "json",
 						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								resolve(data.id);	
+								resolve(data.id);
+								
+								// log new incident creation
+								$.backend.incident_logs.create(data.id, "Incident Activation");
 							} else {
 								reject("Failed to create incident.");	
 							}
@@ -1128,12 +1108,14 @@ $(function () {
 				});
 				return promise;
 			}, // end $.backend.incident.create
-			update : function(incident_id, radius) {
+			update : function(incident_id, data) {
+				/*
 				var data = {
 					"location" : {
 						"radius" : radius
 					}
 				};
+				*/
 				
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
@@ -1146,7 +1128,7 @@ $(function () {
 						dataType : "json",
 						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								resolve(data);	
+								resolve(data);
 							} else {
 								reject("Failed to update incident for {" + incident_id + "}.");	
 							}
@@ -1157,37 +1139,7 @@ $(function () {
 					});
 				});
 				return promise;
-			},
-			updateStatus : function(incident_id, deactivation_time) {
-				var data = {
-					"deactivation_time" : deactivation_time
-				};
-				
-				// stringify json for backend to recognise
-				data = JSON.stringify(data);
-				
-				var promise = new Promise(function(resolve, reject) {
-					$.ajax({
-						url : $.backend.get_root_url() + "Incident/update/" + incident_id + "/",
-						method : "POST",
-						data : data,
-						dataType : "json",
-						success : function(data, textStatus, jqXHR) {
-							if (data.success) {
-								resolve(data);	
-							} else {
-								reject("Failed to update incident for {" + incident_id + "}.");	
-							}
-						},
-						error : function(jqXHR, textStatus, errorThrown) {
-							reject(jqXHR.responseText);
-						}
-					});
-				});
-				return promise;
-			},
-			
-			// end $.backend.incident.update
+			}, // end $.backend.incident.update
 		}, // end $.backend.incident
 		call_report : {
 			create : function(incident_id, name, contact, description) {
