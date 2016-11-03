@@ -48,6 +48,17 @@ $(function () {
 						},
 						color : "#006DF0",
 						stroke : "#666666"
+					},
+					Others : {
+						icon : function() {
+							return {
+								url : "../images/others.svg",
+								origin : new google.maps.Point(0, 0),
+								anchor : new google.maps.Point(12, 12)
+							}
+						},
+						color : "#DDDDDD",
+						stroke : "#666666"
 					}
 				},
 				/**
@@ -77,17 +88,18 @@ $(function () {
 					}
 					var contentString = '<div id="content">'+
 					'<div id="siteNotice">'+
-            '</div>'+
-            '<div id="bodyContent">'+
-            '<p><b>'+title+'</b></p>'+
-            '</div>'+
-            '</div>';
+					'</div>'+
+					'<div id="bodyContent">'+
+					'<p><b>'+title+'</b></p>'+
+					'</div>'+
+					'</div>';
 					var infowindow = new google.maps.InfoWindow({
-          content: contentString
-          });
+						content: contentString
+					});
+					
 					marker.addListener('click', function() {
-          infowindow.open(map, marker);
-         });
+						infowindow.open(map, marker);
+					});
           
         
 					$.google.maps.markers.push(marker);
@@ -392,9 +404,7 @@ $(function () {
 						
 						$("#incident_create_form").submit($.page.incident.submit_create_form);
 					}
-				})/*.done(function() {
-					$.page.incident.logs.refresh_list();
-				})*/;
+				});
 				
 				//load menus
 				$.page.incident.menu.init($.page.incident.menu.click);
@@ -407,9 +417,8 @@ $(function () {
 				$.google.maps.geocode_address(address).then(function(results) {
 					var new_location = results[0].geometry.location;
 					
-					//TODO search for existing incidents
 					var incident_exists = false;
-					var incident_id;
+					var incident_id, description;
 					$.page.incident.list.some(function(incident, index) {
 						if (incident.location != null) {
 							var existing_location = new google.maps.LatLng(incident.location.coord_lat, incident.location.coord_long)
@@ -420,23 +429,27 @@ $(function () {
 							incident_exists = dist <= radius && incident_type === incident.incident_type;
 							if (incident_exists) {
 								incident_id = incident.id;
+								description = incident.description;
 							}
 							return incident_exists;
 						}
 					});
 					
-					return { incident_id : incident_id, location : new_location };
+					return { incident_id : incident_id, location : new_location, description : description };
 				}).then(function(result) {
 					var location = result.location;
+					
 					if (result.incident_id === undefined) {
-						$.google.maps.geocode_latlng(location).then(function(results) {
+						return $.google.maps.geocode_latlng(location);
+						
+						/*$.google.maps.geocode_latlng(location).then(function(results) {
 							var address = results[0].formatted_address;
 							
 							// deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long
 							var lat = location.lat();
 							var lng = location.lng();
 							var activation_time = new Date();
-							$.backend.incident.create(null, activation_time, address, incident_type, 2000, lat, lng)
+							p = $.backend.incident.create(null, activation_time, address, incident_type, 2000, lat, lng)
 							.then(function(incident_id) {
 								console.log("created new incident with id : ", incident_id);
 								$.google.firebase.send_broadcast({incident:true});
@@ -446,11 +459,27 @@ $(function () {
 								$("#incident-type").val("F");
 								
 								//[TODO] create call report
+								//incident_id, name, contact, description
+								$.backend.call_report.create();
 							});
 						});
-					} else {
-						//[TODO] create call report
+						*/
 					}
+					
+					return result;
+				}).then(function(results) {
+					if (results.incident_id === undefined) {
+						var address = results[0].formatted_address;
+						var location = results[0].geometry.location;
+						var lat = location.lat();
+						var lng = location.lng();
+						var activation_time = new Date();
+						
+						return $.backend.incident.create(null, activation_time, address, incident_type, 2000, lat, lng);
+					}
+					return results;
+				}).then(function(result) {
+					console.log(result);
 				});
 			}, //end $.page.incident.submit_create_form
 			menu : {
