@@ -599,6 +599,9 @@ $(function () {
 							$("#incident_"+result.id).remove();
 							var deactivation_time = new Date();
 							$.backend.incident.update(result.id, { deactivation_time : deactivation_time })
+							.then(function(result) {
+								$.google.firebase.send_broadcast({incident:true});
+							});
 						}
 					});
 					
