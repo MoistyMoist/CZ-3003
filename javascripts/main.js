@@ -555,7 +555,7 @@ $(function () {
 					}
 					
 					// [START] incident table refresh/update
-					var tr = $("<tr id=incident_"+result.id+">", {
+					var tr = $("<tr>", {
 						"data-id" : result.id
 					}).css("cursor", "pointer").click(function(e) {
                        $("#incident-log-list").attr({
@@ -594,12 +594,16 @@ $(function () {
 					var status = $("<span>");
 					
 					status.click(function() {
-						var r = confirm("Confirm close this incident?");
-						if (r == true) {
-							$("#incident_"+result.id).remove();
+						var dialog = confirm("Confirm close this incident?");
+						if (dialog == true) {
+							var incident_id = tr.attr("data-id");
+							
+							tr.remove();
+							
 							var deactivation_time = new Date();
-							$.backend.incident.update(result.id, { deactivation_time : deactivation_time })
+							$.backend.incident.update(incident_id, { deactivation_time : deactivation_time })
 							.then(function(result) {
+								$.backend.incident_logs.create(incident_id, "Incident Deactivated (" + deactivation_time + ")");
 								$.google.firebase.send_broadcast({incident:true});
 							});
 						}
@@ -1164,7 +1168,10 @@ $(function () {
 						dataType : "json",
 						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								resolve(data);	
+								resolve(data);
+								
+								var log_desc = "Call report made by " + name + " (contact no.: " + contact + ")";
+								$.backend.incident_logs.create(incident_id, log_desc);
 							} else {
 								reject("Failed to create call report for {" + incident_id + "}.");	
 							}
