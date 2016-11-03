@@ -1161,7 +1161,7 @@ $(function () {
 		social_managment : {
 		  create : function(status_string) {
 				var data = {
-					"status" : status_string
+					"status" : $("#social_media_content").val();
 				};
 				
 				// stringify json for backend to recognise

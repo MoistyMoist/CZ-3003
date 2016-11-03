@@ -39,7 +39,7 @@
 	</div>
 
 	<div id="" class="panel-body padding-md">
-    	<form class="form-horizontal">
+    	<form class="form-horizontal" onSubmit="$.backend.resource.create(this, event)">
 			<div class="form-group">
             	<label class="col-md-2 control-label">To:</label>
 				<div class="col-md-10">
@@ -68,7 +68,7 @@
 			<div class="form-group">
             	<div class="col-md-offset-2 col-md-10">
 					<button class="col-md-12 btn  btn-success" type="submit"><i class="fa fa-save fa-lg"></i>  Assign Task</button>
-                </div>
+       </div>
 			</div>
 		</form>
 	</div>
