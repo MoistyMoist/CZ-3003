@@ -80,7 +80,7 @@ $(function () {
             '<div id="siteNotice">'+
             '</div>'+
             '<div id="bodyContent">'+
-            '<p><b>'+titlehere+'</b></p>'+
+            '<p><b>'+title+'</b></p>'+
             '</div>'+
             '</div>';
 					var infowindow = new google.maps.InfoWindow({
