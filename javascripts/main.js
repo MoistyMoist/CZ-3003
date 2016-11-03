@@ -622,7 +622,7 @@ $(function () {
 				new_list_item : function(id, description, datetimeString) {
 					var li = $("<li>", {
 						class : "list-group-item clearfix log-item",
-						id : id
+						"data-id" : id
 					});
 					
 					var icon_wrapper = $("<div>", {
@@ -774,39 +774,116 @@ $(function () {
 				timeline.empty();
 				
 				results.forEach(function(result, index) {
-					
-					var entry = $("<div>", {
-						class : "entry",
-						"data-id" : result.id
-					}).appendTo(timeline);
-					
-					entry.click(function(e) {
-                        console.log(e);
-                    });
-					
-					var date, time;
-					var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-					if (result.activation_time != null) {
-						var datetime = new Date(result.activation_time);
-						date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
-						time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
-						time = datetime.toTimeString().substr(0, 8);
-						//date = datetime.toUTCString();
-					}
-					
-					var type = $.page.incident.get_type_text(result.incident_type);
-					
-					$("<small>").text(date).appendTo(entry);
-					$("<h1>").text(time).appendTo(entry);
-					$("<h2>").text(type).appendTo(entry);
-					$("<div>", {
-						style : "overflow:hidden"
-					}).text(result.description).appendTo(entry);
-					
-					timeline.animate({ scrollLeft : timeline.width() } , 100);
-					//timeline.scrollLeft(timeline.width());
+					var incident_id = result.id;
+					var activation_time = result.activation_time;
+					var deactivation_time = result.deactivation_time;
+					var incident_type = $.page.incident.get_type_text(result.incident_type);
+					var description = result.description;
+					$.page.social_media.timeline.incidents.add_entry(incident_id, activation_time, deactivation_time, incident_type, description);
 				});
+				
+				timeline.children(".entry:last").click();
 			}, // end $.page.social_media.update
+			timeline : {
+				incidents : {
+					add_entry : function(incident_id, activation_time, deactivation_time, incident_type, description) {
+						var timeline = $("#media_view .timeline_main");
+					
+						var entry = $("<div>", {
+							class : "entry",
+							"data-id" : incident_id
+						}).appendTo(timeline);
+						
+						if (deactivation_time === null || deactivation_time === undefined) {
+							entry.addClass("active");
+						}
+						
+						entry.click($.page.social_media.timeline.incidents.entry_onClick);
+						
+						var date, time;
+						var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+						if (activation_time != null) {
+							var datetime = new Date(activation_time);
+							date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
+							time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
+							time = datetime.toTimeString().substr(0, 8);
+						}
+						
+						$("<small>").text(date).appendTo(entry);
+						$("<h1>").text(time).appendTo(entry);
+						$("<h2>").text(incident_type).appendTo(entry);
+						$("<div>", {
+							style : "overflow:hidden"
+						}).text(description).appendTo(entry);
+					}, // end $.page.social_media.timeline.incidents.add_entry
+					entry_onClick : function(e) {
+						var incident_id = $(this).attr("data-id");
+						var log_timeline = $("#media_view .timeline");
+						log_timeline.attr("data-incident-id", incident_id);
+						$.page.social_media.timeline.logs.update();
+					} // end $.page.social_media.timeline.incidents.entry_onClick
+				}, // end $.page.social_media.timeline.incidents
+				logs : {
+					inverted : false,
+					update : function() {
+						var incident_id = $("#media_view .timeline").attr("data-incident-id");
+						if (incident_id === undefined) return;
+						
+						$.page.social_media.timeline.logs.inverted = false;
+						$.backend.incident_logs.list(incident_id).then(function(results) {
+							$("#media_view .timeline").empty();
+							for(var i = 0; i < results.length; i++) {
+								var id = results[i].id;
+								var description = results[i].description;
+								var datetimeString = results[i].datetime;
+								
+								$.page.social_media.timeline.logs.add_entry(id, description, datetimeString);
+							}
+						});
+					}, // end $.page.social_media.timeline.logs.update
+					add_entry : function(id, description, datetimeString) {
+						var timeline = $("#media_view .timeline");
+						
+						var entry = $("<li>").prependTo(timeline);
+						if ($.page.social_media.timeline.logs.inverted) {
+							entry.addClass("timeline-inverted");
+						}
+						$.page.social_media.timeline.logs.inverted = !$.page.social_media.timeline.logs.inverted;
+						
+						var badge = $("<div>", {
+							class : "timeline-badge"	
+						}).appendTo(entry);
+						
+						var icon = $("<i>", {
+							class : "fa fa-comment"
+						}).appendTo(badge);
+						
+						var panel = $("<div>", {
+							class : "timeline-panel"
+						}).appendTo(entry);
+						
+						var timeline_heading = $("<div>", {
+							class : "timeline-heading"
+						}).appendTo(panel);
+						
+						var heading_wrapper = $("<p>").appendTo(timeline_heading);
+						var small_text = $("<small>", {
+							class : "text-muted"
+						}).appendTo(heading_wrapper);
+						$("<i>", {
+							class : "fa fa-clock-o"
+						}).appendTo(small_text);
+						
+						small_text.append($.page.convert_time_display(datetimeString));
+						
+						var timeline_body = $("<div>", {
+							class : "timeline-body"
+						}).appendTo(panel);
+						
+						$("<p>").text(description).appendTo(timeline_body);
+					} // end $.page.social_media.timeline.logs.add_entry
+				} // end $.page.social_media.timeline.logs
+			}, // end $.page.social_media.timeline
 			menu : {
 				init : function(onClick) {
 					$.page.social_media.menu.main_menu(onClick);
@@ -1213,34 +1290,34 @@ $(function () {
 		}, // end $.backend.resource
 		social_managment : {
 		  create : function(status_string) {
-				var data = {
-					"status" : $("#social_media_content").val()
-				};
-				
-				// stringify json for backend to recognise
-				data = JSON.stringify(data);
-				
-				var promise = new Promise(function(resolve, reject) {
-					$.ajax({
-						url : $.backend.get_root_url() + "CMSSocial/update/",
-						method : "POST",
-						data : data,
-						dataType : "json",
-						success : function(data, textStatus, jqXHR) {
-							if (data.success) {
+			  var data = {
+				  "status" : $("#social_media_content").val()
+			  };
+			  
+			  // stringify json for backend to recognise
+			  data = JSON.stringify(data);
+			  
+			  var promise = new Promise(function(resolve, reject) {
+				  $.ajax({
+					  url : $.backend.get_root_url() + "CMSSocial/update/",
+					  method : "POST",
+					  data : data,
+					  dataType : "json",
+					  success : function(data, textStatus, jqXHR) {
+						  if (data.success) {
 							  alert("success")
-							} else {
-								reject("Failed to create incident.");	
-							}
-						},
-						error : function(jqXHR, textStatus, errorThrown) {
-							reject(jqXHR.responseText);
-						}
-					});
-				});
-				return promise;
-			} // end $.backend.incident.create
-			}
+						  } else {
+							  reject("Failed to create incident.");	
+						  }
+					  },
+					  error : function(jqXHR, textStatus, errorThrown) {
+						  reject(jqXHR.responseText);
+					  }
+				  });
+			  });
+			  return promise;
+			} // end $.backend.social_managment.create
+		} // end $.backend.social_managment
 	} // end $.backend
 	
 	$(document).ready(function(e) {
