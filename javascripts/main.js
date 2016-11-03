@@ -613,7 +613,7 @@ $(function () {
 				new_list_item : function(id, description, datetimeString) {
 					var li = $("<li>", {
 						class : "list-group-item clearfix log-item",
-						id : id
+						"data-id" : id
 					});
 					
 					var icon_wrapper = $("<div>", {
@@ -772,6 +772,8 @@ $(function () {
 					var description = result.description;
 					$.page.social_media.timeline.incidents.add_entry(incident_id, activation_time, deactivation_time, incident_type, description);
 				});
+				
+				timeline.children(".entry:last").click();
 			}, // end $.page.social_media.update
 			timeline : {
 				incidents : {
@@ -808,18 +810,32 @@ $(function () {
 					entry_onClick : function(e) {
 						var incident_id = $(this).attr("data-id");
 						var log_timeline = $("#media_view .timeline");
-						log_timeline.attr("data-id", incident_id);
+						log_timeline.attr("data-incident-id", incident_id);
+						$.page.social_media.timeline.logs.update();
 					} // end $.page.social_media.timeline.incidents.entry_onClick
 				}, // end $.page.social_media.timeline.incidents
 				logs : {
 					inverted : false,
 					update : function() {
+						var incident_id = $("#media_view .timeline").attr("data-incident-id");
+						if (incident_id === undefined) return;
 						
-					},
-					add_entry : function() {
+						$.page.social_media.timeline.logs.inverted = false;
+						$.backend.incident_logs.list(incident_id).then(function(results) {
+							$("#media_view .timeline").empty();
+							for(var i = 0; i < results.length; i++) {
+								var id = results[i].id;
+								var description = results[i].description;
+								var datetimeString = results[i].datetime;
+								
+								$.page.social_media.timeline.logs.add_entry(id, description, datetimeString);
+							}
+						});
+					}, // end $.page.social_media.timeline.logs.update
+					add_entry : function(id, description, datetimeString) {
 						var timeline = $("#media_view .timeline");
 						
-						var entry = $("<li>");
+						var entry = $("<li>").prependTo(timeline);
 						if ($.page.social_media.timeline.logs.inverted) {
 							entry.addClass("timeline-inverted");
 						}
@@ -836,7 +852,27 @@ $(function () {
 						var panel = $("<div>", {
 							class : "timeline-panel"
 						}).appendTo(entry);
-					}
+						
+						var timeline_heading = $("<div>", {
+							class : "timeline-heading"
+						}).appendTo(panel);
+						
+						var heading_wrapper = $("<p>").appendTo(timeline_heading);
+						var small_text = $("<small>", {
+							class : "text-muted"
+						}).appendTo(heading_wrapper);
+						$("<i>", {
+							class : "fa fa-clock-o"
+						}).appendTo(small_text);
+						
+						small_text.append($.page.convert_time_display(datetimeString));
+						
+						var timeline_body = $("<div>", {
+							class : "timeline-body"
+						}).appendTo(panel);
+						
+						$("<p>").text(description).appendTo(timeline_body);
+					} // end $.page.social_media.timeline.logs.add_entry
 				} // end $.page.social_media.timeline.logs
 			}, // end $.page.social_media.timeline
 			menu : {
