@@ -144,18 +144,20 @@
 			
 		<div class="panel-body col-md-6" style="background:white;height:500px">
 		  <div class="col-md-12" style="height:100%">
+         <form class="form text-right" id="log-create-form" onSubmit="$.backend.social_management.create(this, event)">
          <div class="form-group" style="margin-top:50px;">
             <div class="col-md-12">
                 <textarea class="form-control" rows="7"></textarea>
             </div>
             <div class="col-md-12" style="margin-top:15px">
-             <button class="btn col-md-12 btn-success" type="submit">
-                <i class="fa fa-save fa-lg"></i>
-                  <span>Submit</span>
-             </button>
+              
+               <button class="btn col-md-12 btn-success" type="submit">
+                  <i class="fa fa-save fa-lg"></i>
+                    <span>Submit</span>
+               </button>
              </div>
          </div>
-         
+         </form>
       </div>
 		</div>
 		  

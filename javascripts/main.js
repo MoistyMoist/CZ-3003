@@ -1157,7 +1157,37 @@ $(function () {
 				});
 				return promise;
 			}, // end $.backend.resource.assign
-		} // end $.backend.resource
+		}, // end $.backend.resource
+		social_managment : {
+		  create : function(status_string) {
+				var data = {
+					"status" : status_string
+				};
+				
+				// stringify json for backend to recognise
+				data = JSON.stringify(data);
+				
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "CMSSocial/update/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+							  alert("success")
+							} else {
+								reject("Failed to create incident.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
+						}
+					});
+				});
+				return promise;
+			} // end $.backend.incident.create
+			}
 	} // end $.backend
 	
 	$(document).ready(function(e) {
