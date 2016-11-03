@@ -814,21 +814,34 @@ $(function () {
 							"data-id" : incident_id
 						}).appendTo(timeline);
 						
-						if (deactivation_time === null || deactivation_time === undefined) {
-							entry.addClass("active");
-						}
-						
 						entry.click($.page.social_media.timeline.incidents.entry_onClick);
 						
-						var date, time;
-						var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-						if (activation_time != null) {
-							var datetime = new Date(activation_time);
-							date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
-							time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
-							time = datetime.toTimeString().substr(0, 8);
+						var datetime = new Date();
+						if (deactivation_time === null || deactivation_time === undefined) {
+							if (activation_time != null) {
+								datetime = new Date(activation_time);
+							}
+							entry.addClass("active");
+							
+							$("<span>", {
+								class : "label label-success"	
+							}).text("ACTIVE").appendTo(entry);
+						} else {
+							if (deactivation_time != null) {
+								datetime = new Date(deactivation_time);
+							}
+							
+							$("<span>", {
+								class : "label label-error"	
+							}).text("CLOSED").appendTo(entry);
 						}
 						
+						var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+						var date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
+						var time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
+						time = datetime.toTimeString().substr(0, 8);
+						
+						$("<br>").appendTo(entry);
 						$("<small>").text(date).appendTo(entry);
 						$("<h1>").text(time).appendTo(entry);
 						$("<h2>").text(incident_type).appendTo(entry);
@@ -1103,7 +1116,7 @@ $(function () {
 								resolve(data.id);
 								
 								// log new incident creation
-								$.backend.incident_logs.create(data.id, "Incident Activation");
+								$.backend.incident_logs.create(data.id, "Incident Activation (" + activation_time + ")");
 							} else {
 								reject("Failed to create incident.");	
 							}
