@@ -54,15 +54,15 @@ $(function () {
 				*	Adds a marker with radius(meters) on Basemap
 				*/
 				add : function(lat, lng, radius, title, type) {
-					var marker = {
-						marker : new google.maps.Marker({
-							position : {lat:lat, lng:lng},
+		
+		  var marker = new google.maps.Marker({
+         	position : {lat:lat, lng:lng},
 							map : $.google.maps.map,
 							animation: google.maps.Animation.DROP,
 							title : title,
 							icon : $.google.maps.marker.icons[type].icon()
-						})
-					};
+        });
+				
 					
 					if (radius > 0) {
 						marker.circle = new google.maps.Circle({
@@ -76,7 +76,21 @@ $(function () {
 							radius: radius
 						});
 					}
-					
+					var contentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<div id="bodyContent">'+
+            '<p><b>titlehere</b></p>'+
+            '</div>'+
+            '</div>';
+					var infowindow = new google.maps.InfoWindow({
+          content: contentString
+          });
+					marker.addListener('click', function() {
+          infowindow.open(map, marker);
+         });
+          
+        
 					$.google.maps.markers.push(marker);
 				}, // end $.google.maps.marker.add
 				clear_all : function() {
