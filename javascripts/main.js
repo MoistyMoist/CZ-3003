@@ -54,14 +54,13 @@ $(function () {
 				*	Adds a marker with radius(meters) on Basemap
 				*/
 				add : function(lat, lng, radius, title, type) {
-		
-		  var marker = new google.maps.Marker({
-         	position : {lat:lat, lng:lng},
-							map : $.google.maps.map,
-							animation: google.maps.Animation.DROP,
-							title : title,
-							icon : $.google.maps.marker.icons[type].icon()
-        });
+					var marker = new google.maps.Marker({
+						position : {lat:lat, lng:lng},
+						map : $.google.maps.map,
+						animation: google.maps.Animation.DROP,
+						title : title,
+						icon : $.google.maps.marker.icons[type].icon()
+					});
 				
 					
 					if (radius > 0) {
