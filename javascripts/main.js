@@ -80,7 +80,7 @@ $(function () {
             '<div id="siteNotice">'+
             '</div>'+
             '<div id="bodyContent">'+
-            '<p><b>titlehere</b></p>'+
+            '<p><b>'+title+'</b></p>'+
             '</div>'+
             '</div>';
 					var infowindow = new google.maps.InfoWindow({
@@ -542,7 +542,7 @@ $(function () {
 					}
 					
 					// [START] incident table refresh/update
-					var tr = $("<tr>", {
+					var tr = $("<tr id=incident_"+result.id+">", {
 						"data-id" : result.id
 					}).css("cursor", "pointer").click(function(e) {
                        $("#incident-log-list").attr({
@@ -579,6 +579,15 @@ $(function () {
 					$("<td>").text(type).appendTo(tr);
 					
 					var status = $("<span>");
+					status.click(function() {
+           var r = confirm("Confirm close this incident?");
+          if (r == true) {
+              $("#incident_"+result.id).remove();
+              var dectivation_time = new Date();
+             	$.backend.incident.updateStatus(result.id,dectivation_time)
+          } 
+           
+          });
 					$("<td>").append(status).appendTo(tr);
 					
 					if (result.deactivation_time === null) {
@@ -1112,7 +1121,37 @@ $(function () {
 					});
 				});
 				return promise;
-			}, // end $.backend.incident.update
+			},
+			updateStatus : function(incident_id, deactivation_time) {
+				var data = {
+					"deactivation_time" : deactivation_time
+				};
+				
+				// stringify json for backend to recognise
+				data = JSON.stringify(data);
+				
+				var promise = new Promise(function(resolve, reject) {
+					$.ajax({
+						url : $.backend.get_root_url() + "Incident/update/" + incident_id + "/",
+						method : "POST",
+						data : data,
+						dataType : "json",
+						success : function(data, textStatus, jqXHR) {
+							if (data.success) {
+								resolve(data);	
+							} else {
+								reject("Failed to update incident for {" + incident_id + "}.");	
+							}
+						},
+						error : function(jqXHR, textStatus, errorThrown) {
+							reject(jqXHR.responseText);
+						}
+					});
+				});
+				return promise;
+			},
+			
+			// end $.backend.incident.update
 		}, // end $.backend.incident
 		call_report : {
 			create : function(incident_id, name, contact, description) {
