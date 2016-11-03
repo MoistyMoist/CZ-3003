@@ -1140,34 +1140,6 @@ $(function () {
 				});
 				return promise;
 			}, // end $.backend.incident.update
-			updateStatus : function(incident_id, deactivation_time) {
-				var data = {
-					"deactivation_time" : deactivation_time
-				};
-				
-				// stringify json for backend to recognise
-				data = JSON.stringify(data);
-				
-				var promise = new Promise(function(resolve, reject) {
-					$.ajax({
-						url : $.backend.get_root_url() + "Incident/update/" + incident_id + "/",
-						method : "POST",
-						data : data,
-						dataType : "json",
-						success : function(data, textStatus, jqXHR) {
-							if (data.success) {
-								resolve(data);	
-							} else {
-								reject("Failed to update incident for {" + incident_id + "}.");	
-							}
-						},
-						error : function(jqXHR, textStatus, errorThrown) {
-							reject(jqXHR.responseText);
-						}
-					});
-				});
-				return promise;
-			} // end $.backend.incident.updateStatus
 		}, // end $.backend.incident
 		call_report : {
 			create : function(incident_id, name, contact, description) {
