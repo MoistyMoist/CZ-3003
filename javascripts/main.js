@@ -412,29 +412,31 @@ $(function () {
 						}
 					});
 					
-					return { incident_exists : incident_exists, incident_id : incident_id };
+					return { incident_id : incident_id, location : new_location };
 				}).then(function(result) {
-					console.log(result);
-					return;
-					if (!result.incident_exists) {
-						$.google.maps.geocode_latlng(new_location).then(function(results) {
+					var location = result.location;
+					if (result.incident_id === undefined) {
+						$.google.maps.geocode_latlng(location).then(function(results) {
 							var address = results[0].formatted_address;
 							
 							// deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long
-							var coord_lat = new_location.lat();
-							var coord_lng = new_location.lng();
+							var lat = location.lat();
+							var lng = location.lng();
 							var activation_time = new Date();
-							$.backend.incident.create(null, activation_time, address, incident_type, 2000, coord_lat, coord_lng).then(function(id) {
-								console.log("created new incident with id : ^", id);
+							$.backend.incident.create(null, activation_time, address, incident_type, 2000, lat, lng)
+							.then(function(incident_id) {
+								console.log("created new incident with id : ", incident_id);
 								$.google.firebase.send_broadcast({incident:true});
 								
 								// reset form
 								$("#incident-location").val("");
 								$("#incident-type").val("F");
+								
+								//[TODO] create call report
 							});
 						});
 					} else {
-						
+						//[TODO] create call report
 					}
 				});
 			}, //end $.page.incident.submit_create_form
@@ -755,6 +757,10 @@ $(function () {
 						"data-id" : result.id
 					}).appendTo(timeline);
 					
+					entry.click(function(e) {
+                        console.log(e);
+                    });
+					
 					var date, time;
 					var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 					if (result.activation_time != null) {
@@ -1018,23 +1024,14 @@ $(function () {
 			}, // end $.backend.incident.update
 		}, // end $.backend.incident
 		call_report : {
-			create : function(incident_id, name, contact, incident_type) {
-				/*
-				var data = {
-					"incident_id" : incident_id,
-					"details" : details
-				};
-				*/
-				//[TODO]
+			create : function(incident_id, name, contact, description) {
 				var data = {
 					caller_name : name,
-					caller_nric : "nric",
 					contact_no : contact,
-					description : "description",
-					incident_type : incident_type,
+					description : description,
 					dateTime : new Date()
 				}
-				
+				//[TODO]
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
