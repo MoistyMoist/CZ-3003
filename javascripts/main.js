@@ -76,7 +76,7 @@ $(function () {
 						});
 					}
 					var contentString = '<div id="content">'+
-            '<div id="siteNotice">'+
+					'<div id="siteNotice">'+
             '</div>'+
             '<div id="bodyContent">'+
             '<p><b>titlehere</b></p>'+
