@@ -976,7 +976,16 @@ $(function () {
 					var timeline = $(".timeline_main");
 					$(".timeline_main").scrollLeft(timeline.width());
 				}
-			} // end $.page.social_media.menu
+			}, // end $.page.social_media.menu
+			post_to : function(form, e) {
+				e.preventDefault();
+				
+				var content = $("#social_media_content").val();
+				$.backend.social_media.publish(content).then(function(result) {
+					console.log("test: ", result);
+					$("#social-media-form")[0].reset();
+				});
+			} // end $.page.social_media.post_to
 		}, // end $.page.social_media
 		convert_time_display : function(datetimeString) {
 			var datetime = new Date(datetimeString);
@@ -1306,10 +1315,10 @@ $(function () {
 				return promise;
 			}, // end $.backend.resource.assign
 		}, // end $.backend.resource
-		social_managment : {
-		  create : function(status_string) {
+		social_media : {
+		  publish : function(status) {
 			  var data = {
-				  "status" : $("#social_media_content").val()
+				  status : status
 			  };
 			  
 			  // stringify json for backend to recognise
@@ -1323,7 +1332,8 @@ $(function () {
 					  dataType : "json",
 					  success : function(data, textStatus, jqXHR) {
 						  if (data.success) {
-							  alert("success")
+							  //console.log(data);
+							  resolve(data);
 						  } else {
 							  reject("Failed to create incident.");	
 						  }
@@ -1334,8 +1344,8 @@ $(function () {
 				  });
 			  });
 			  return promise;
-			} // end $.backend.social_managment.create
-		} // end $.backend.social_managment
+			} // end $.backend.social_media.publish
+		} // end $.backend.social_media
 	} // end $.backend
 	
 	$(document).ready(function(e) {
