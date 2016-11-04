@@ -48,11 +48,23 @@ $(function () {
 						},
 						color : "#006DF0",
 						stroke : "#666666"
+					},
+					Others : {
+						icon : function() {
+							return {
+								url : "../images/others.svg",
+								origin : new google.maps.Point(0, 0),
+								anchor : new google.maps.Point(12, 12)
+							}
+						},
+						color : "#DDDDDD",
+						stroke : "#666666"
 					}
 				},
 				/**
 				*	Adds a marker with radius(meters) on Basemap
 				*/
+<<<<<<< HEAD
 				add : function(id,lat, lng, radius, title, type,activatedDateTime) {
 		
   		  var marker = new google.maps.Marker({
@@ -62,8 +74,17 @@ $(function () {
   							title : title,
   							icon : $.google.maps.marker.icons[type].icon()
           });
+=======
+				add : function(lat, lng, radius, title, type) {
+					var marker = new google.maps.Marker({
+						position : {lat:lat, lng:lng},
+						map : $.google.maps.map,
+						animation: google.maps.Animation.DROP,
+						title : title,
+						icon : $.google.maps.marker.icons[type].icon()
+					});
+>>>>>>> master
 				
-					
 					if (radius > 0) {
 						marker.circle = new google.maps.Circle({
 							strokeColor: $.google.maps.marker.icons[type].stroke,
@@ -76,6 +97,7 @@ $(function () {
 							radius: radius
 						});
 					}
+<<<<<<< HEAD
 					var incidentcontentString = '<div id="content">'+
             '<div id="siteNotice">'+
             '</div>'+
@@ -127,6 +149,24 @@ $(function () {
             }
            
          });
+=======
+					
+					var contentString = '<div id="content">'+
+					'<div id="siteNotice">'+
+					'</div>'+
+					'<div id="bodyContent">'+
+					'<p><b>'+title+'</b></p>'+
+					'</div>'+
+					'</div>';
+					
+					var infowindow = new google.maps.InfoWindow({
+						content: contentString
+					});
+					
+					marker.addListener('click', function() {
+						infowindow.open(map, marker);
+					});
+>>>>>>> master
           
         
 					$.google.maps.markers.push(marker);
@@ -138,7 +178,7 @@ $(function () {
 				},
 				clear_all : function() {
 					$.google.maps.markers.forEach(function(marker, index) {
-						marker.marker.setMap(null);
+						marker.setMap(null);
 						if(marker.circle !== undefined) {
 							marker.circle.setMap(null);	
 						}
@@ -436,9 +476,7 @@ $(function () {
 						
 						$("#incident_create_form").submit($.page.incident.submit_create_form);
 					}
-				})/*.done(function() {
-					$.page.incident.logs.refresh_list();
-				})*/;
+				});
 				
 				//load menus
 				$.page.incident.menu.init($.page.incident.menu.click);
@@ -451,9 +489,8 @@ $(function () {
 				$.google.maps.geocode_address(address).then(function(results) {
 					var new_location = results[0].geometry.location;
 					
-					//TODO search for existing incidents
 					var incident_exists = false;
-					var incident_id;
+					var incident_id, description;
 					$.page.incident.list.some(function(incident, index) {
 						if (incident.location != null) {
 							var existing_location = new google.maps.LatLng(incident.location.coord_lat, incident.location.coord_long)
@@ -464,6 +501,7 @@ $(function () {
 							incident_exists = dist <= radius && incident_type === incident.incident_type;
 							if (incident_exists) {
 								incident_id = incident.id;
+								address = incident.description;
 							}
 							return incident_exists;
 						}
@@ -472,29 +510,32 @@ $(function () {
 					return { incident_id : incident_id, location : new_location };
 				}).then(function(result) {
 					var location = result.location;
+					
 					if (result.incident_id === undefined) {
-						$.google.maps.geocode_latlng(location).then(function(results) {
-							var address = results[0].formatted_address;
-							
-							// deactivation_time, activation_time, description, incident_type, radius, coord_lat, coord_long
-							var lat = location.lat();
-							var lng = location.lng();
-							var activation_time = new Date();
-							$.backend.incident.create(null, activation_time, address, incident_type, 2000, lat, lng)
-							.then(function(incident_id) {
-								console.log("created new incident with id : ", incident_id);
-								$.google.firebase.send_broadcast({incident:true});
-								
-								// reset form
-								$("#incident-location").val("");
-								$("#incident-type").val("F");
-								
-								//[TODO] create call report
-							});
-						});
-					} else {
-						//[TODO] create call report
+						return $.google.maps.geocode_latlng(location);
 					}
+					
+					return result;
+				}).then(function(results) {
+					if (results.incident_id === undefined) {
+						address = results[0].formatted_address;
+						var location = results[0].geometry.location;
+						var lat = location.lat();
+						var lng = location.lng();
+						var activation_time = new Date();
+						
+						return $.backend.incident.create(null, activation_time, address, incident_type, 2000, lat, lng);
+					}
+					return results.incident_id;
+				}).then(function(result) {
+					console.log("incident id : ", result);
+					var description = $.page.incident.get_type_text(incident_type) + " @ " + address;
+					return $.page.incident.call_report.create(result, description);
+				}).then(function(result) {
+					console.log("created new call report with id : ", result.id);
+					$.google.firebase.send_broadcast({incident:true});
+					// reset form
+					$("#incident_create_form")[0].reset();
 				});
 			}, //end $.page.incident.submit_create_form
 			menu : {
@@ -585,7 +626,7 @@ $(function () {
 					}
 					
 					// [START] incident table refresh/update
-					var tr = $("<tr id=incident_"+result.id+">", {
+					var tr = $("<tr>", {
 						"data-id" : result.id
 					}).css("cursor", "pointer").click(function(e) {
                        $("#incident-log-list").attr({
@@ -622,15 +663,23 @@ $(function () {
 					$("<td>").text(type).appendTo(tr);
 					
 					var status = $("<span>");
+					
 					status.click(function() {
-           var r = confirm("Confirm close this incident?");
-          if (r == true) {
-              $("#incident_"+result.id).remove();
-              var dectivation_time = new Date();
-             	$.backend.incident.updateStatus(result.id,dectivation_time)
-          } 
-           
-          });
+						var dialog = confirm("Confirm close this incident?");
+						if (dialog == true) {
+							var incident_id = tr.attr("data-id");
+							
+							tr.remove();
+							
+							var deactivation_time = new Date();
+							$.backend.incident.update(incident_id, { deactivation_time : deactivation_time })
+							.then(function(result) {
+								$.backend.incident_logs.create(incident_id, "Incident Deactivated (" + deactivation_time + ")");
+								$.google.firebase.send_broadcast({incident:true});
+							});
+						}
+					});
+					
 					$("<td>").append(status).appendTo(tr);
 					
 					if (result.deactivation_time === null) {
@@ -711,13 +760,12 @@ $(function () {
 				}  // end $.page.incident.logs.create
 			}, // end $.page.incident.logs
 			call_report : {
-				create : function(incident_id) {
+				create : function(incident_id, description) {
 					var name = $("#incident_caller_name").val();
 					var contact = $("#incident_caller_contact").val();
-					
-					//[TODO]
-				}	
-			}
+					return $.backend.call_report.create(incident_id, name, contact, description);
+				}	// end $.page.incident.call_report.create
+			} // end $.page.incident.call_report
 		},  // end $.page.incident
 		resource : {
 			init : function(showView) {
@@ -1123,7 +1171,10 @@ $(function () {
 						dataType : "json",
 						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								resolve(data.id);	
+								resolve(data.id);
+								
+								// log new incident creation
+								$.backend.incident_logs.create(data.id, "Incident Activation");
 							} else {
 								reject("Failed to create incident.");	
 							}
@@ -1135,12 +1186,14 @@ $(function () {
 				});
 				return promise;
 			}, // end $.backend.incident.create
-			update : function(incident_id, radius) {
+			update : function(incident_id, data) {
+				/*
 				var data = {
 					"location" : {
 						"radius" : radius
 					}
 				};
+				*/
 				
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
@@ -1153,7 +1206,7 @@ $(function () {
 						dataType : "json",
 						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								resolve(data);	
+								resolve(data);
 							} else {
 								reject("Failed to update incident for {" + incident_id + "}.");	
 							}
@@ -1164,37 +1217,7 @@ $(function () {
 					});
 				});
 				return promise;
-			},
-			updateStatus : function(incident_id, deactivation_time) {
-				var data = {
-					"deactivation_time" : deactivation_time
-				};
-				
-				// stringify json for backend to recognise
-				data = JSON.stringify(data);
-				
-				var promise = new Promise(function(resolve, reject) {
-					$.ajax({
-						url : $.backend.get_root_url() + "Incident/update/" + incident_id + "/",
-						method : "POST",
-						data : data,
-						dataType : "json",
-						success : function(data, textStatus, jqXHR) {
-							if (data.success) {
-								resolve(data);	
-							} else {
-								reject("Failed to update incident for {" + incident_id + "}.");	
-							}
-						},
-						error : function(jqXHR, textStatus, errorThrown) {
-							reject(jqXHR.responseText);
-						}
-					});
-				});
-				return promise;
-			},
-			
-			// end $.backend.incident.update
+			}, // end $.backend.incident.update
 		}, // end $.backend.incident
 		call_report : {
 			create : function(incident_id, name, contact, description) {
@@ -1216,7 +1239,10 @@ $(function () {
 						dataType : "json",
 						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								resolve(data);	
+								resolve(data);
+								
+								var log_desc = "Call report made by " + name + " (contact no.: " + contact + ")";
+								$.backend.incident_logs.create(incident_id, log_desc);
 							} else {
 								reject("Failed to create call report for {" + incident_id + "}.");	
 							}
