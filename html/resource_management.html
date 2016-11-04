@@ -1,74 +1,36 @@
-<div class="panel panel-default">
-	<div class="pannel-heading clearfix" style="padding-top:20px;">
-		<div class="col-md-3">
-            <div class="panel-stat3 bg-info">
-                <h2 class="m-top-none">SPF</h2>
-                <div class="stat-icon">
-                    <i class="fa fa-taxi fa-3x"></i>
-                </div>
-            </div>
-        </div><!-- SPF -->
-        
-        <div class="col-md-3">
-            <div class="panel-stat3 bg-danger">
-                <h2 class="m-top-none">SCDF</h2>
-                <div class="stat-icon">
-                    <i class="fa fa-bus fa-3x"></i>
-                </div>
-            </div>
-        </div><!-- SCDF -->
-        
-        <div class="col-md-3">
-            <div class="panel-stat3 bg-info">
-                <h2 class="m-top-none">PUB</h2>
-                <div class="stat-icon">
-                    <i class="fa fa-tint fa-3x"></i>
-                </div>
-            </div>
-        </div><!-- PUB -->
-        
-        <div class="col-md-3">
-            <div class="panel-stat3 bg-danger">
-                <h2 class="m-top-none">AMBULANCE</h2>
-                <div class="stat-icon">
-                    <i class="fa fa-ambulance fa-3x"></i>
-                </div>
-            </div>
-        </div><!-- AMBULANCE -->
-        
-	</div>
+<div class="panel panel-info">
+	<div id="resource-selector" class="panel-heading clearfix" style="padding-top:20px;overflow-x:scroll;"></div>
 
-	<div id="" class="panel-body padding-md">
-    	<form class="form-horizontal" onSubmit="$.backend.resource.create(this, event)">
+	<div class="panel-body padding-md">
+    	<form class="form-horizontal" onSubmit="$.page.resource.form_submit(this, event)">
 			<div class="form-group">
-            	<label class="col-md-2 control-label">To:</label>
+            	<label class="col-md-2 control-label" for="resource-contact">To:</label>
 				<div class="col-md-10">
-					<input  class="form-control" type="text" placeholder="input here..." />
+					<input id="resource-contact" class="form-control" type="text" required />
 				</div>
 			</div>
 
 			<div class="form-group">
-				<label class="col-md-2 control-label">Incident ID</label>
+				<label class="col-md-2 control-label" for="resource-incidents">Incidents</label>
 				<div class="col-md-10">
-                    <select id="" class="form-control input-sm inline-block">
-                        <option value="INCIDENT ID">INCIDENT ID</option>
-                        <option value="INCIDENT ID">INCIDENT ID</option>
-                        <option value="INCIDENT ID">INCIDENT ID</option>
-                    </select>
+                    <select id="resource-incidents" class="form-control input-sm inline-block" required></select>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<label class="col-md-2 control-label">Task Description</label>
+				<label class="col-md-2 control-label" for="resource-message">Task Description</label>
 				<div class="col-md-10">
-					<textarea id="membershipFormAddress" class="form-control" rows="10"></textarea>
+					<textarea id="resource-message" class="form-control" rows="10" required></textarea>
 				</div>
 			</div>
             
 			<div class="form-group">
             	<div class="col-md-offset-2 col-md-10">
-					<button class="col-md-12 btn  btn-success" type="submit"><i class="fa fa-save fa-lg"></i>  Assign Task</button>
-       </div>
+					<button class="col-md-12 btn  btn-success" type="submit">
+                        <i class="fa fa-flag fa-lg" aria-hidden="true"></i>  
+                        <span>Assign Task</span>
+                    </button>
+                </div>
 			</div>
 		</form>
 	</div>

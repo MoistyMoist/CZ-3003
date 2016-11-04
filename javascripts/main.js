@@ -428,6 +428,7 @@ $(function () {
 			$.backend.incident.list().then(function(results) {
 				$.page.incident.list = results;
 				$.page.incident.update(results);
+				$.page.resource.update.incidents(results);
 				$.page.social_media.update(results);
 			});
 		}, // end $.page.update
@@ -742,6 +743,13 @@ $(function () {
 			} // end $.page.incident.call_report
 		},  // end $.page.incident
 		resource : {
+			icons : {
+				SPF : "fa fa-taxi fa-3x",
+				SCDF : "fa fa-bus fa-3x",
+				PUB : "fa fa-tint fa-3x",
+				SEAS : "fa fa-ambulance fa-3x"
+			}, // end $.page.resource.icons
+			inverted : false,
 			init : function(showView) {
 				//load view
 				$.ajax({
@@ -756,6 +764,16 @@ $(function () {
 						
 						if (!showView) view.hide();
 					}
+				}).done(function() {
+					$.page.resource.update.agencies();
+					
+					$("#resource-contact").on("focusin", function() {
+						$(this).prop("readonly", true);
+					});
+					
+					$("#resource-contact").on("focusout", function() {
+						$(this).prop("readonly", false);
+					});
 				});
 				
 				//load controls
@@ -783,7 +801,7 @@ $(function () {
 					}).text("Resource Management").appendTo(a);
 					
 					li.click(onClick);
-				}, //end $.page.resource.menu.main_menu
+				}, // end $.page.resource.menu.main_menu
 				shortcut : function(onClick) {
 					var a = $("<a>", {
 						class : "shortcut-link resource_btn",
@@ -800,7 +818,7 @@ $(function () {
 					}).text("Resource Management").appendTo(a);
 					
 					a.click(onClick);
-				}, //end $.page.resource.menu.shortcut
+				}, // end $.page.resource.menu.shortcut
 				click : function(e) {
 					e.preventDefault();
 				
@@ -810,7 +828,100 @@ $(function () {
 						$.page.scrollTo("#resource_view");
 					});
 				}
-			}, //end $.page.resource.menu
+			}, // end $.page.resource.menu
+			update : {
+				agencies : function() {
+					var selector = $("#resource_view #resource-selector");
+					selector.empty();
+					$.page.resource.inverted = false;
+					
+					return $.backend.resource.list().then(function(results) {
+						results.forEach(function(result, index) {
+							var col = $("<div>", {
+								class : "col-md-3"
+							}).appendTo(selector);
+							
+							var panel = $("<div>", {
+								class : "panel-stat3",
+								title : result.description,
+								"data-contact" : result.sms_contact_no,
+								"data-id" : result.id
+							}).appendTo(col);
+							
+							if ($.page.resource.inverted) {
+								panel.addClass("bg-danger");	
+							} else {
+								panel.addClass("bg-primary");	
+							}
+							
+							panel.click($.page.resource.agency_onclick);
+							
+							var header = $("<h2>", {
+								class : "m-top-none"
+							}).text(result.name).appendTo(panel);
+							
+							$("<small>").text(result.description).appendTo(panel);
+							
+							var icon_wrapper = $("<div>", {
+								class : "stat-icon"
+							}).appendTo(panel);
+							
+							$("<i>", {
+								class : $.page.resource.icons[result.name]
+							}).appendTo(icon_wrapper);
+							
+							$.page.resource.inverted = !$.page.resource.inverted;
+						});
+					});
+				},
+				incidents : function(incidents) {
+					var select = $("#resource-incidents");
+					select.empty();
+					
+					var option = $("<option>", {
+						value : "",
+						default : ""
+					}).text("").appendTo(select);
+					
+					incidents.forEach(function(incident, index) {
+						var deactivation_time = incident.deactivation_time;
+						
+						if (deactivation_time !== undefined && deactivation_time !== null) {
+							return;
+						}
+						
+						var title = $.page.incident.get_type_text(incident.incident_type);
+						title += " @ " + incident.description;
+						
+						var opt_text = incident.id + ": ";
+						opt_text += title;
+						opt_text += " [" + new Date(incident.activation_time) + "]";
+						
+						var option = $("<option>", {
+							value : title
+						}).text(opt_text).appendTo(select);
+					});
+				} // end $.page.resource.update.incidents
+			}, // end $.page.resource.update
+			agency_onclick : function(e) {
+				var target = $(e.currentTarget);
+				var contact = target.attr("data-contact");
+				var description = target.attr("title");
+				
+				$("#resource-contact").val(description + " (" + contact + ")");
+				$("#resource-contact").attr("data-contact", contact);
+			}, // end $.page.resource.agency_onclick
+			form_submit : function(form, e) {
+				e.preventDefault();
+				
+				var contact = $("#resource-contact").attr("data-contact");
+				var title = $("#resource-incidents").val();
+				var message = $("#resource-message").val();
+				
+				$.backend.resource.assign(contact, title, message).then(function(data) {
+					form.reset();
+				});
+			} // end $.page.resource.form_submit
 		}, // end $.page.resource
 		social_media : {
 			init : function(showView) {
@@ -1223,7 +1334,7 @@ $(function () {
 					description : description,
 					dateTime : new Date()
 				}
-				//[TODO]
+				
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
@@ -1305,12 +1416,12 @@ $(function () {
 			list : function() {
 				var promise = new Promise(function(resolve, reject) {
 					$.ajax({
-						url : $.backend.get_root_url(),
+						url : $.backend.get_root_url() + "Agency/list/",
 						method : "GET",
 						dataType : "json",
 						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								resolve(data);	
+								resolve(data.results);	
 							} else {
 								reject("Failed to retrieve resources.");	
 							}
@@ -1340,7 +1451,7 @@ $(function () {
 						dataType : "json",
 						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								resolve(data);	
+								resolve(data.id);	
 							} else {
 								reject("Failed to send SMS.");	
 							}
