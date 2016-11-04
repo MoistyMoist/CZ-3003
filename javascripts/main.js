@@ -273,8 +273,14 @@ $(function () {
 					console.log("Message received. ", payload);
 					
 					var incident = payload.data.incident;
-					if(incident !== undefined && incident) {
+					if (incident !== undefined && incident) {
 						$.page.update();
+					}
+					
+					var incident_logs = payload.data.incident_logs;
+					if (incident_logs !== undefined && inident_logs) {
+						$.page.incident.logs.refresh_list();
+						$.page.social_media.timeline.logs.update();
 					}
 				});
 			}, // end $.google.firebase.receive_message
@@ -684,6 +690,7 @@ $(function () {
 					
 					$.backend.incident_logs.create(incident_id, description).then(function(data) {
 						$.page.incident.logs.refresh_list();
+						$.google.firebase.send_broadcast({incident_logs:true});
 						$("#log-create-description").val("");
 					});
 				}  // end $.page.incident.logs.create
