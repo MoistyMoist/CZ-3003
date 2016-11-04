@@ -66,16 +66,14 @@ $(function () {
 				*/
 
 				add : function(id,lat, lng, radius, title, type,activatedDateTime) {
-		
-  		  var marker = new google.maps.Marker({
-           	position : {lat:lat, lng:lng},
-  							map : $.google.maps.map,
-  							animation: google.maps.Animation.DROP,
-  							title : title,
-  							icon : $.google.maps.marker.icons[type].icon()
-          });
-
-				
+					var marker = new google.maps.Marker({
+						position : {lat:lat, lng:lng},
+						map : $.google.maps.map,
+						animation: google.maps.Animation.DROP,
+						title : title,
+						icon : $.google.maps.marker.icons[type].icon()
+					});
+					
 					if (radius > 0) {
 						marker.circle = new google.maps.Circle({
 							strokeColor: $.google.maps.marker.icons[type].stroke,
@@ -90,14 +88,16 @@ $(function () {
 					}
 
 					var incidentcontentString = '<div id="content">'+
-            '<div id="siteNotice">'+
-            '</div>'+
-            '<div id="bodyContent">'+
-            '<p><b>Incident Reported '+$.page.convert_time_display(activatedDateTime)+' at '+title+' </b></p>'+
-            '</div>'+
-            '</div>';
-          var mediacontentString ="";
-          var resourcecontentString = '<div id="content">'+
+					'<div id="siteNotice">'+
+					'</div>'+
+					'<div id="bodyContent">'+
+					'<p><b>Incident Reported '+$.page.convert_time_display(activatedDateTime)+' at '+title+' </b></p>'+
+					'</div>'+
+					'</div>';
+					
+					var mediacontentString ="";
+					
+					var resourcecontentString = '<div id="content">'+
             '<div id="siteNotice">'+
             '</div>'+
             '<div id="bodyContent">'+
