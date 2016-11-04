@@ -37,7 +37,7 @@ $(function () {
 						},
 						color : "#FF0000",
 						stroke : "#666666"
-					},
+					}, // end $.google.maps.marker.icons.Terrorist
 					Flooding : {
 						icon : function() {
 							return {
@@ -48,7 +48,7 @@ $(function () {
 						},
 						color : "#006DF0",
 						stroke : "#666666"
-					},
+					}, // end $.google.maps.marker.icons.Flooding
 					Others : {
 						icon : function() {
 							return {
@@ -59,23 +59,20 @@ $(function () {
 						},
 						color : "#DDDDDD",
 						stroke : "#666666"
-					}
-				},
+					} // end $.google.maps.marker.icons.Others
+				}, // end $.google.maps.marker.icons
 				/**
 				*	Adds a marker with radius(meters) on Basemap
 				*/
-
 				add : function(id,lat, lng, radius, title, type,activatedDateTime) {
-		
-  		  var marker = new google.maps.Marker({
-           	position : {lat:lat, lng:lng},
-  							map : $.google.maps.map,
-  							animation: google.maps.Animation.DROP,
-  							title : title,
-  							icon : $.google.maps.marker.icons[type].icon()
-          });
-
-				
+					var marker = new google.maps.Marker({
+						position : {lat:lat, lng:lng},
+						map : $.google.maps.map,
+						animation: google.maps.Animation.DROP,
+						title : title,
+						icon : $.google.maps.marker.icons[type].icon()
+					});
+					
 					if (radius > 0) {
 						marker.circle = new google.maps.Circle({
 							strokeColor: $.google.maps.marker.icons[type].stroke,
@@ -88,68 +85,64 @@ $(function () {
 							radius: radius
 						});
 					}
-
+					
 					var incidentcontentString = '<div id="content">'+
-            '<div id="siteNotice">'+
-            '</div>'+
-            '<div id="bodyContent">'+
-            '<p><b>Incident Reported '+$.page.convert_time_display(activatedDateTime)+' at '+title+' </b></p>'+
-            '</div>'+
-            '</div>';
-          var mediacontentString ="";
-          var resourcecontentString = '<div id="content">'+
-            '<div id="siteNotice">'+
-            '</div>'+
-            '<div id="bodyContent">'+
-            '<p><b>Deploy resource here?</b></p>'+
-            '<form class="form" onsubmit="$.google.maps.marker.mediaInfoWindow_click('+id+', event)">'+
-            '<button type="submit">Yes</botton>'+
-            '</form>'+
-            '</div>'+
-            '</div>';
-            
-          mediacontentString = '<div id="content">'+
-                '<div id="siteNotice">'+
-                '</div>'+
-                '<div id="bodyContent">'+
-                '<p><b>Activated time :'+$.page.convert_time_display(activatedDateTime)+'</b></p>'+
-                '</div>'+
-                '</div>';
-                
-         
-          
-            
+					'<div id="siteNotice">'+
+					'</div>'+
+					'<div id="bodyContent">'+
+					'<p><b>Incident Reported '+$.page.convert_time_display(activatedDateTime)+' at '+title+' </b></p>'+
+					'</div>'+
+					'</div>';
+					
+					//var mediacontentString ="";
+					var resourcecontentString = '<div id="content">'+
+					'<div id="siteNotice">'+
+					'</div>'+
+					'<div id="bodyContent">'+
+					'<p><b>Deploy resource here?</b></p>'+
+					'<form class="form" onsubmit="$.google.maps.marker.mediaInfoWindow_click('+id+', event)">'+
+					'<button type="submit">Yes</botton>'+
+					'</form>'+
+					'</div>'+
+					'</div>';
+					
+					var mediacontentString = '<div id="content">'+
+					'<div id="siteNotice">'+
+					'</div>'+
+					'<div id="bodyContent">'+
+					'<p><b>Activated time :'+$.page.convert_time_display(activatedDateTime)+'</b></p>'+
+					'</div>'+
+					'</div>';
+					
 					var incidentinfowindow = new google.maps.InfoWindow({
-            content: incidentcontentString
-          });
-          var resourceinfowindow = new google.maps.InfoWindow({
-            content: resourcecontentString
-          });
-          var mediainfowindow = new google.maps.InfoWindow({
-            content: mediacontentString
-          });
-          
-          
+						content: incidentcontentString
+					});
+					
+					var resourceinfowindow = new google.maps.InfoWindow({
+						content: resourcecontentString
+					});
+					
+					var mediainfowindow = new google.maps.InfoWindow({
+						content: mediacontentString
+					});
+					
 					marker.circle.addListener('click', function() {
-					  if($('#incident_view').css('display') == 'none' && $('#media_view').css('display') == 'none'){ 
-                resourceinfowindow.open(map, marker);
-            } else if($('#incident_view').css('display') == 'none' && $('#resource_view').css('display') == 'none'){ 
-               mediainfowindow.open(map, marker);
-            }else{
-               incidentinfowindow.open(map, marker);
-            }
-           
-         });
-
-          
-        
+						if($('#incident_view').css('display') == 'none' && $('#media_view').css('display') == 'none'){
+							resourceinfowindow.open(map, marker);
+						} else if($('#incident_view').css('display') == 'none' && $('#resource_view').css('display') == 'none'){
+							mediainfowindow.open(map, marker);
+						} else {
+							incidentinfowindow.open(map, marker);
+						}
+					});
+					
 					$.google.maps.markers.push(marker);
 				}, // end $.google.maps.marker.add
 				mediaInfoWindow_click : function(id, e){
-				  e.preventDefault();
-				  //TODO:infowindow on click
-				  alert("update the selected id to "+id+" here!")
-				},
+					e.preventDefault();
+					//TODO:infowindow on click
+					alert("update the selected id to "+id+" here!")
+				}, // end $.google.maps.marker.mediaInfoWindow_click
 				clear_all : function() {
 					$.google.maps.markers.forEach(function(marker, index) {
 						marker.setMap(null);
