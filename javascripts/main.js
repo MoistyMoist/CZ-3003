@@ -318,8 +318,14 @@ $(function () {
 					console.log("Message received. ", payload);
 					
 					var incident = payload.data.incident;
-					if(incident !== undefined && incident) {
+					if (incident !== undefined && incident) {
 						$.page.update();
+					}
+					
+					var incident_logs = payload.data.incident_logs;
+					if (incident_logs !== undefined && inident_logs) {
+						$.page.incident.logs.refresh_list();
+						$.page.social_media.timeline.logs.update();
 					}
 				});
 			}, // end $.google.firebase.receive_message
@@ -729,6 +735,7 @@ $(function () {
 					
 					$.backend.incident_logs.create(incident_id, description).then(function(data) {
 						$.page.incident.logs.refresh_list();
+						$.google.firebase.send_broadcast({incident_logs:true});
 						$("#log-create-description").val("");
 					});
 				}  // end $.page.incident.logs.create
@@ -859,21 +866,34 @@ $(function () {
 							"data-id" : incident_id
 						}).appendTo(timeline);
 						
-						if (deactivation_time === null || deactivation_time === undefined) {
-							entry.addClass("active");
-						}
-						
 						entry.click($.page.social_media.timeline.incidents.entry_onClick);
 						
-						var date, time;
-						var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-						if (activation_time != null) {
-							var datetime = new Date(activation_time);
-							date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
-							time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
-							time = datetime.toTimeString().substr(0, 8);
+						var datetime = new Date();
+						if (deactivation_time === null || deactivation_time === undefined) {
+							if (activation_time != null) {
+								datetime = new Date(activation_time);
+							}
+							entry.addClass("active");
+							
+							$("<span>", {
+								class : "label label-success"	
+							}).text("ACTIVE").appendTo(entry);
+						} else {
+							if (deactivation_time != null) {
+								datetime = new Date(deactivation_time);
+							}
+							
+							$("<span>", {
+								class : "label label-error"	
+							}).text("CLOSED").appendTo(entry);
 						}
 						
+						var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+						var date = datetime.getDate() + " " + monthNames[datetime.getMonth()] + " " + datetime.getFullYear();
+						var time = datetime.getHours() + ":" + datetime.getMinutes() + ":" + datetime.getSeconds();
+						time = datetime.toTimeString().substr(0, 8);
+						
+						$("<br>").appendTo(entry);
 						$("<small>").text(date).appendTo(entry);
 						$("<h1>").text(time).appendTo(entry);
 						$("<h2>").text(incident_type).appendTo(entry);
@@ -1001,7 +1021,16 @@ $(function () {
 					var timeline = $(".timeline_main");
 					$(".timeline_main").scrollLeft(timeline.width());
 				}
-			} // end $.page.social_media.menu
+			}, // end $.page.social_media.menu
+			post_to : function(form, e) {
+				e.preventDefault();
+				
+				var content = $("#social_media_content").val();
+				$.backend.social_media.publish(content).then(function(result) {
+					console.log("test: ", result);
+					$("#social-media-form")[0].reset();
+				});
+			} // end $.page.social_media.post_to
 		}, // end $.page.social_media
 		convert_time_display : function(datetimeString) {
 			var datetime = new Date(datetimeString);
@@ -1148,7 +1177,7 @@ $(function () {
 								resolve(data.id);
 								
 								// log new incident creation
-								$.backend.incident_logs.create(data.id, "Incident Activation");
+								$.backend.incident_logs.create(data.id, "Incident Activation (" + activation_time + ")");
 							} else {
 								reject("Failed to create incident.");	
 							}
@@ -1331,10 +1360,10 @@ $(function () {
 				return promise;
 			}, // end $.backend.resource.assign
 		}, // end $.backend.resource
-		social_managment : {
-		  create : function(status_string) {
+		social_media : {
+		  publish : function(status) {
 			  var data = {
-				  "status" : $("#social_media_content").val()
+				  status : status
 			  };
 			  
 			  // stringify json for backend to recognise
@@ -1348,7 +1377,8 @@ $(function () {
 					  dataType : "json",
 					  success : function(data, textStatus, jqXHR) {
 						  if (data.success) {
-							  alert("success")
+							  //console.log(data);
+							  resolve(data);
 						  } else {
 							  reject("Failed to create incident.");	
 						  }
@@ -1359,8 +1389,8 @@ $(function () {
 				  });
 			  });
 			  return promise;
-			} // end $.backend.social_managment.create
-		} // end $.backend.social_managment
+			} // end $.backend.social_media.publish
+		} // end $.backend.social_media
 	} // end $.backend
 	
 	$(document).ready(function(e) {

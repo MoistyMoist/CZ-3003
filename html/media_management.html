@@ -1,167 +1,52 @@
-<div class="panel panel-default">
-  <link href="../stylesheets/media_management.css" rel="stylesheet"/>
-  
-	
-		<div class="panel-heading" style="margin:0px;padding:0px;border-top:1px solid grey">
-		  <center><h3>Incident Timeline</h3></center>
-		</div>
-    <div class="panel-body">
-      <div class="col-md-12" style="text-align: center">
-          
-      <div class="bar"></div>
-      <div class="timeline_main">
-      	<!--
-          <div class="entry">
-              <h1>DATE TIME</h1>
-              INCIDENT TYPE
-          </div>
-          <div class="entry">
-              <h1>DATE TIME</h1>
-              INCIDENT TYPE
-          </div>
-          <div class="entry">
-              <h1>DATE TIME</h1>
-              INCIDENT TYPE
-          </div>
-          <div class="entry">
-              <h1>DATE TIME</h1>
-              INCIDENT TYPE
-          </div>
-          <div class="entry">
-              <h1>DATE TIME</h1>
-              INCIDENT TYPE
-          </div>
-          -->
-      </div>
-      
-    </div>
-      
-     
-       
-    </div>
+<link href="../stylesheets/media_management.css" rel="stylesheet"/>
 
-  	<div class="panel-heading col-md-6" style="border-bottom:1px solid grey; border-top:1px solid grey">
-		  <center><h4>Log Timeline</h4></center>
-		</div>
-		<div class="panel-heading col-md-6" style="border-bottom:1px solid grey; border-top:1px solid grey" >
-		  <center><h4>Message Broadcast</h4></center>
-		</div>
-		 <div class="panel-body col-md-6" style="overflow:scroll;height:500px;background:white;border-right:1px solid grey">
-		    <div class="col-md-12">
-         <div class="container col-md-12">
-          <ul class="timeline">
-          <!--
-        <li>
-          <div class="timeline-badge"><i class="fa fa-comment"></i></div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <p><small class="text-muted"><i class="fa fa-clock-o"></i> 11 hours ago via Twitter</small></p>
-            </div>
-            <div class="timeline-body">
-              <p>Assigned resources</p>
-            </div>
-          </div>
-        </li>
-        <li class="timeline-inverted">
-          <div class="timeline-badge warning"><i class="fa fa-comment"></i></div>
-          <div class="timeline-panel">
-           <div class="timeline-heading">
-              <p><small class="text-muted"><i class="fa fa-clock-o"></i> 11 hours ago via Twitter</small></p>
-            </div>
-            <div class="timeline-body">
-              <p>Assigned resources</p>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div class="timeline-badge danger"><i class="fa fa-comment"></i></div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <p><small class="text-muted"><i class="fa fa-clock-o"></i> 11 hours ago via Twitter</small></p>
-            </div>
-            <div class="timeline-body">
-               <p>Assigned resources</p>
-            </div>
-          </div>
-        </li>
-        <li class="timeline-inverted">
-            <div class="timeline-badge danger"><i class="fa fa-comment"></i></div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <p><small class="text-muted"><i class="fa fa-clock-o"></i> 11 hours ago via Twitter</small></p>
-            </div>
-            <div class="timeline-body">
-               <p>Assigned resources</p>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div class="timeline-badge danger"><i class="fa fa-comment"></i></div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <p><small class="text-muted"><i class="fa fa-clock-o"></i> 11 hours ago via Twitter</small></p>
-            </div>
-            <div class="timeline-body">
-               <p>Assigned resources</p>
-            </div>
-          </div>
-        </li>
-        <li class="timeline-inverted">
-            <div class="timeline-badge danger"><i class="fa fa-comment"></i></div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <p><small class="text-muted"><i class="fa fa-clock-o"></i> 11 hours ago via Twitter</small></p>
-            </div>
-            <div class="timeline-body">
-               <p>Assigned resources</p>
-            </div>
-          </div>
-        </li>
-        <li>
-          <div class="timeline-badge danger"><i class="fa fa-comment"></i></div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <p><small class="text-muted"><i class="fa fa-clock-o"></i> 11 hours ago via Twitter</small></p>
-            </div>
-            <div class="timeline-body">
-               <p>Assigned resources</p>
-            </div>
-          </div>
-        </li>
-        <li class="timeline-inverted">
-            <div class="timeline-badge danger"><i class="fa fa-comment"></i></div>
-          <div class="timeline-panel">
-            <div class="timeline-heading">
-              <p><small class="text-muted"><i class="fa fa-clock-o"></i> 11 hours ago via Twitter</small></p>
-            </div>
-            <div class="timeline-body">
-               <p>Assigned resources</p>
-            </div>
-          </div>
-        </li>
-        -->
-    </ul>
+<div class="panel panel-info">
+    <div class="panel-heading clearfix" style="margin:0px;padding:0px;">
+    	<center><h3>Incident Timeline</h3></center>
+    </div>
+    
+    <div class="panel-body">
+    	<div class="row" style="text-align: center">
+        	<div class="bar"></div>
+            <div class="timeline_main"></div>
+            
+            <div class="col-md-6 panel-left">
+            	<div class="panel panel-info">
+                    <div class="panel-heading">
+                        <center><h4>Log Timeline</h4></center>
+                    </div>
+                    
+                    <div class="panel-body" style="overflow:scroll;max-height:440px;background:white;padding-top:0px;padding-bottom:0px;">
+                        <ul class="timeline"></ul>
+                    </div> <!-- end panel-body -->
+                </div>
+            </div> <!-- end panel-left -->
+            
+            <div class="col-md-6 panel-right">
+            	<div class="panel panel-info">
+                    <div class="panel-heading">
+                        <center><h4>Social Media Messages</h4></center>
+                    </div>
+                    
+                    <div class="panel-body" style="max-height:440px;overflow:scroll;">
+                    	
+                    </div>
+                    
+                    <div class="panel-footer">
+                        <form class="form text-right" id="social-media-form" onSubmit="$.page.social_media.post_to(this, event)">
+                            <div class="form-group clearfix">
+                            	<textarea id="social_media_content" class="form-control" rows="7" required></textarea>
+                            </div>
+                            
+                            <button class="btn btn-success" type="submit">
+                                <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i>
+                                <span>Post to Social Media</span>
+                            </button>
+                        </form>
+                    </div> <!-- end panel-body -->
+                </div>
+            </div> <!-- end panel-right -->
+            
         </div>
-      </div>
-		  </div>
-			
-		<div class="panel-body col-md-6" style="background:white;height:500px">
-		  <div class="col-md-12" style="height:100%">
-         <form class="form text-right" id="log-create-form" onSubmit="$.backend.social_management.assign(this, event)">
-         <div class="form-group" style="margin-top:50px;">
-            <div class="col-md-12">
-                <textarea id="social_media_content" class="form-control" rows="7"></textarea>
-            </div>
-            <div class="col-md-12" style="margin-top:15px">
-              
-               <button class="btn col-md-12 btn-success" type="submit">
-                  <i class="fa fa-save fa-lg"></i>
-                    <span>Submit</span>
-               </button>
-             </div>
-         </div>
-         </form>
-      </div>
-		</div>
-		  
+    </div> <!-- end panel-body top -->
 </div>
