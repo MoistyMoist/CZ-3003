@@ -64,14 +64,17 @@ $(function () {
 				/**
 				*	Adds a marker with radius(meters) on Basemap
 				*/
-				add : function(lat, lng, radius, title, type) {
-					var marker = new google.maps.Marker({
-						position : {lat:lat, lng:lng},
-						map : $.google.maps.map,
-						animation: google.maps.Animation.DROP,
-						title : title,
-						icon : $.google.maps.marker.icons[type].icon()
-					});
+
+				add : function(id,lat, lng, radius, title, type,activatedDateTime) {
+		
+  		  var marker = new google.maps.Marker({
+           	position : {lat:lat, lng:lng},
+  							map : $.google.maps.map,
+  							animation: google.maps.Animation.DROP,
+  							title : title,
+  							icon : $.google.maps.marker.icons[type].icon()
+          });
+
 				
 					if (radius > 0) {
 						marker.circle = new google.maps.Circle({
@@ -85,26 +88,68 @@ $(function () {
 							radius: radius
 						});
 					}
-					
-					var contentString = '<div id="content">'+
-					'<div id="siteNotice">'+
-					'</div>'+
-					'<div id="bodyContent">'+
-					'<p><b>'+title+'</b></p>'+
-					'</div>'+
-					'</div>';
-					
-					var infowindow = new google.maps.InfoWindow({
-						content: contentString
-					});
-					
-					marker.addListener('click', function() {
-						infowindow.open(map, marker);
-					});
+
+					var incidentcontentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<div id="bodyContent">'+
+            '<p><b>Incident Reported '+$.page.convert_time_display(activatedDateTime)+' at '+title+' </b></p>'+
+            '</div>'+
+            '</div>';
+          var mediacontentString ="";
+          var resourcecontentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<div id="bodyContent">'+
+            '<p><b>Deploy resource here?</b></p>'+
+            '<form class="form" onsubmit="$.google.maps.marker.mediaInfoWindow_click('+id+', event)">'+
+            '<button type="submit">Yes</botton>'+
+            '</form>'+
+            '</div>'+
+            '</div>';
+            
+          mediacontentString = '<div id="content">'+
+                '<div id="siteNotice">'+
+                '</div>'+
+                '<div id="bodyContent">'+
+                '<p><b>Activated time :'+$.page.convert_time_display(activatedDateTime)+'</b></p>'+
+                '</div>'+
+                '</div>';
+                
+         
+          
+            
+					var incidentinfowindow = new google.maps.InfoWindow({
+            content: incidentcontentString
+          });
+          var resourceinfowindow = new google.maps.InfoWindow({
+            content: resourcecontentString
+          });
+          var mediainfowindow = new google.maps.InfoWindow({
+            content: mediacontentString
+          });
+          
+          
+					marker.circle.addListener('click', function() {
+					  if($('#incident_view').css('display') == 'none' && $('#media_view').css('display') == 'none'){ 
+                resourceinfowindow.open(map, marker);
+            } else if($('#incident_view').css('display') == 'none' && $('#resource_view').css('display') == 'none'){ 
+               mediainfowindow.open(map, marker);
+            }else{
+               incidentinfowindow.open(map, marker);
+            }
+           
+         });
+
           
         
 					$.google.maps.markers.push(marker);
 				}, // end $.google.maps.marker.add
+				mediaInfoWindow_click : function(id, e){
+				  e.preventDefault();
+				  //TODO:infowindow on click
+				  alert("update the selected id to "+id+" here!")
+				},
 				clear_all : function() {
 					$.google.maps.markers.forEach(function(marker, index) {
 						marker.setMap(null);
@@ -548,7 +593,7 @@ $(function () {
 						var lat = location.coord_lat;
 						var lng = location.coord_long;
 						var radius = location.radius;
-						$.google.maps.marker.add(lat, lng, radius, description, type);
+						$.google.maps.marker.add(result.id,lat, lng, radius, description, type,result.activation_time);
 							
 						$.google.maps.map.setZoom(11);
 						$.google.maps.map.setCenter({lat:lat,lng:lng});
