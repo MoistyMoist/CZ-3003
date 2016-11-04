@@ -64,7 +64,7 @@ $(function () {
 				/**
 				*	Adds a marker with radius(meters) on Basemap
 				*/
-<<<<<<< HEAD
+
 				add : function(id,lat, lng, radius, title, type,activatedDateTime) {
 		
   		  var marker = new google.maps.Marker({
@@ -74,16 +74,7 @@ $(function () {
   							title : title,
   							icon : $.google.maps.marker.icons[type].icon()
           });
-=======
-				add : function(lat, lng, radius, title, type) {
-					var marker = new google.maps.Marker({
-						position : {lat:lat, lng:lng},
-						map : $.google.maps.map,
-						animation: google.maps.Animation.DROP,
-						title : title,
-						icon : $.google.maps.marker.icons[type].icon()
-					});
->>>>>>> master
+
 				
 					if (radius > 0) {
 						marker.circle = new google.maps.Circle({
@@ -97,7 +88,7 @@ $(function () {
 							radius: radius
 						});
 					}
-<<<<<<< HEAD
+
 					var incidentcontentString = '<div id="content">'+
             '<div id="siteNotice">'+
             '</div>'+
@@ -149,24 +140,7 @@ $(function () {
             }
            
          });
-=======
-					
-					var contentString = '<div id="content">'+
-					'<div id="siteNotice">'+
-					'</div>'+
-					'<div id="bodyContent">'+
-					'<p><b>'+title+'</b></p>'+
-					'</div>'+
-					'</div>';
-					
-					var infowindow = new google.maps.InfoWindow({
-						content: contentString
-					});
-					
-					marker.addListener('click', function() {
-						infowindow.open(map, marker);
-					});
->>>>>>> master
+
           
         
 					$.google.maps.markers.push(marker);
