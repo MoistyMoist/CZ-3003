@@ -1,5 +1,14 @@
 <link href="../stylesheets/media_management.css" rel="stylesheet"/>
 
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
 <div class="panel panel-info">
     <div class="panel-heading clearfix" style="margin:0px;padding:0px;">
     	<center><h3>Incident Timeline</h3></center>
@@ -29,7 +38,12 @@
                     </div>
                     
                     <div class="panel-body">
-                    	<a class="twitter-timeline" href="https://twitter.com/sg_crisis">Tweets by sg_crisis</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+                    	<div class="col-md-6">
+                    		<a class="twitter-timeline" href="https://twitter.com/sg_crisis">Tweets by sg_crisis</a> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+                        </div>
+                        <div class="col-md-6">
+                        	<div class="fb-page" data-href="https://www.facebook.com/sgcrisis/" data-tabs="timeline" data-small-header="true" data-adapt-container-width="true" data-hide-cover="true" data-show-facepile="false"><blockquote cite="https://www.facebook.com/sgcrisis/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/sgcrisis/">Crisis Management</a></blockquote></div>
+                        </div>
                     </div>
                     
                     <div class="panel-footer">
