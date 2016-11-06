@@ -64,7 +64,7 @@ $(function () {
 				/**
 				*	Adds a marker with radius(meters) on Basemap
 				*/
-				add : function(id,lat, lng, radius, title, type,activatedDateTime) {
+				add : function(incident_id, lat, lng, radius, title, type, activatedDateTime) {
 					var marker = new google.maps.Marker({
 						position : {lat:lat, lng:lng},
 						map : $.google.maps.map,
@@ -86,21 +86,12 @@ $(function () {
 						});
 					}
 					
-					var incidentcontentString = '<div id="content">'+
-					'<div id="siteNotice">'+
-					'</div>'+
-					'<div id="bodyContent">'+
-					'<p><b>Incident Reported '+$.page.convert_time_display(activatedDateTime)+' at '+title+' </b></p>'+
-					'</div>'+
-					'</div>';
-					
-					//var mediacontentString ="";
 					var resourcecontentString = '<div id="content">'+
 					'<div id="siteNotice">'+
 					'</div>'+
 					'<div id="bodyContent">'+
 					'<p><b>Deploy resource here?</b></p>'+
-					'<form class="form" onsubmit="$.google.maps.marker.mediaInfoWindow_click('+id+', event)">'+
+					'<form class="form" onsubmit="$.google.maps.marker.mediaInfoWindow_click('+incident_id+', event)">'+
 					'<button type="submit">Yes</botton>'+
 					'</form>'+
 					'</div>'+
@@ -113,27 +104,67 @@ $(function () {
 					'<p><b>Activated time :'+$.page.convert_time_display(activatedDateTime)+'</b></p>'+
 					'</div>'+
 					'</div>';
-
-					var incidentinfowindow = new google.maps.InfoWindow({
-						content: incidentcontentString
-					});
 					
-					var resourceinfowindow = new google.maps.InfoWindow({
-						content: resourcecontentString
-					});
+					marker.infowindow = {
+						incident : $.google.maps.infowindow.incident(incident_id, type, title),
+						resource : $.google.maps.infowindow.resource(incident_id, type, title),
+						social_media : $.google.maps.infowindow.social_media(incident_id, type, title)
+					};
 					
-					var mediainfowindow = new google.maps.InfoWindow({
-						content: mediacontentString
+					marker.addListener('click', function() {
+						$.page.scrollTo("#map");
+						
+						$.google.maps.markers.forEach(function(marker, index) {
+							marker.infowindow.resource.close();
+							marker.infowindow.social_media.close();
+							marker.infowindow.incident.close();
+						});
+						
+						if($('#incident_view').css('display') === 'none' && $('#media_view').css('display') === 'none'){
+							marker.infowindow.resource.open($.google.maps.map, marker);
+						} else if($('#incident_view').css('display') === 'none' && $('#resource_view').css('display') === 'none'){
+							marker.infowindow.social_media.open($.google.maps.map, marker);
+						} else {
+							marker.infowindow.incident.open($.google.maps.map, marker);
+						}
 					});
 					
 					marker.circle.addListener('click', function() {
-						if($('#incident_view').css('display') == 'none' && $('#media_view').css('display') == 'none'){
-							resourceinfowindow.open(map, marker);
-						} else if($('#incident_view').css('display') == 'none' && $('#resource_view').css('display') == 'none'){
-							mediainfowindow.open(map, marker);
-						} else {
-							incidentinfowindow.open(map, marker);
-						}
+						google.maps.event.trigger(marker, 'click');
+					});
+					
+					google.maps.event.addListener(marker.infowindow.incident, 'domready', function() {
+						$(".infowindow .incident-view-log").click(function(e) {
+							var incident_id = $(this).attr("data-id");
+                            $("#incident-table tr[data-id=" + incident_id + "]").click();
+							$.page.scrollTo("#incident_view");
+                        });
+						
+						$(".infowindow .incident-close").click(function(e) {
+                            var incident_id = $(this).attr("data-id");
+                            $("#incident-table tr[data-id=" + incident_id + "] span.label").click();
+                        });
+					});
+					
+					google.maps.event.addListener(marker.infowindow.resource, 'domready', function() {
+						$(".infowindow .panel-stat3").click(function(e) {
+							var id = $(this).attr("data-id");
+							$("#resource-selector .panel-stat3[data-id=" + id + "]").click();
+							$.page.scrollTo("#resource_view");
+							
+							var incident_id = $(this).parent(".infowindow.body").attr("data-incident-id");
+							var selected_val = $("#resource-incidents option[data-id=" + incident_id + "]").val();
+							console.log(incident_id, selected_val);
+							$("#resource-incidents").val(selected_val);
+                        });
+					});
+					
+					google.maps.event.addListener(marker.infowindow.social_media, 'domready', function() {
+						$(".infowindow .social-media-view-log").click(function(e) {
+							var incident_id = $(this).attr("data-id");
+                            $(".timeline_main .entry[data-id=" + incident_id + "]").click();
+							$.page.scrollTo("#media_view");
+                        });
 					});
 					
 					$.google.maps.markers.push(marker);
@@ -153,6 +184,112 @@ $(function () {
 					$.google.maps.markers = [];
 				} // end $.google.maps.marker.clear_all
 			}, // end $.google.maps.marker
+			infowindow : {
+				incident : function(incident_id, type, description) {
+					var content = $("<div>", {
+						class : "infowindow content"	
+					});
+					
+					var content_heading = $("<div>", {
+						class : "infowindow heading text-center"
+					}).appendTo(content);
+					
+					var type = $("<b>").append($("<u>").text(type)).appendTo(content_heading);
+					var title = $("<h4>").text(description).appendTo(content_heading);
+					
+					var content_body = $("<div>", {
+						class : "infowindow body"	
+					}).appendTo(content);
+					
+					var btn1 = $("<button>", {
+						class : "btn btn-success incident-view-log",
+						type : "button",
+						"data-id" : incident_id
+					}).appendTo(content_body);
+					
+					$("<i>", {
+						class : "fa fa-comment"
+					}).appendTo(btn1);
+					
+					$("<span>").text(" View Logs").appendTo(btn1);
+					
+					var role = $.page.get_cookie("groups");
+					if (role === "HQ_Commander") {
+						var btn2 = $("<button>", {
+							class : "btn btn-danger incident-close pull-right",
+							type : "button",
+							"data-id" : incident_id
+						}).appendTo(content_body);
+						
+						$("<i>", {
+							class : "fa fa-exclamation-triangle"
+						}).appendTo(btn2);
+						
+						$("<span>").text(" Close Incident").appendTo(btn2);
+					}
+					
+					return new google.maps.InfoWindow({
+						content: content.html()
+					});
+				}, // end $.google.maps.infowindow.incident
+				resource : function(incident_id, type, description) {
+					var content = $("<div>", {
+						class : "infowindow content"	
+					});
+					
+					var content_heading = $("<div>", {
+						class : "infowindow heading text-center"
+					}).appendTo(content);
+					
+					var type = $("<b>").append($("<u>").text(type)).appendTo(content_heading);
+					var title = $("<h4>").text(description).appendTo(content_heading);
+
+					var content_body = $("<div>", {
+						class : "infowindow body",
+						"data-incident-id" : incident_id
+					}).appendTo(content);
+					
+					$("#resource-selector").children().each(function(index, element) {
+						content_body.append($(element).html());
+                    });
+					
+					return new google.maps.InfoWindow({
+						content: content.html()
+					});
+				}, // end $.google.maps.infowindow.resource
+				social_media : function(incident_id, type, description) {
+					var content = $("<div>", {
+						class : "infowindow content"	
+					});
+					
+					var content_heading = $("<div>", {
+						class : "infowindow heading text-center"
+					}).appendTo(content);
+					
+					var type = $("<b>").append($("<u>").text(type)).appendTo(content_heading);
+					var title = $("<h4>").text(description).appendTo(content_heading);
+					
+					var content_body = $("<div>", {
+						class : "infowindow body"	
+					}).appendTo(content);
+					
+					var btn1 = $("<button>", {
+						class : "btn btn-success social-media-view-log",
+						type : "button",
+						"data-id" : incident_id
+					}).appendTo(content_body);
+					
+					$("<i>", {
+						class : "fa fa-comment"
+					}).appendTo(btn1);
+					
+					$("<span>").text(" View Logs").appendTo(btn1);
+					
+					return new google.maps.InfoWindow({
+						content: content.html()
+					});
+				} // end $.google.maps.infowindow.social_media
+			}, // end $.google.maps.infowindow
 			geocode_address : function(address) {
 				var promise = new Promise(function(resolve, reject) {
 					$.google.maps.geocoder.geocode({
@@ -320,6 +457,17 @@ $(function () {
 						$.page.incident.logs.refresh_list();
 						$.page.social_media.timeline.logs.update();
 					}
+					
+					var cms_status = payload.data.cms_status;
+					if (cms_status !== undefined) {
+						if (cms_status) {
+							Cookies.set("skin_color", "skin-2");
+						} else {
+							Cookies.set("skin_color", "skin-1");	
+						}
+						$('aside').addClass(Cookies.get('skin_color'));
+        				$('#top-nav').addClass(Cookies.get('skin_color'));
+					}
 				});
 			}, // end $.google.firebase.receive_message
 			/**
@@ -400,16 +548,6 @@ $(function () {
             });
 		}, // end $.page.init
 		get_cookie : function(c_name) {
-			/*var i, x, y, ARRcookies = document.cookie.split(";");
-			
-			for (i = 0; i < ARRcookies.length; i++) {
-				x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
-				y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
-				x = x.replace(/^\s+|\s+$/g, "");
-				if (x == c_name) {
-					return unescape(y);
-				}
-			}*/
 			return Cookies.get()[c_name];
 		}, // end $.page.get_cookie
 		scrollTo : function(element) {
@@ -422,6 +560,7 @@ $(function () {
 		logout : function() {
 			Cookies.remove("groups");
 			Cookies.remove("skin_color");
+			$.google.firebase.token.to_server.is_sent(false);
 			window.location = "login.html";
 		}, // end $.page.logout
 		update : function() {
@@ -555,6 +694,12 @@ $(function () {
 				click : function(e) {
 					e.preventDefault();
 					
+					$.google.maps.markers.forEach(function(marker, index) {
+						marker.infowindow.resource.close();
+						marker.infowindow.social_media.close();
+						marker.infowindow.incident.close();
+					});
+					
 					$(".role_view:not(#incident_view)").slideUp("fast");
 					$(".role_view").promise().done(function() {
 						$("#incident_view").slideDown("fast");
@@ -638,21 +783,24 @@ $(function () {
 					
 					var status = $("<span>");
 					
-					status.click(function() {
-						var dialog = confirm("Confirm close this incident?");
-						if (dialog == true) {
-							var incident_id = tr.attr("data-id");
-							
-							tr.remove();
-							
-							var deactivation_time = new Date();
-							$.backend.incident.update(incident_id, { deactivation_time : deactivation_time })
-							.then(function(result) {
-								$.backend.incident_logs.create(incident_id, "Incident Deactivated (" + deactivation_time + ")");
-								$.google.firebase.send_broadcast({incident:true});
-							});
-						}
-					});
+					var role = $.page.get_cookie("groups");
+					if (role === "HQ_Commander") {
+						status.click(function() {
+							var dialog = confirm("Confirm close this incident?");
+							if (dialog == true) {
+								var incident_id = tr.attr("data-id");
+								
+								tr.remove();
+								
+								var deactivation_time = new Date();
+								$.backend.incident.update(incident_id, { deactivation_time : deactivation_time })
+								.then(function(result) {
+									$.backend.incident_logs.create(incident_id, "Incident Deactivated (" + deactivation_time + ")");
+									$.google.firebase.send_broadcast({incident:true});
+								});
+							}
+						});
+					}
 					
 					$("<td>").append(status).appendTo(tr);
 					
@@ -821,6 +969,12 @@ $(function () {
 				}, // end $.page.resource.menu.shortcut
 				click : function(e) {
 					e.preventDefault();
+					
+					$.google.maps.markers.forEach(function(marker, index) {
+						marker.infowindow.resource.close();
+						marker.infowindow.social_media.close();
+						marker.infowindow.incident.close();
+					});
 				
 					$(".role_view:not(#resource_view)").slideUp("fast");
 					$(".role_view").promise().done(function() {
@@ -1125,6 +1279,12 @@ $(function () {
 				}, //end $.page.resource.menu.shortcut
 				click : function(e) {
 					e.preventDefault();
+					
+					$.google.maps.markers.forEach(function(marker, index) {
+						marker.infowindow.resource.close();
+						marker.infowindow.social_media.close();
+						marker.infowindow.incident.close();
+					});
 				
 					$(".role_view:not(#media_view)").slideUp("fast");
 					$(".role_view").promise().done(function() {
@@ -1409,7 +1569,8 @@ $(function () {
 						dataType : "json",
 						success : function(data, textStatus, jqXHR) {
 							if (data.success) {
-								resolve(data);	
+								resolve(data);
+								$.google.firebase.send_broadcast({cms_status:active});
 							} else {
 								reject("Failed to update CMS Status.");	
 							}

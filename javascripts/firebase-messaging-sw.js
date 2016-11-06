@@ -23,11 +23,21 @@ const messaging = firebase.messaging();
 
 messaging.setBackgroundMessageHandler(function(payload) {
   console.log('[firebase-messaging-sw.js] Received background message ', payload);
+  
+  var msg_body = ""
+  if (incident !== undefined && incident) {
+	  msg_body = "New Incident reported";
+  }
+  
+  if (incident_logs !== undefined && inident_logs) {
+	  msg_body = "New Log Added"  
+  }
+  
   // Customize notification here
-  const notificationTitle = 'Background Message Title';
+  const notificationTitle = 'Crisis SG';
   const notificationOptions = {
-    body: 'Background Message body.',
-    icon: '/firebase-logo.png'
+    body: msg_body,
+    icon: '../images/logo.png'
   };
 
   return self.registration.showNotification(notificationTitle, notificationOptions);
