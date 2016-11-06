@@ -306,9 +306,7 @@ $(function () {
 			config : {
 				apiKey: "AIzaSyAfx3vltb6DmiG9O72T1dni1KweHxVQbNc",
 				serverKey: "AIzaSyDGkaf5JEu3LZmc5_ObZP-7XGqzEhB0vTA",
-				//authDomain: "cz3003-cms.firebaseapp.com",
 				databaseURL: "https://cz3003-cms.firebaseio.com",
-				//storageBucket: "cz3003-cms.appspot.com",
 				messagingSenderId: "455786633696"
 			}, // end $.google.firebase.config
 			messaging : { /* Firebase Messaging Object */ },
@@ -334,7 +332,6 @@ $(function () {
 				$.google.firebase.database = firebase.database();
 				$.google.firebase.token.db_ref = $.google.firebase.database.ref("push_registrations");
 				$.google.firebase.token.db_ref.on('value', function(snapshot) {
-					console.log("value changed");
 					var i = 0;
 					$.google.firebase.token.registration_ids = [];
 					
@@ -398,16 +395,6 @@ $(function () {
 								console.log('Token has been sent...');
 								$.google.firebase.token.to_server.is_sent(true)
 							});
-							/*
-							$.google.firebase.token.db_ref.push().set({
-								registration_id : currentToken,
-								groups : $.page.get_cookie("groups"),
-								datetime : new Date().getTime()
-							}).then(function() {
-								console.log('Token has been sent...');
-								$.google.firebase.token.to_server.is_sent(true)
-							});
-							*/
 						} else {
 							console.log('Token already sent to server so won\'t send it again unless it changes');	
 						}
@@ -416,14 +403,9 @@ $(function () {
 						if (sent === undefined) {
 							var cookie_val = Cookies.get("sentToServer");
 							return cookie_val === "true" ? true : false;
-							//return Cookies.get("sentToServer");
-							/*if (window.localStorage.getItem('sentToServer') == 1) {
-								  return true;
-							}*/
 							return false;
 						} else {
 							Cookies.set("sentToServer", sent);
-							//window.localStorage.setItem('sentToServer', sent ? 1 : 0);
 							return sent;
 						}
 					} // end $.google.firebase.token.to_server.is_sent
@@ -706,7 +688,6 @@ $(function () {
 			}, // end $.page.incident.type
 			get_type_text : function(incident_type) {
 				return $.page.incident.type[incident_type];
-				//return $("#incident-type option[value=" + incident_type + "]").text();
 			}, // end $.page.incident.get_type_text
 			update : function(results) {
 				$.google.maps.marker.clear_all();
@@ -1335,8 +1316,6 @@ $(function () {
 	} // end $.page
 	
 	$.backend = {
-		//root_url : "https://crisismanagement.herokuapp.com/",
-		//root_url : "/",
 		get_root_url : function() {
 			if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
 				return "https://crisismanagement.herokuapp.com/";	
@@ -1455,14 +1434,6 @@ $(function () {
 				return promise;
 			}, // end $.backend.incident.create
 			update : function(incident_id, data) {
-				/*
-				var data = {
-					"location" : {
-						"radius" : radius
-					}
-				};
-				*/
-				
 				// stringify json for backend to recognise
 				data = JSON.stringify(data);
 				
