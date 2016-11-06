@@ -151,11 +151,6 @@ $(function () {
 					
 					$.google.maps.markers.push(marker);
 				}, // end $.google.maps.marker.add
-				mediaInfoWindow_click : function(id, e){
-					e.preventDefault();
-					//TODO:infowindow on click
-					alert("update the selected id to "+id+" here!")
-				}, // end $.google.maps.marker.mediaInfoWindow_click
 				clear_all : function() {
 					$.google.maps.markers.forEach(function(marker, index) {
 						marker.setMap(null);
@@ -344,7 +339,6 @@ $(function () {
 					$.google.firebase.token.registration_ids = [];
 					
 					snapshot.forEach(function(row) {
-						console.log(row.getKey());
 						$.google.firebase.token.registration_ids[i] = row.getKey();
 						i++;
 					});
@@ -723,7 +717,6 @@ $(function () {
 				tbody.empty();
 				
 				results.forEach(function(result, index) {
-					//[TODO] remove deactivated incidents?
 					if (result.deactivation_time !== null) {
 						return;
 					}
