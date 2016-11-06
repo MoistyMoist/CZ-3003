@@ -10,7 +10,7 @@ $(function () {
 			load_library : function() {
 				var googleMaps = $("<script>", {
 					type : "text/javascript",
-					src : "https://maps.googleapis.com/maps/api/js?key=" + $.google.api_key + "&region=SG&callback=" + $.google.maps.callback
+					src : "https://maps.googleapis.com/maps/api/js?key=" + $.google.api_key + "&libraries=geometry&region=SG&callback=" + $.google.maps.callback
 				}).prop("defer", true).prop("async", true);
 				
 				$("body").append(googleMaps);
@@ -467,7 +467,7 @@ $(function () {
 					var incident_id, description;
 					$.page.incident.list.some(function(incident, index) {
 						if (incident.location != null) {
-							var existing_location = new google.maps.LatLng(incident.location.coord_lat, incident.location.coord_long)
+							var existing_location = new google.maps.LatLng(incident.location.coord_lat, incident.location.coord_long);
 							
 							var dist = google.maps.geometry.spherical.computeDistanceBetween(new_location, existing_location);
 							var radius = incident.location.radius;
@@ -898,7 +898,8 @@ $(function () {
 						opt_text += " [" + new Date(incident.activation_time) + "]";
 						
 						var option = $("<option>", {
-							value : title
+							value : title,
+							"data-id" : incident.id
 						}).text(opt_text).appendTo(select);
 					});
 				} // end $.page.resource.update.incidents
@@ -918,8 +919,17 @@ $(function () {
 				var title = $("#resource-incidents").val();
 				var message = $("#resource-message").val();
 				
+				var contact_text = $("#resource-contact").val();
+				
+				var incident_id = $("#resource-incidents option:selected").attr("data-id");
+				
 				$.backend.resource.assign(contact, title, message).then(function(data) {
 					form.reset();
+				}).then(function() {
+					var logs_desc = contact_text + " assigned, message: " + message;
+					return $.backend.incident_logs.create(incident_id, logs_desc);
+				}).then(function() {
+					$.google.firebase.send_broadcast({incident_logs:true});
 				});
 			} // end $.page.resource.form_submit
 		}, // end $.page.resource
