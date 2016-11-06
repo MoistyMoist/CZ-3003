@@ -339,11 +339,13 @@ $(function () {
 				$.google.firebase.database = firebase.database();
 				$.google.firebase.token.db_ref = $.google.firebase.database.ref("push_registrations");
 				$.google.firebase.token.db_ref.on('value', function(snapshot) {
+					console.log("value changed");
 					var i = 0;
 					$.google.firebase.token.registration_ids = [];
 					
 					snapshot.forEach(function(row) {
-						$.google.firebase.token.registration_ids[i] = row.val().registration_id;
+						console.log(row.getKey());
+						$.google.firebase.token.registration_ids[i] = row.getKey();
 						i++;
 					});
 				});
@@ -394,6 +396,15 @@ $(function () {
 						if (!$.google.firebase.token.to_server.is_sent()) {
 							console.log('Sending token to server...');
 							
+							var ref = $.google.firebase.database.ref("push_registrations/" + currentToken);
+							ref.set({
+								groups : $.page.get_cookie("groups"),
+								datetime : new Date().getTime()
+							}).then(function() {
+								console.log('Token has been sent...');
+								$.google.firebase.token.to_server.is_sent(true)
+							});
+							/*
 							$.google.firebase.token.db_ref.push().set({
 								registration_id : currentToken,
 								groups : $.page.get_cookie("groups"),
@@ -402,18 +413,23 @@ $(function () {
 								console.log('Token has been sent...');
 								$.google.firebase.token.to_server.is_sent(true)
 							});
+							*/
 						} else {
 							console.log('Token already sent to server so won\'t send it again unless it changes');	
 						}
 					}, // end $.google.firebase.token.to_server.send
 					is_sent : function(sent) {
 						if (sent === undefined) {
-							if (window.localStorage.getItem('sentToServer') == 1) {
+							var cookie_val = Cookies.get("sentToServer");
+							return cookie_val === "true" ? true : false;
+							//return Cookies.get("sentToServer");
+							/*if (window.localStorage.getItem('sentToServer') == 1) {
 								  return true;
-							}
+							}*/
 							return false;
 						} else {
-							window.localStorage.setItem('sentToServer', sent ? 1 : 0);
+							Cookies.set("sentToServer", sent);
+							//window.localStorage.setItem('sentToServer', sent ? 1 : 0);
 							return sent;
 						}
 					} // end $.google.firebase.token.to_server.is_sent
