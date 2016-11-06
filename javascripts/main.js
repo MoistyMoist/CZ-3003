@@ -86,25 +86,6 @@ $(function () {
 						});
 					}
 					
-					var resourcecontentString = '<div id="content">'+
-					'<div id="siteNotice">'+
-					'</div>'+
-					'<div id="bodyContent">'+
-					'<p><b>Deploy resource here?</b></p>'+
-					'<form class="form" onsubmit="$.google.maps.marker.mediaInfoWindow_click('+incident_id+', event)">'+
-					'<button type="submit">Yes</botton>'+
-					'</form>'+
-					'</div>'+
-					'</div>';
-					
-					var mediacontentString = '<div id="content">'+
-					'<div id="siteNotice">'+
-					'</div>'+
-					'<div id="bodyContent">'+
-					'<p><b>Activated time :'+$.page.convert_time_display(activatedDateTime)+'</b></p>'+
-					'</div>'+
-					'</div>';
-					
 					marker.infowindow = {
 						incident : $.google.maps.infowindow.incident(incident_id, type, title),
 						resource : $.google.maps.infowindow.resource(incident_id, type, title),
@@ -120,11 +101,12 @@ $(function () {
 							marker.infowindow.incident.close();
 						});
 						
-						if($('#incident_view').css('display') === 'none' && $('#media_view').css('display') === 'none'){
+						
+						if($('#resource_view').is(":visible")){
 							marker.infowindow.resource.open($.google.maps.map, marker);
-						} else if($('#incident_view').css('display') === 'none' && $('#resource_view').css('display') === 'none'){
+						} else if($('#media_view').is(":visible")){
 							marker.infowindow.social_media.open($.google.maps.map, marker);
-						} else {
+						} else if($("#incident_view").is(":visible")) {
 							marker.infowindow.incident.open($.google.maps.map, marker);
 						}
 					});
@@ -154,13 +136,13 @@ $(function () {
 							
 							var incident_id = $(this).parent(".infowindow.body").attr("data-incident-id");
 							var selected_val = $("#resource-incidents option[data-id=" + incident_id + "]").val();
-							console.log(incident_id, selected_val);
 							$("#resource-incidents").val(selected_val);
                         });
 					});
 					
 					google.maps.event.addListener(marker.infowindow.social_media, 'domready', function() {
 						$(".infowindow .social-media-view-log").click(function(e) {
+							//console.log("test");
 							var incident_id = $(this).attr("data-id");
                             $(".timeline_main .entry[data-id=" + incident_id + "]").click();
 							$.page.scrollTo("#media_view");
