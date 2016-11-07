@@ -224,10 +224,14 @@ $(function () {
 					var content_body = $("<div>", {
 						class : "infowindow body",
 						"data-incident-id" : incident_id
-					}).appendTo(content);
+					});
+					
+					content_body.appendTo(content);
 					
 					$("#resource-selector").children().each(function(index, element) {
-						content_body.append($(element).html());
+						var element_html = $(element).html();
+						//console.log(element_html);
+						content_body.append($(element_html));
                     });
 					
 					return new google.maps.InfoWindow({
@@ -434,11 +438,15 @@ $(function () {
 					
 					var cms_status = payload.data.cms_status;
 					if (cms_status !== undefined) {
+						$('aside').removeClass(Cookies.get('skin_color'));
+        				$('#top-nav').removeClass(Cookies.get('skin_color'));
+						
 						if (cms_status === 'true') {
 							Cookies.set("skin_color", "skin-2");
 						} else if (cms_status === 'false') {
 							Cookies.set("skin_color", "skin-1");
 						}
+						
 						$('aside').addClass(Cookies.get('skin_color'));
         				$('#top-nav').addClass(Cookies.get('skin_color'));
 					}
