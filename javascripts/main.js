@@ -434,10 +434,10 @@ $(function () {
 					
 					var cms_status = payload.data.cms_status;
 					if (cms_status !== undefined) {
-						if (cms_status) {
+						if (cms_status === 'true') {
 							Cookies.set("skin_color", "skin-2");
-						} else {
-							Cookies.set("skin_color", "skin-1");	
+						} else if (cms_status === 'false') {
+							Cookies.set("skin_color", "skin-1");
 						}
 						$('aside').addClass(Cookies.get('skin_color'));
         				$('#top-nav').addClass(Cookies.get('skin_color'));
